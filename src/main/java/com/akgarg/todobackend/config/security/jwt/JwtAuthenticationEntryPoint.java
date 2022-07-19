@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.config.security.jwt;
 
-import com.akgarg.todobackend.utils.TimeUtils;
+import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -31,7 +31,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         errorsMap.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         errorsMap.put("success", false);
         errorsMap.put("data", null);
-        errorsMap.put("timestamp", TimeUtils.getCurrentDateTimeInMilliseconds());
+        errorsMap.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         String errorJsonString = new ObjectMapper().writeValueAsString(errorsMap);
 

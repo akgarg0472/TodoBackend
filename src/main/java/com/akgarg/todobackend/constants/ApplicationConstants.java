@@ -30,7 +30,9 @@ public final class ApplicationConstants {
     public static final String EMAIL_ALREADY_REGISTERED = "email-id is already registered";
     public static final String TODO_STATUS_UPDATED_SUCCESSFULLY = "Todo status successfully updated";
     public static final String USER_ROLE = "ROLE_USER";
-    public static final String USER_NOT_FOUND = "No user found with email provided";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "No user found with email provided";
+    public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
+    public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "No account found with token provided";
     public static final String INVALID_EMAIL_OR_PASSWORD = "Email or password is invalid";
     public static final String USER_ACCOUNT_DISABLED = "Your account is disabled";
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
@@ -39,5 +41,11 @@ public final class ApplicationConstants {
     public static final String UNKNOWN_JWT_TOKEN = "Token is invalid or malicious";
     public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "An email has been sent to $email. Please follow instruction on email to reset your account password";
     public static final String FORGOT_PASSWORD_EMAIL_FAILURE = "Error occurred while sending forgot password email to $email. Please try again once. If problem persists then try again after sometime";
+
+    public static final String ACCOUNT_VERIFICATION_EMAIL_SUBJECT = "Verify Account";
+    public static final String ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT = "Congratulations 🎉, Account activated successfully";
+    public static final String ACCOUNT_VERIFIED_SUCCESSFUL = "Account $EMAIL verified successfully";
+    public static final String ACCOUNT_VERIFICATION_FAILED = "No verification token provided. Account verification failed";
+    public static final String ACCOUNT_VERIFICATION_TOKEN_INVALID = "Verification token is invalid or expired. Account verification failed";
 
 }

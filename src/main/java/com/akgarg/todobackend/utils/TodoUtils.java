@@ -40,7 +40,7 @@ public class TodoUtils {
         response.setMessage(message);
         response.setData(data);
         response.setStatus(status);
-        response.setTimestamp(TimeUtils.getCurrentDateTimeInMilliseconds());
+        response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
     }

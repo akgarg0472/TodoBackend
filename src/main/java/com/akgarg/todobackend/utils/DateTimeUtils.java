@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
  * Date: 16-07-2022
  */
-public class TimeUtils {
+public class DateTimeUtils {
 
     public static long getCurrentDateTimeInMilliseconds() {
         return System.currentTimeMillis();

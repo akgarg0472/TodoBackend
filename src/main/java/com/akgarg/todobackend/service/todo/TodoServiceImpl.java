@@ -8,7 +8,7 @@ import com.akgarg.todobackend.request.NewTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
 import com.akgarg.todobackend.response.TodoResponseDto;
-import com.akgarg.todobackend.utils.TimeUtils;
+import com.akgarg.todobackend.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -40,7 +40,7 @@ public class TodoServiceImpl implements TodoService {
         todo.setId(ObjectId.get().toString());
         todo.setCompleted(false);
         todo.setDescription(null);
-        todo.setCreatedAt(TimeUtils.getCurrentDateTimeInMilliseconds());
+        todo.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
         todo.setUpdatedAt(null);
 
         TodoEntity insertedEntity = todoRepository.insert(todo);
@@ -78,7 +78,7 @@ public class TodoServiceImpl implements TodoService {
         TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setDescription(updateDto.getDescription());
         todoEntity.setTitle(updateDto.getTitle());
-        todoEntity.setUpdatedAt(TimeUtils.getCurrentDateTimeInMilliseconds());
+        todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         TodoEntity updatedEntity = todoRepository.save(todoEntity);
 
@@ -89,7 +89,7 @@ public class TodoServiceImpl implements TodoService {
     public TodoResponseDto updateTodoStatus(String todoId, UpdateTodoStatusRequest request) {
         TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setCompleted(request.getCompleted());
-        todoEntity.setUpdatedAt(TimeUtils.getCurrentDateTimeInMilliseconds());
+        todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         TodoEntity updatedEntity = todoRepository.save(todoEntity);
 

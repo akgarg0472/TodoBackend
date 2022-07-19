@@ -57,7 +57,7 @@ public class WebSecurityConfig {
                 .antMatchers(
                         "/api/v1/users/register",
                         "/api/v1/users/login",
-                        "/api/v1/users/forgot-password"
+                        "/api/v1/account/**"
                 ).permitAll()
                 .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasRole("USER")

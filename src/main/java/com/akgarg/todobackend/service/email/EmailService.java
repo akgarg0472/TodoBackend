@@ -11,9 +11,9 @@ public interface EmailService {
 
     boolean sendForgotPasswordEmail(String email);
 
-    boolean sendAccountVerificationEmail(String email);
+    boolean sendAccountVerificationEmail(String email, String url, String accountVerificationToken);
 
-    boolean sendAccountConfirmSuccessEmail(String email);
+    void sendAccountConfirmSuccessEmail(String email);
 
     boolean sendPasswordSuccessfullyUpdatedEmail(String email);
 

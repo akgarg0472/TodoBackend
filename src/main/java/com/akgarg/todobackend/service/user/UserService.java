@@ -12,7 +12,7 @@ import com.akgarg.todobackend.response.UserResponseDto;
  */
 public interface UserService {
 
-    String addNewUser(RegisterUserRequest request);
+    String addNewUser(RegisterUserRequest request, String url);
 
     UserResponseDto getUserById(String userId);
 
@@ -24,6 +24,8 @@ public interface UserService {
 
     String login(LoginRequest loginRequest);
 
-    boolean sendForgotPasswordEmail(String email);
+    boolean sendForgotPasswordEmail(String email, String url);
+
+    String verifyUserAccount(String accountVerificationToken);
 
 }

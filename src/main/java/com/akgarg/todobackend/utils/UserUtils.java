@@ -5,6 +5,7 @@ import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class UserUtils {
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         response.setSuccess(true);
-        response.setTimestamp(TimeUtils.getCurrentDateTimeInMilliseconds());
+        response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
     }
@@ -99,9 +100,40 @@ public class UserUtils {
 
         response.put("message", responseMessage);
         response.put("success", emailResponse);
-        response.put("timestamp", TimeUtils.getCurrentDateTimeInMilliseconds());
+        response.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateAccountVerificationResponse(
+            boolean isTokenValid,
+            String verifiedAccountEmail
+    ) {
+        Map<String, Object> response = new HashMap<>();
+
+        String responseMessage;
+        int responseStatusCode;
+
+        if (isTokenValid && verifiedAccountEmail == null) {
+            responseMessage = ACCOUNT_VERIFICATION_TOKEN_INVALID;
+            responseStatusCode = 400;
+        } else if (isTokenValid) {
+            responseMessage = ACCOUNT_VERIFIED_SUCCESSFUL.replace("$EMAIL", verifiedAccountEmail);
+            responseStatusCode = 200;
+        } else {
+            responseMessage = ACCOUNT_VERIFICATION_FAILED;
+            responseStatusCode = 400;
+        }
+
+        response.put("message", responseMessage);
+        response.put("status", responseStatusCode);
+        response.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.status(responseStatusCode).body(response);
+    }
+
+    public static boolean checkForNullOrInvalidToken(String token) {
+        return token != null && !token.isBlank();
     }
 
 }

@@ -12,8 +12,9 @@ import com.akgarg.todobackend.request.UpdateUserRequest;
 import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.email.EmailService;
 import com.akgarg.todobackend.service.todo.TodoService;
+import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.akgarg.todobackend.utils.JwtUtils;
-import com.akgarg.todobackend.utils.TimeUtils;
+import com.akgarg.todobackend.utils.PasswordUtils;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -32,6 +33,7 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
  * Date: 16-07-2022
  */
 @Service
+@SuppressWarnings("all")
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Override
-    public String addNewUser(RegisterUserRequest request) {
+    public String addNewUser(RegisterUserRequest request, String url) {
         TodoUser user = convertRequestToEntity(request);
 
         user.setId(generateUserId());
@@ -55,14 +57,17 @@ public class UserServiceImpl implements UserService {
         user.setRole(USER_ROLE);
         user.setIsEnabled(true);
         user.setIsAccountNonLocked(false);
-        user.setCreatedAt(TimeUtils.getCurrentDateTimeInMilliseconds());
+        user.setAccountVerificationToken(generateTokenFromUserId(user.getId()));
+        user.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         try {
             TodoUser insertedUser = this.userRepository.insert(user);
-            logger.info(getClass(), "User {} saved in database", insertedUser);
+            logger.info(getClass(), "New user {} saved in database", insertedUser);
+            boolean confirmSuccessEmail = emailService.sendAccountVerificationEmail(insertedUser.getEmail(), url, insertedUser.getAccountVerificationToken());
+            logger.info(getClass(), "Account confirm email sent successfully: {}", confirmSuccessEmail);
             return insertedUser.getEmail();
         } catch (Exception e) {
-            logger.error(getClass(), "Something wrong happened saving new user into db. {}", e.getMessage());
+            logger.error(getClass(), "Something wrong happened saving new user into db. {}", e.getClass());
 
             if ("DuplicateKeyException".equals(e.getClass().getSimpleName())) {
                 throw new UserException(EMAIL_ALREADY_REGISTERED);
@@ -75,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(String userId) {
         logger.info(getClass(), "Fetching user with userId: {}", userId);
-        TodoUser user = this.fetchUserEntityById(userId);
+        TodoUser user = this.fetchUserEntityById(userId, USER_NOT_FOUND_BY_EMAIL);
 
         return convertEntityToDto(user);
     }
@@ -92,7 +97,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto updateUser(String userId, UpdateUserRequest updateUserRequest) {
         logger.info(getClass(), "Updating user {} profile: {}", userId, updateUserRequest);
 
-        TodoUser user = fetchUserEntityById(userId);
+        TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
         user.setFirstName(updateUserRequest.getFirstName());
         user.setLastName(updateUserRequest.getLastName());
         user.setAvatar(updateUserRequest.getAvatar());
@@ -108,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto deleteUser(String userId, String email) {
         logger.info(getClass(), "Deleting user with userId {} & email {}");
 
-        TodoUser user = this.userRepository.findByIdAndEmail(userId, email).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        TodoUser user = this.userRepository.findByIdAndEmail(userId, email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
 
         this.todoService.removeAllTodoByUserId(userId);
 
@@ -151,22 +156,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean sendForgotPasswordEmail(String email) {
+    public boolean sendForgotPasswordEmail(String email, String url) {
         fetchUserEntityByEmail(email);
 
         return this.emailService.sendForgotPasswordEmail(email);
     }
-        
+
+    @Override
+    public String verifyUserAccount(String accountVerificationToken) {
+        logger.info(getClass(), "Account verification request received for token: {}", accountVerificationToken);
+        String userId = getUserIdFromToken(accountVerificationToken);
+
+        TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
+
+        if (accountVerificationToken.equals(user.getAccountVerificationToken())) {
+            user.setAccountVerificationToken(null);
+            user.setIsAccountNonLocked(true);
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+            TodoUser updatedUser = this.userRepository.save(user);
+            this.emailService.sendAccountConfirmSuccessEmail(updatedUser.getEmail());
+
+            return user.getEmail();
+        }
+
+        logger.error(getClass(), "Account is already verified for token {} and id {}", accountVerificationToken, userId);
+        return null;
+    }
+
     private TodoUser fetchUserEntityByEmail(String email) {
-        return this.userRepository.findByEmail(email).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        return this.userRepository.findByEmail(email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
     }
 
-    private TodoUser fetchUserEntityById(String userId) {
-        return this.userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
-    }
-
-    private String generateUserId() {
-        return ObjectId.get().toString();
+    private TodoUser fetchUserEntityById(String userId, String exceptionMessage) {
+        return this.userRepository.findById(userId).orElseThrow(() -> new UserException(exceptionMessage));
     }
 
     private TodoUser convertRequestToEntity(RegisterUserRequest request) {
@@ -175,6 +198,18 @@ public class UserServiceImpl implements UserService {
 
     private UserResponseDto convertEntityToDto(TodoUser user) {
         return this.modelMapper.map(user, UserResponseDto.class);
+    }
+
+    private String generateUserId() {
+        return ObjectId.get().toString();
+    }
+
+    private String generateTokenFromUserId(String userId) {
+        return PasswordUtils.generateTokenFromId(userId);
+    }
+
+    private String getUserIdFromToken(String token) {
+        return PasswordUtils.generateIdFromToken(token);
     }
 
 }

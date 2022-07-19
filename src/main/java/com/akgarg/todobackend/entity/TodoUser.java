@@ -33,6 +33,9 @@ public class TodoUser {
     private Boolean isEnabled;
     private Boolean isAccountNonLocked;
 
+    private String accountVerificationToken;
+    private String forgotPasswordToken;
+
     private Long createdAt;
     private Long lastUpdatedAt;
 

@@ -18,7 +18,6 @@ public class TodoApplicationExceptionHandler {
 
     @ExceptionHandler(TodoException.class)
     public ResponseEntity<TodoApiResponse> handleTodoException(TodoException e) {
-        e.printStackTrace();
         int errorStatusCode;
 
         switch (e.getMessage()) {
@@ -47,7 +46,6 @@ public class TodoApplicationExceptionHandler {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<TodoApiResponse> handleUserException(UserException e) {
-        e.printStackTrace();
         int errorStatusCode;
 
         switch (e.getMessage()) {
@@ -59,6 +57,7 @@ public class TodoApplicationExceptionHandler {
             case EXPIRED_JWT_TOKEN:
             case INVALID_JWT_TOKEN:
             case UNKNOWN_JWT_TOKEN:
+            case ACCOUNT_NOT_FOUND_BY_TOKEN:
                 errorStatusCode = 400;
                 break;
 
@@ -75,12 +74,13 @@ public class TodoApplicationExceptionHandler {
                 break;
         }
 
-        return ResponseEntity.status(errorStatusCode).body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
+        return ResponseEntity
+                .status(errorStatusCode)
+                .body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<TodoApiResponse> handleGenericException(Exception e) {
-        e.printStackTrace();
         String message;
         int errorStatusCode;
 
