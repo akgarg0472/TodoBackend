@@ -6,6 +6,7 @@ import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.logger.TodoLogger;
 import com.akgarg.todobackend.repository.UserRepository;
+import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.request.UpdateUserRequest;
@@ -24,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
@@ -88,7 +91,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserByUsername(String username) {
         logger.info(getClass(), "Fetching user with username: {}", username);
-        TodoUser user = this.fetchUserEntityByEmail(username);
+
+        TodoUser user;
+
+        Optional<Object> cacheUser = this.cache.getValue(username);
+        if (cacheUser.isPresent()) {
+            user = (TodoUser) cacheUser.get();
+        } else {
+            user = this.fetchUserEntityByEmail(username);
+        }
 
         return convertEntityToDto(user);
     }
@@ -105,6 +116,8 @@ public class UserServiceImpl implements UserService {
         TodoUser updatedUser = this.userRepository.save(user);
 
         logger.info(getClass(), "User {} updated successfully: {}", userId, updatedUser);
+        this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+        logger.info(getClass(), "Cache updated for user {}", user.getEmail());
 
         return convertEntityToDto(updatedUser);
     }
@@ -157,9 +170,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean sendForgotPasswordEmail(String email, String url) {
-        fetchUserEntityByEmail(email);
+        TodoUser user = fetchUserEntityByEmail(email);
 
-        return this.emailService.sendForgotPasswordEmail(email);
+        String forgotPasswordToken = generateTokenFromUserId(user.getId());
+
+        try {
+            user.setForgotPasswordToken(forgotPasswordToken);
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+            TodoUser updatedUser = this.userRepository.save(user);
+            return this.emailService.sendForgotPasswordEmail(url, updatedUser.getEmail(), forgotPasswordToken);
+        } catch (Exception e) {
+            logger.error(getClass(), "Something went wrong sending forgot password email to {}", user.getEmail());
+        }
+
+        return false;
     }
 
     @Override
@@ -177,6 +201,10 @@ public class UserServiceImpl implements UserService {
             TodoUser updatedUser = this.userRepository.save(user);
             this.emailService.sendAccountConfirmSuccessEmail(updatedUser.getEmail());
 
+            logger.info(getClass(), "User {} verified successfully: {}", userId, updatedUser);
+            this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+            logger.info(getClass(), "Cache updated for user {}", user.getEmail());
+
             return user.getEmail();
         }
 
@@ -184,7 +212,42 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public boolean processForgotPasswordRequest(ForgotPasswordRequest request) {
+        logger.info(getClass(), "Forgot password process request received for: {}", request.getForgotPasswordToken());
+        String forgotPasswordToken = request.getForgotPasswordToken();
+        String userId = getUserIdFromToken(forgotPasswordToken);
+
+        TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
+
+        if (forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
+                request.getPassword().equals(request.getConfirmPassword())) {
+            user.setForgotPasswordToken(null);
+            user.setPassword(this.passwordEncoder.encode(request.getPassword()));
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+            TodoUser updatedUser = this.userRepository.save(user);
+            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail());
+
+            logger.info(getClass(), "Forgot password success for {}: {}", forgotPasswordToken, user.getEmail());
+            this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+            logger.info(getClass(), "Cache updated for user {}", user.getEmail());
+
+            return true;
+        }
+
+        logger.error(getClass(), "Something went wrong in forgot password processing");
+
+        return false;
+    }
+
     private TodoUser fetchUserEntityByEmail(String email) {
+        Optional<Object> cachedUser = this.cache.getValue(email);
+
+        if (cachedUser.isPresent()) {
+            return (TodoUser) cachedUser.get();
+        }
+
         return this.userRepository.findByEmail(email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
     }
 

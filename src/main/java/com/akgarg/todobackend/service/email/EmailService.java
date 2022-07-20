@@ -9,13 +9,13 @@ public interface EmailService {
 
     boolean send(String toEmail, String subject, String message);
 
-    boolean sendForgotPasswordEmail(String email);
+    boolean sendForgotPasswordEmail(String url, String email, String forgotPasswordToken);
 
     boolean sendAccountVerificationEmail(String email, String url, String accountVerificationToken);
 
     void sendAccountConfirmSuccessEmail(String email);
 
-    boolean sendPasswordSuccessfullyUpdatedEmail(String email);
+    void sendPasswordSuccessfullyUpdatedEmail(String email);
 
     boolean sendAccountDeletedSuccessfullyEmail(String email);
 

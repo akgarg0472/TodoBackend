@@ -1,8 +1,10 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.service.user.UserService;
+import com.akgarg.todobackend.utils.PasswordUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
 import com.akgarg.todobackend.utils.UserUtils;
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * Author: Akhilesh Garg
@@ -29,18 +32,31 @@ public class PasswordController {
     private final UserService userService;
 
     @PostMapping(value = "/forgot-password", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> sendForgotPasswordEmail(
-            @RequestBody ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest request
+    public Map<String, Object> sendForgotPasswordEmail(
+            @RequestBody ForgotPasswordEmailRequest forgotPasswordEmailRequest, HttpServletRequest request
     ) {
-        logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordRequest);
+        logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordEmailRequest);
 
-        UserUtils.checkForgotPasswordRequest(forgotPasswordRequest);
+        UserUtils.checkForgotPasswordRequest(forgotPasswordEmailRequest);
 
-        String email = forgotPasswordRequest.getEmail();
+        String email = forgotPasswordEmailRequest.getEmail();
         boolean forgotPasswordEmailResponse = this.userService.sendForgotPasswordEmail(email, UrlUtils.getUrl(request));
-        int responseStatus = forgotPasswordEmailResponse ? 200 : 500;
 
-        return ResponseEntity.status(responseStatus).body(UserUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, email));
+        return UserUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
+    }
+
+    @PostMapping(value = "reset-password")
+    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        logger.info(getClass(), "Received resetPassword request for: {}", forgotPasswordRequest.getForgotPasswordToken());
+
+        boolean isRequestValid = PasswordUtils.isForgotPasswordRequestValid(forgotPasswordRequest);
+        boolean passwordResetResponse = false;
+
+        if (isRequestValid) {
+            passwordResetResponse = this.userService.processForgotPasswordRequest(forgotPasswordRequest);
+        }
+
+        return UserUtils.generateForgotPasswordCompleteResponse(isRequestValid, passwordResetResponse);
     }
 
 }

@@ -56,7 +56,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         logger.debug(getClass(), "loadUserByUsername() -> Returning user from db: {}", databaseUser.get());
 
-        if (databaseUser.get().getIsAccountNonLocked()) {
+        if (Boolean.TRUE.equals(databaseUser.get().getIsAccountNonLocked())) {
             this.cache.insertKeyValue(username, databaseUser.get());
         }
 

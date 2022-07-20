@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.service.user;
 
+import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.request.UpdateUserRequest;
@@ -27,5 +28,7 @@ public interface UserService {
     boolean sendForgotPasswordEmail(String email, String url);
 
     String verifyUserAccount(String accountVerificationToken);
+
+    boolean processForgotPasswordRequest(ForgotPasswordRequest request);
 
 }

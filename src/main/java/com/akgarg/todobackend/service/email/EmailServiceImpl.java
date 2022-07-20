@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 
-import static com.akgarg.todobackend.constants.ApplicationConstants.ACCOUNT_VERIFICATION_EMAIL_SUBJECT;
-import static com.akgarg.todobackend.constants.ApplicationConstants.ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT;
+import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
  * Author: Akhilesh Garg
@@ -37,14 +36,17 @@ public class EmailServiceImpl implements EmailService {
             logger.info(getClass(), "{}: email successfully sent to -> {}", subject, toEmail);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(getClass(), "Error sending {} email to {}: {}", subject, toEmail, e.getClass().getSimpleName());
             return false;
         }
     }
 
     @Override
-    public boolean sendForgotPasswordEmail(String email) {
-        return this.send(email, "Forgot Password", "Forgot password email body");
+    public boolean sendForgotPasswordEmail(String url, String email, String forgotPasswordToken) {
+        String forgotPasswordEmailMessage = "Your forgot password token is: " + forgotPasswordToken;
+
+        return this.send(email, "Forgot Password", forgotPasswordEmailMessage);
     }
 
     @Override
@@ -76,8 +78,11 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean sendPasswordSuccessfullyUpdatedEmail(String email) {
-        return false;
+    public void sendPasswordSuccessfullyUpdatedEmail(String email) {
+        String passwordSuccessfullyUpdatedEmailMessage = "Dear " + email + ". " +
+                "Password of your account is successfully changed..";
+
+        this.send(email, PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT, passwordSuccessfullyUpdatedEmailMessage);
     }
 
     @Override

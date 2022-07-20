@@ -57,7 +57,8 @@ public class WebSecurityConfig {
                 .antMatchers(
                         "/api/v1/users/register",
                         "/api/v1/users/login",
-                        "/api/v1/account/**"
+                        "/api/v1/account/**",
+                        "/api/v1/password/**"
                 ).permitAll()
                 .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasRole("USER")
@@ -75,7 +76,7 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**");
+        return web -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**");
     }
 
     @Bean

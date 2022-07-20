@@ -14,7 +14,7 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
  * Date: 16-07-2022
  */
 @ControllerAdvice
-public class TodoApplicationExceptionHandler {
+public class ApplicationExceptionHandler {
 
     @ExceptionHandler(TodoException.class)
     public ResponseEntity<TodoApiResponse> handleTodoException(TodoException e) {
@@ -41,7 +41,9 @@ public class TodoApplicationExceptionHandler {
                 break;
         }
 
-        return ResponseEntity.status(errorStatusCode).body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
+        return ResponseEntity
+                .status(errorStatusCode)
+                .body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
     }
 
     @ExceptionHandler(UserException.class)
@@ -62,7 +64,7 @@ public class TodoApplicationExceptionHandler {
                 break;
 
             case INVALID_EMAIL_OR_PASSWORD:
-                errorStatusCode = 403;
+                errorStatusCode = 401;
                 break;
 
             case EMAIL_ALREADY_REGISTERED:
@@ -85,6 +87,15 @@ public class TodoApplicationExceptionHandler {
         int errorStatusCode;
 
         switch (e.getClass().getSimpleName()) {
+            case "IllegalArgumentException":
+                if (INVALID_TOKEN_BIT_PROVIDED.equals(e.getMessage())) {
+                    message = "Invalid token value provided";
+                } else {
+                    message = "Invalid value provided";
+                }
+                errorStatusCode = 400;
+                break;
+
             case "HttpRequestMethodNotSupportedException":
                 message = "Request Method not allowed";
                 errorStatusCode = 405;
@@ -103,7 +114,9 @@ public class TodoApplicationExceptionHandler {
                 break;
         }
 
-        return ResponseEntity.status(errorStatusCode).body(TodoUtils.generateTodoApiResponse(message, null, errorStatusCode));
+        return ResponseEntity
+                .status(errorStatusCode)
+                .body(TodoUtils.generateTodoApiResponse(message, null, errorStatusCode));
     }
 
 }

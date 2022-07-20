@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.utils;
 
 import com.akgarg.todobackend.exception.UserException;
-import com.akgarg.todobackend.request.ForgotPasswordRequest;
+import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
@@ -19,6 +19,14 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
  * Date: 16-07-2022
  */
 public class UserUtils {
+
+    public static final String MESSAGE = "message";
+    public static final String SUCCESS = "success";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String STATUS = "status";
+
+    private UserUtils() {
+    }
 
     public static void checkRegisterUserRequest(RegisterUserRequest request) {
         if (request == null) {
@@ -58,12 +66,12 @@ public class UserUtils {
         checkPasswordField(password);
     }
 
-    public static void checkForgotPasswordRequest(ForgotPasswordRequest forgotPasswordRequest) {
-        if (forgotPasswordRequest == null) {
+    public static void checkForgotPasswordRequest(ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
+        if (forgotPasswordEmailRequest == null) {
             throw new UserException(NULL_OR_INVALID_REQUEST);
         }
 
-        String email = forgotPasswordRequest.getEmail();
+        String email = forgotPasswordEmailRequest.getEmail();
         checkEmailField(email);
     }
 
@@ -80,7 +88,7 @@ public class UserUtils {
     }
 
     private static void checkPasswordField(String password) {
-        Pattern passwordRegexPattern = Pattern.compile("(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+        Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             throw new UserException(NULL_OR_EMPTY_PASSWORD);
@@ -94,30 +102,27 @@ public class UserUtils {
     public static Map<String, Object> generateForgotPasswordResponse(boolean emailResponse, String email) {
         Map<String, Object> response = new HashMap<>();
 
-        String responseMessage = emailResponse ?
-                FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) :
-                FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
+        String responseMessage = emailResponse ? FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) : FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
 
-        response.put("message", responseMessage);
-        response.put("success", emailResponse);
-        response.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        response.put(MESSAGE, responseMessage);
+        response.put(SUCCESS, emailResponse);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
     }
 
     public static ResponseEntity<Map<String, Object>> generateAccountVerificationResponse(
-            boolean isTokenValid,
-            String verifiedAccountEmail
+            boolean isTokenValid, String verifiedAccountEmail
     ) {
         Map<String, Object> response = new HashMap<>();
 
         String responseMessage;
         int responseStatusCode;
 
-        if (isTokenValid && verifiedAccountEmail == null) {
+        if (!isTokenValid) {
             responseMessage = ACCOUNT_VERIFICATION_TOKEN_INVALID;
             responseStatusCode = 400;
-        } else if (isTokenValid) {
+        } else if (verifiedAccountEmail != null) {
             responseMessage = ACCOUNT_VERIFIED_SUCCESSFUL.replace("$EMAIL", verifiedAccountEmail);
             responseStatusCode = 200;
         } else {
@@ -125,15 +130,40 @@ public class UserUtils {
             responseStatusCode = 400;
         }
 
-        response.put("message", responseMessage);
-        response.put("status", responseStatusCode);
-        response.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        response.put(MESSAGE, responseMessage);
+        response.put(STATUS, responseStatusCode);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(responseStatusCode).body(response);
     }
 
     public static boolean checkForNullOrInvalidToken(String token) {
         return token != null && !token.isBlank();
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateForgotPasswordCompleteResponse(
+            boolean isRequestValid, boolean passwordResetResponse
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        String responseMessage;
+        int statusCode;
+
+        if (!isRequestValid) {
+            responseMessage = INVALID_FORGOT_PASSWORD_REQUEST;
+            statusCode = 400;
+        } else if (!passwordResetResponse) {
+            responseMessage = PASSWORD_RESET_FAILED;
+            statusCode = 400;
+        } else {
+            responseMessage = PASSWORD_RESET_SUCCESS;
+            statusCode = 200;
+        }
+
+        response.put(MESSAGE, responseMessage);
+        response.put(SUCCESS, isRequestValid);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.status(statusCode).body(response);
     }
 
 }

@@ -2,7 +2,6 @@ package com.akgarg.todobackend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("users")
 @Getter
 @Setter
-@ToString
 public class TodoUser {
 
     @Id
@@ -38,5 +36,21 @@ public class TodoUser {
 
     private Long createdAt;
     private Long lastUpdatedAt;
+
+    @Override
+    public String toString() {
+        return "TodoUser{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", role='" + role + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", isEnabled=" + isEnabled +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", createdAt=" + createdAt +
+                ", lastUpdatedAt=" + lastUpdatedAt +
+                '}';
+    }
 
 }

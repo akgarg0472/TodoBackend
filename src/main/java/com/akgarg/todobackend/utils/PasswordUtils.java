@@ -1,7 +1,10 @@
 package com.akgarg.todobackend.utils;
 
+import com.akgarg.todobackend.request.ForgotPasswordRequest;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.regex.Pattern;
 
 /**
  * Author: Akhilesh Garg
@@ -21,6 +24,30 @@ public class PasswordUtils {
         byte[] decodedToken = Base64.getDecoder().decode(token.getBytes(StandardCharsets.UTF_8));
 
         return new String(decodedToken);
+    }
+
+    public static boolean isForgotPasswordRequestValid(ForgotPasswordRequest request) {
+        if (request == null) {
+            return false;
+        }
+
+        if (request.getForgotPasswordToken() == null || request.getForgotPasswordToken().isBlank()) {
+            return false;
+        }
+
+        return checkPasswordField(request.getPassword()) &&
+                checkPasswordField(request.getConfirmPassword()) &&
+                request.getPassword().equals(request.getConfirmPassword());
+    }
+
+    private static boolean checkPasswordField(String password) {
+        Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+
+        if (password == null || password.trim().isBlank()) {
+            return false;
+        }
+
+        return passwordRegexPattern.matcher(password).matches();
     }
 
 }
