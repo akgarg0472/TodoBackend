@@ -37,20 +37,9 @@ public class TodoUser {
     private Long createdAt;
     private Long lastUpdatedAt;
 
-    @Override
-    public String toString() {
-        return "TodoUser{" +
-                "id='" + id + '\'' +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", role='" + role + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", isEnabled=" + isEnabled +
-                ", isAccountNonLocked=" + isAccountNonLocked +
-                ", createdAt=" + createdAt +
-                ", lastUpdatedAt=" + lastUpdatedAt +
-                '}';
-    }
+    // admin related fields
+    private boolean isAdmin;
+    private String approvedAsAdminBy;
+    private Long approvedAsAdminOn;
 
 }

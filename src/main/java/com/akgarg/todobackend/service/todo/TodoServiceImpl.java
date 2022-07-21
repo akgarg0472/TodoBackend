@@ -7,6 +7,7 @@ import com.akgarg.todobackend.repository.TodoRepository;
 import com.akgarg.todobackend.request.NewTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.response.PaginatedTodoResponse;
 import com.akgarg.todobackend.response.TodoResponseDto;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
@@ -15,8 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
@@ -63,14 +62,14 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<TodoResponseDto> getTodosForUser(String userId) {
-        Optional<List<TodoEntity>> userTodos = this.todoRepository.findAllByUserId(userId);
+    public PaginatedTodoResponse getTodosForUser(String userId, int offset, int limit) {
+        PaginatedTodoResponse userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
 
-        if (userTodos.isEmpty() || userTodos.get().isEmpty()) {
+        if (userTodos == null || userTodos.getTodos() == null || userTodos.getTodos().isEmpty()) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
         }
 
-        return userTodos.get().stream().map(this::convertEntityToDto).collect(Collectors.toList());
+        return userTodos;
     }
 
     @Override

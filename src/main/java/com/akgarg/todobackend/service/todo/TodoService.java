@@ -3,9 +3,8 @@ package com.akgarg.todobackend.service.todo;
 import com.akgarg.todobackend.request.NewTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.response.PaginatedTodoResponse;
 import com.akgarg.todobackend.response.TodoResponseDto;
-
-import java.util.List;
 
 /**
  * TodoApplication service object
@@ -22,7 +21,7 @@ public interface TodoService {
 
     TodoResponseDto getTodoById(String todoId);
 
-    List<TodoResponseDto> getTodosForUser(String userId);
+    PaginatedTodoResponse getTodosForUser(String userId, int offset, int limit);
 
     TodoResponseDto update(String todoId, UpdateTodoRequest updateTodoRequest);
 

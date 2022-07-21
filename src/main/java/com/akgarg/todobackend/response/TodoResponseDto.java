@@ -1,6 +1,8 @@
 package com.akgarg.todobackend.response;
 
+import com.akgarg.todobackend.entity.TodoEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -12,6 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class TodoResponseDto {
 
     private String id;
@@ -20,5 +23,14 @@ public class TodoResponseDto {
     private Boolean completed;
     private Long createdAt;
     private Long updatedAt;
+
+    public TodoResponseDto(TodoEntity todo) {
+        this.id = todo.getId();
+        this.title = todo.getTitle();
+        this.description = todo.getDescription();
+        this.completed = todo.isCompleted();
+        this.createdAt = todo.getCreatedAt();
+        this.updatedAt = todo.getUpdatedAt();
+    }
 
 }

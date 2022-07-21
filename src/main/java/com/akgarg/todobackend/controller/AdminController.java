@@ -1,6 +1,7 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.service.admin.AdminService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,5 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final TodoLogger todoLogger;
+    private final AdminService adminService;
 
 }
