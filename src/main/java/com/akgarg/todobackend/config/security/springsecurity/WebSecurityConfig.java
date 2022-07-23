@@ -55,8 +55,6 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
-                        "/api/v1/users/register",
-                        "/api/v1/users/login",
                         "/api/v1/account/**",
                         "/api/v1/password/**"
                 ).permitAll()

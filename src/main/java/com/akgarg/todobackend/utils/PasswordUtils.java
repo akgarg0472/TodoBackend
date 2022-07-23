@@ -40,7 +40,7 @@ public class PasswordUtils {
                 request.getPassword().equals(request.getConfirmPassword());
     }
 
-    private static boolean checkPasswordField(String password) {
+    public static boolean checkPasswordField(String password) {
         Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {

@@ -166,4 +166,39 @@ public class UserUtils {
         return ResponseEntity.status(statusCode).body(response);
     }
 
+    public static boolean isValidStringInput(String str) {
+        return str != null && !str.isBlank();
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateUpdateProfileResponse(String updateResponse) {
+        Map<String, Object> response = new HashMap<>();
+        int statusCode;
+
+        switch (updateResponse) {
+            case PROFILE_UPDATED_SUCCESSFULLY:
+            case PASSWORD_CHANGED_SUCCESSFULLY:
+            case USER_PROFILE_DELETED_SUCCESSFULLY:
+                statusCode = 200;
+                break;
+
+            case REDUNDANT_PROFILE_UPDATE_REQUEST:
+            case INVALID_OLD_PASSWORD:
+            case PASSWORDS_MISMATCHED:
+            case NULL_OR_INVALID_REQUEST:
+            case INVALID_PASSWORD_CHANGE_REQUEST:
+                statusCode = 400;
+                break;
+
+            default:
+                statusCode = 500;
+                break;
+        }
+
+        response.put(MESSAGE, updateResponse);
+        response.put(STATUS, statusCode);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.status(statusCode).body(response);
+    }
+
 }

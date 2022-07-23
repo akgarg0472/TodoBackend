@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.akgarg.todobackend.constants.ApplicationConstants.USER_NOT_FOUND_BY_EMAIL;
+
 /**
  * Author: Akhilesh Garg
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
@@ -51,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (databaseUser.isEmpty()) {
             logger.error(getClass(), "loadUserByUsername() -> No user found with email: {}", username);
 
-            throw new UsernameNotFoundException("loadUserByUsername() -> No user found with email " + username);
+            throw new UsernameNotFoundException(USER_NOT_FOUND_BY_EMAIL);
         }
 
         logger.debug(getClass(), "loadUserByUsername() -> Returning user from db: {}", databaseUser.get());

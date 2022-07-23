@@ -1,9 +1,6 @@
 package com.akgarg.todobackend.service.user;
 
-import com.akgarg.todobackend.request.ForgotPasswordRequest;
-import com.akgarg.todobackend.request.LoginRequest;
-import com.akgarg.todobackend.request.RegisterUserRequest;
-import com.akgarg.todobackend.request.UpdateUserRequest;
+import com.akgarg.todobackend.request.*;
 import com.akgarg.todobackend.response.UserResponseDto;
 
 /**
@@ -19,9 +16,9 @@ public interface UserService {
 
     UserResponseDto getUserByUsername(String username);
 
-    UserResponseDto updateUser(String userId, UpdateUserRequest updateUserRequest);
+    String updateUserProfile(String userId, UpdateUserRequest updateUserRequest);
 
-    UserResponseDto deleteUser(String userId, String email);
+    void deleteUser(String userId, String email);
 
     String login(LoginRequest loginRequest);
 
@@ -30,5 +27,7 @@ public interface UserService {
     String verifyUserAccount(String accountVerificationToken);
 
     boolean processForgotPasswordRequest(ForgotPasswordRequest request);
+
+    String changeProfilePassword(String userId, ChangePasswordRequest request);
 
 }

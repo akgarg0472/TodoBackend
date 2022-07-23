@@ -6,16 +6,14 @@ import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.logger.TodoLogger;
 import com.akgarg.todobackend.repository.UserRepository;
-import com.akgarg.todobackend.request.ForgotPasswordRequest;
-import com.akgarg.todobackend.request.LoginRequest;
-import com.akgarg.todobackend.request.RegisterUserRequest;
-import com.akgarg.todobackend.request.UpdateUserRequest;
+import com.akgarg.todobackend.request.*;
 import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.email.EmailService;
 import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.akgarg.todobackend.utils.JwtUtils;
 import com.akgarg.todobackend.utils.PasswordUtils;
+import com.akgarg.todobackend.utils.UserUtils;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -105,36 +103,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUser(String userId, UpdateUserRequest updateUserRequest) {
+    public String updateUserProfile(String userId, UpdateUserRequest updateUserRequest) {
         logger.info(getClass(), "Updating user {} profile: {}", userId, updateUserRequest);
 
         TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
-        user.setFirstName(updateUserRequest.getFirstName());
-        user.setLastName(updateUserRequest.getLastName());
-        user.setAvatar(updateUserRequest.getAvatar());
 
-        TodoUser updatedUser = this.userRepository.save(user);
+        String firstName = updateUserRequest.getFirstName();
+        String lastName = updateUserRequest.getLastName();
+        String avatar = updateUserRequest.getAvatar();
 
-        logger.info(getClass(), "User {} updated successfully: {}", userId, updatedUser);
-        this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
-        logger.info(getClass(), "Cache updated for user {}", user.getEmail());
+        boolean isThereAnyUpdate = updateUserEntity(user, firstName, lastName, avatar);
+        System.out.println("AnyNewUpdate: " + isThereAnyUpdate);
 
-        return convertEntityToDto(updatedUser);
+        if (isThereAnyUpdate) {
+            try {
+                TodoUser updatedUser = this.userRepository.save(user);
+                logger.info(getClass(), "User {} updated successfully: {}", userId, updatedUser);
+                this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+                return PROFILE_UPDATED_SUCCESSFULLY;
+            } catch (Exception e) {
+                logger.error(getClass(), "Error updating user {}: {}", userId, e.getMessage());
+                return PROFILE_UPDATE_FAILED;
+            }
+        }
+
+        logger.warn(getClass(), "Error updating user {}: Redundant update", userId);
+
+        return REDUNDANT_PROFILE_UPDATE_REQUEST;
     }
 
     @Override
-    public UserResponseDto deleteUser(String userId, String email) {
-        logger.info(getClass(), "Deleting user with userId {} & email {}");
+    public void deleteUser(String userId, String email) {
+        logger.warn(getClass(), "Deleting user with userId {}", userId);
 
-        TodoUser user = this.userRepository.findByIdAndEmail(userId, email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
+        TodoUser user = this.userRepository.findByIdAndEmail(userId, email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL_AND_ID));
 
         this.todoService.removeAllTodoByUserId(userId);
 
         this.userRepository.delete(user);
 
-        logger.info(getClass(), "User {} removed from database", user);
-
-        return convertEntityToDto(user);
+        logger.warn(getClass(), "User {} and related info removed from database", user);
     }
 
     @Override
@@ -220,8 +228,7 @@ public class UserServiceImpl implements UserService {
 
         TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
 
-        if (forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
-                request.getPassword().equals(request.getConfirmPassword())) {
+        if (forgotPasswordToken.equals(user.getForgotPasswordToken()) && request.getPassword().equals(request.getConfirmPassword())) {
             user.setForgotPasswordToken(null);
             user.setPassword(this.passwordEncoder.encode(request.getPassword()));
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
@@ -239,6 +246,68 @@ public class UserServiceImpl implements UserService {
         logger.error(getClass(), "Something went wrong in forgot password processing");
 
         return false;
+    }
+
+    @Override
+    public String changeProfilePassword(String userId, ChangePasswordRequest request) {
+        TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
+
+        boolean isOldPasswordValidated = PasswordUtils.checkPasswordField(request.getOldPassword());
+        boolean isNewPasswordValidated = PasswordUtils.checkPasswordField(request.getPassword());
+        boolean isConfirmPasswordValidated = PasswordUtils.checkPasswordField(request.getConfirmPassword());
+
+        if (!isOldPasswordValidated || !isNewPasswordValidated || !isConfirmPasswordValidated) {
+            return INVALID_PASSWORD_CHANGE_REQUEST;
+        }
+
+        if (!request.getPassword().matches(request.getConfirmPassword())) {
+            return PASSWORDS_MISMATCHED;
+        }
+
+        isOldPasswordValidated = this.passwordEncoder.matches(request.getOldPassword(), user.getPassword());
+
+        if (!isOldPasswordValidated) {
+            return INVALID_OLD_PASSWORD;
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        try {
+            TodoUser updatedUser = this.userRepository.save(user);
+            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail());
+            logger.info(getClass(), "Password changed successfully for {}", userId);
+            return PASSWORD_CHANGED_SUCCESSFULLY;
+        } catch (Exception e) {
+            logger.error(getClass(), "Error changing password: {}", userId);
+        }
+
+        return ERROR_CHANGING_PASSWORD;
+    }
+
+    private boolean updateUserEntity(TodoUser user, String firstName, String lastName, String avatar) {
+        boolean isNewUpdate = false;
+
+        if (UserUtils.isValidStringInput(firstName) && !firstName.equals(user.getFirstName())) {
+            user.setFirstName(firstName);
+            isNewUpdate = true;
+        }
+
+        if (UserUtils.isValidStringInput(lastName) && !lastName.equals(user.getLastName())) {
+            user.setLastName(lastName);
+            isNewUpdate = true;
+        }
+
+        if (UserUtils.isValidStringInput(avatar) && !avatar.equals(user.getAvatar())) {
+            user.setAvatar(avatar);
+            isNewUpdate = true;
+        }
+
+        if (isNewUpdate) {
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        }
+
+        return isNewUpdate;
     }
 
     private TodoUser fetchUserEntityByEmail(String email) {

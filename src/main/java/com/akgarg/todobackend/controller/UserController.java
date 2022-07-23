@@ -1,69 +1,77 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.TodoLogger;
-import com.akgarg.todobackend.request.LoginRequest;
-import com.akgarg.todobackend.request.RegisterUserRequest;
-import com.akgarg.todobackend.response.LoginResponse;
-import com.akgarg.todobackend.response.TodoApiResponse;
+import com.akgarg.todobackend.request.ChangePasswordRequest;
+import com.akgarg.todobackend.request.UpdateUserRequest;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.TodoUtils;
-import com.akgarg.todobackend.utils.UrlUtils;
 import com.akgarg.todobackend.utils.UserUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Map;
 
-import static com.akgarg.todobackend.constants.ApplicationConstants.REGISTRATION_SUCCESS_CONFIRM_ACCOUNT;
+import static com.akgarg.todobackend.constants.ApplicationConstants.NULL_OR_INVALID_USER_ID;
+import static com.akgarg.todobackend.constants.ApplicationConstants.USER_PROFILE_DELETED_SUCCESSFULLY;
 
 /**
  * Author: Akhilesh Garg
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * Date: 23-07-2022
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/account")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
     private final TodoLogger logger;
 
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TodoApiResponse> registerUser(
-            @RequestBody RegisterUserRequest registerUserRequest, HttpServletRequest httpServletRequest
+    @PostMapping(value = "/{userId}/update-profile")
+    public ResponseEntity<Map<String, Object>> updateUserProfile(
+            @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("userId") String userId
     ) {
-        logger.info(getClass(), "Signup request received: {}", registerUserRequest);
+        logger.info(getClass(), "Received update profile request for {}: {}", userId, updateUserRequest);
 
-        UserUtils.checkRegisterUserRequest(registerUserRequest);
-        String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
+        TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        return ResponseEntity.status(201).body(TodoUtils.generateTodoApiResponse(REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email), null, 201));
+        String updateProfileResponse = this.userService.updateUserProfile(userId, updateUserRequest);
+
+        logger.info(getClass(), "Update profile response {}: {}", userId, updateProfileResponse);
+
+        return UserUtils.generateUpdateProfileResponse(updateProfileResponse);
     }
 
-    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
-        UserUtils.checkLoginRequest(loginRequest);
-        logger.info(getClass(), "Login request received: {}", loginRequest.getEmail());
+    @PostMapping(value = "/{userId}/change-password")
+    public ResponseEntity<Map<String, Object>> changeUserPassword(
+            @PathVariable("userId") String userId, @RequestBody ChangePasswordRequest changePasswordRequest
+    ) {
+        logger.info(getClass(), "Received change password changePasswordRequest for {}", userId);
 
-        String token = this.userService.login(loginRequest);
+        TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        return ResponseEntity.ok(UserUtils.generateLoginSuccessRequest(token));
+        String changePasswordResponse = this.userService.changeProfilePassword(userId, changePasswordRequest);
+
+        logger.info(getClass(), "Password change response {}: {}", userId, changePasswordResponse);
+
+        return UserUtils.generateUpdateProfileResponse(changePasswordResponse);
     }
 
-    @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> verifyUserAccount(@PathVariable String accountVerificationToken) {
-        boolean isTokenValid = UserUtils.checkForNullOrInvalidToken(accountVerificationToken);
-        String verifiedAccountEmail = null;
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<Map<String, Object>> deleteUserAccount(
+            @PathVariable("userId") String userId, Principal principal
+    ) {
+        logger.warn(getClass(), "Received delete account request for {}: {}", userId, principal.getName());
 
-        if (isTokenValid) {
-            verifiedAccountEmail = this.userService.verifyUserAccount(accountVerificationToken);
-        }
+        TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        return UserUtils.generateAccountVerificationResponse(isTokenValid, verifiedAccountEmail);
+        this.userService.deleteUser(userId, principal.getName());
+
+        logger.warn(getClass(), "User with id {} & email {} deleted successfully", userId, principal.getName());
+
+        return UserUtils.generateUpdateProfileResponse(USER_PROFILE_DELETED_SUCCESSFULLY);
     }
 
 }

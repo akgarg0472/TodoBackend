@@ -10,7 +10,7 @@ public final class ApplicationConstants {
     public static final String NULL_OR_INVALID_VALUE = "Null or invalid value provided";
     public static final String NULL_OR_INVALID_REQUEST = "Invalid request object";
     public static final String NULL_OR_INVALID_TODO_TITLE = "Invalid todo title";
-    public static final String NULL_OR_INVALID_USER_ID = "Invalid todo userId";
+    public static final String NULL_OR_INVALID_USER_ID = "Invalid userId";
     public static final String TODO_CREATED_SUCCESSFULLY = "Todo created successfully";
     public static final String ERROR_UPDATING_TODO = "Error updating todo";
     public static final String TODO_NOT_FOUND = "Requested todo not found";
@@ -48,10 +48,19 @@ public final class ApplicationConstants {
     public static final String ACCOUNT_VERIFICATION_TOKEN_INVALID = "Verification token is invalid or expired. Account verification failed";
     public static final String PASSWORD_RESET_SUCCESS = "Password change successfully";
     public static final String PASSWORD_RESET_FAILED = "Error changing password. Token provided might be invalid or expired";
-
     public static final String INVALID_FORGOT_PASSWORD_REQUEST = "Invalid forgot password request";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT = "Password changed successfully";
-public static final String INVALID_TOKEN_BIT_PROVIDED = "Last unit does not have enough valid bits";
+    public static final String INVALID_TOKEN_BIT_PROVIDED = "Last unit does not have enough valid bits";
+    public static final String PROFILE_UPDATED_SUCCESSFULLY = "Profile updated successfully";
+    public static final String PROFILE_UPDATE_FAILED = "Failed to update profile";
+    public static final String REDUNDANT_PROFILE_UPDATE_REQUEST = "Redundant profile update request";
+    public static final String INVALID_OLD_PASSWORD = "Old password is incorrect";
+    public static final String PASSWORDS_MISMATCHED = "Passwords didn't matched";
+    public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password changed successfully";
+    public static final String ERROR_CHANGING_PASSWORD = "Error changing password";
+    public static final String INVALID_PASSWORD_CHANGE_REQUEST = "Invalid password change request";
+    public static final String USER_PROFILE_DELETED_SUCCESSFULLY = "Account deleted successfully";
+    public static final String USER_NOT_FOUND_BY_EMAIL_AND_ID = "No user found with provided userId & email";
 
     private ApplicationConstants() {
     }
