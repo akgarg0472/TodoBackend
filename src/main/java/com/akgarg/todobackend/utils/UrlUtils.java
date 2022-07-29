@@ -14,9 +14,8 @@ public final class UrlUtils {
     private UrlUtils() {
     }
 
-    public static String getUrl(HttpServletRequest request) {
+    public static String getUrl(final HttpServletRequest request) {
         return ServletUriComponentsBuilder.fromRequestUri(request).replacePath(null).build().toUriString();
     }
-
 
 }

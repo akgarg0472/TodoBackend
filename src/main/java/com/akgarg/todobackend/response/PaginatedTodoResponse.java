@@ -2,6 +2,7 @@ package com.akgarg.todobackend.response;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,9 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaginatedTodoResponse {
+public class PaginatedTodoResponse implements Serializable {
+
+    private static final long serialVersionUID = -72735473573465354L;
 
     int currentPage;
     private long totalTodos;

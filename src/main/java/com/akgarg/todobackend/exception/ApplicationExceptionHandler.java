@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.exception;
 
-import com.akgarg.todobackend.response.TodoApiResponse;
+import com.akgarg.todobackend.response.ApiErrorResponse;
 import com.akgarg.todobackend.utils.TodoUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,7 +17,7 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 public class ApplicationExceptionHandler {
 
     @ExceptionHandler(TodoException.class)
-    public ResponseEntity<TodoApiResponse> handleTodoException(TodoException e) {
+    public ResponseEntity<ApiErrorResponse> handleTodoException(TodoException e) {
         int errorStatusCode;
 
         switch (e.getMessage()) {
@@ -43,11 +43,11 @@ public class ApplicationExceptionHandler {
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
+                .body(TodoUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
     }
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<TodoApiResponse> handleUserException(UserException e) {
+    public ResponseEntity<ApiErrorResponse> handleUserException(UserException e) {
         int errorStatusCode;
 
         switch (e.getMessage()) {
@@ -65,6 +65,7 @@ public class ApplicationExceptionHandler {
                 break;
 
             case INVALID_EMAIL_OR_PASSWORD:
+            case USER_ACCOUNT_LOCKED:
                 errorStatusCode = 401;
                 break;
 
@@ -79,45 +80,45 @@ public class ApplicationExceptionHandler {
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateTodoApiResponse(e.getMessage(), null, errorStatusCode));
+                .body(TodoUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<TodoApiResponse> handleGenericException(Exception e) {
-        String message;
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception e) {
+        String errorMessage;
         int errorStatusCode;
 
         switch (e.getClass().getSimpleName()) {
             case "IllegalArgumentException":
                 if (INVALID_TOKEN_BIT_PROVIDED.equals(e.getMessage())) {
-                    message = "Invalid token value provided";
+                    errorMessage = "Invalid token value provided";
                 } else {
-                    message = "Invalid value provided";
+                    errorMessage = "Invalid value provided";
                 }
                 errorStatusCode = 400;
                 break;
 
             case "HttpRequestMethodNotSupportedException":
-                message = "Request Method not allowed";
+                errorMessage = "Request Method not allowed";
                 errorStatusCode = 405;
                 break;
             case "HttpMediaTypeNotSupportedException":
-                message = e.getMessage();
+                errorMessage = e.getMessage();
                 errorStatusCode = 400;
                 break;
             case "HttpMessageNotReadableException":
-                message = "Invalid request body";
+                errorMessage = "Invalid request body";
                 errorStatusCode = 400;
                 break;
             default:
-                message = e.getMessage();
+                errorMessage = e.getMessage();
                 errorStatusCode = 500;
                 break;
         }
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateTodoApiResponse(message, null, errorStatusCode));
+                .body(TodoUtils.generateApiErrorResponse(errorMessage, errorStatusCode));
     }
 
 }

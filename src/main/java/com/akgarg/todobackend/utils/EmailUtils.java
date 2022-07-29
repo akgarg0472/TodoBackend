@@ -11,7 +11,11 @@ import com.akgarg.todobackend.request.SendEmailRequest;
  */
 public class EmailUtils {
 
-    public static void checkSendEmailRequest(SendEmailRequest request) {
+    private EmailUtils() {
+        super();
+    }
+
+    public static void checkSendEmailRequest(final SendEmailRequest request) {
         if (request.getToEmail() == null || request.getToEmail().trim().isEmpty()) {
             throw new TodoException("Invalid 'to' email in email send request");
         }
@@ -23,10 +27,9 @@ public class EmailUtils {
         if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
             throw new TodoException("Invalid email 'message' in email send request");
         }
-
     }
 
-    public static void checkEmailSenderProperties(EmailSenderConfigProperties config) {
+    public static void checkEmailSenderProperties(final EmailSenderConfigProperties config) {
         if (config == null || config.getHost() == null || config.getPort() == 0 || config.getSenderEmail() == null || config.getSenderEmailPassword() == null) {
             throw new NullPointerException("Invalid email config properties");
         }

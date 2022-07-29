@@ -34,11 +34,8 @@ public class UserController {
             @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("userId") String userId
     ) {
         logger.info(getClass(), "Received update profile request for {}: {}", userId, updateUserRequest);
-
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
-
-        String updateProfileResponse = this.userService.updateUserProfile(userId, updateUserRequest);
-
+        final String updateProfileResponse = this.userService.updateUserProfile(userId, updateUserRequest);
         logger.info(getClass(), "Update profile response {}: {}", userId, updateProfileResponse);
 
         return UserUtils.generateUpdateProfileResponse(updateProfileResponse);
@@ -49,11 +46,8 @@ public class UserController {
             @PathVariable("userId") String userId, @RequestBody ChangePasswordRequest changePasswordRequest
     ) {
         logger.info(getClass(), "Received change password changePasswordRequest for {}", userId);
-
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
-
-        String changePasswordResponse = this.userService.changeProfilePassword(userId, changePasswordRequest);
-
+        final String changePasswordResponse = this.userService.changeProfilePassword(userId, changePasswordRequest);
         logger.info(getClass(), "Password change response {}: {}", userId, changePasswordResponse);
 
         return UserUtils.generateUpdateProfileResponse(changePasswordResponse);
@@ -64,11 +58,8 @@ public class UserController {
             @PathVariable("userId") String userId, Principal principal
     ) {
         logger.warn(getClass(), "Received delete account request for {}: {}", userId, principal.getName());
-
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
-
         this.userService.deleteUser(userId, principal.getName());
-
         logger.warn(getClass(), "User with id {} & email {} deleted successfully", userId, principal.getName());
 
         return UserUtils.generateUpdateProfileResponse(USER_PROFILE_DELETED_SUCCESSFULLY);

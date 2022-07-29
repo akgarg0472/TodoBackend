@@ -4,6 +4,7 @@ import com.akgarg.todobackend.exception.TodoException;
 import com.akgarg.todobackend.request.NewTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.response.ApiErrorResponse;
 import com.akgarg.todobackend.response.TodoApiResponse;
 import org.bson.types.ObjectId;
 
@@ -16,13 +17,17 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
  */
 public class TodoUtils {
 
-    public static void checkNewTodoRequest(NewTodoRequest newTodoRequest) {
+    private TodoUtils() {
+        super();
+    }
+
+    public static void checkNewTodoRequest(final NewTodoRequest newTodoRequest) {
         if (newTodoRequest == null) {
             throw new TodoException(NULL_OR_INVALID_REQUEST);
         }
 
-        String title = newTodoRequest.getTitle();
-        String userId = newTodoRequest.getUserId();
+        final String title = newTodoRequest.getTitle();
+        final String userId = newTodoRequest.getUserId();
 
         if (title == null || title.trim().isBlank()) {
             throw new TodoException(NULL_OR_INVALID_TODO_TITLE);
@@ -33,8 +38,8 @@ public class TodoUtils {
         }
     }
 
-    public static TodoApiResponse generateTodoApiResponse(String message, Object data, int status) {
-        TodoApiResponse response = new TodoApiResponse();
+    public static TodoApiResponse generateTodoApiResponse(final String message, final Object data, final int status) {
+        final TodoApiResponse response = new TodoApiResponse();
 
         response.setSuccess(status < 400 || status > 599);
         response.setMessage(message);
@@ -45,7 +50,7 @@ public class TodoUtils {
         return response;
     }
 
-    public static void checkForNullOrInvalidValue(Object object) {
+    public static void checkForNullOrInvalidValue(final Object object) {
         if (object == null) {
             throw new TodoException(NULL_OR_INVALID_REQUEST);
         }
@@ -55,19 +60,19 @@ public class TodoUtils {
         }
     }
 
-    public static void checkIdForNullOrInvalid(String id, String exceptionMessage) {
+    public static void checkIdForNullOrInvalid(final String id, final String exceptionMessage) {
         if (id == null || id.trim().isBlank() || !ObjectId.isValid(id)) {
             throw new TodoException(exceptionMessage);
         }
     }
 
-    public static void checkUpdateTodoRequest(UpdateTodoRequest updateTodoRequest) {
+    public static void checkUpdateTodoRequest(final UpdateTodoRequest updateTodoRequest) {
         if (updateTodoRequest == null) {
             throw new TodoException(NULL_OR_INVALID_REQUEST);
         }
 
-        String title = updateTodoRequest.getTitle();
-        String description = updateTodoRequest.getDescription();
+        final String title = updateTodoRequest.getTitle();
+        final String description = updateTodoRequest.getDescription();
 
         if (title == null || title.trim().isBlank()) {
             throw new TodoException(NULL_OR_INVALID_TODO_TITLE);
@@ -79,7 +84,7 @@ public class TodoUtils {
 
     }
 
-    public static void checkUpdateTodoStatusRequest(UpdateTodoStatusRequest request) {
+    public static void checkUpdateTodoStatusRequest(final UpdateTodoStatusRequest request) {
         if (request == null) {
             throw new TodoException(NULL_OR_INVALID_REQUEST);
         }
@@ -87,6 +92,16 @@ public class TodoUtils {
         if (request.getCompleted() == null) {
             throw new TodoException(NULL_OR_INVALID_TODO_COMPLETED);
         }
+    }
+
+    public static ApiErrorResponse generateApiErrorResponse(final String errorMessage, final int errorCode) {
+        final ApiErrorResponse errorResponse = new ApiErrorResponse();
+
+        errorResponse.setErrorMessage(errorMessage);
+        errorResponse.setErrorCode(errorCode);
+        errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return errorResponse;
     }
 
 }

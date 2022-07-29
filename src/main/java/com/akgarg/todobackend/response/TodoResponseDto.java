@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * Author: Akhilesh Garg
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
@@ -15,7 +17,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class TodoResponseDto {
+public class TodoResponseDto implements Serializable {
+
+    private static final long serialVersionUID = -8972830008465468L;
 
     private String id;
     private String title;
@@ -24,7 +28,7 @@ public class TodoResponseDto {
     private Long createdAt;
     private Long updatedAt;
 
-    public TodoResponseDto(TodoEntity todo) {
+    public TodoResponseDto(final TodoEntity todo) {
         this.id = todo.getId();
         this.title = todo.getTitle();
         this.description = todo.getDescription();

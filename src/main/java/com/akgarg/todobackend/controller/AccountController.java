@@ -4,9 +4,8 @@ import com.akgarg.todobackend.logger.TodoLogger;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
-import com.akgarg.todobackend.response.TodoApiResponse;
+import com.akgarg.todobackend.response.SignupResponse;
 import com.akgarg.todobackend.service.user.UserService;
-import com.akgarg.todobackend.utils.TodoUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
 import com.akgarg.todobackend.utils.UserUtils;
 import lombok.AllArgsConstructor;
@@ -33,23 +32,26 @@ public class AccountController {
     private final TodoLogger logger;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TodoApiResponse> registerUser(
+    public ResponseEntity<SignupResponse> registerUser(
             @RequestBody RegisterUserRequest registerUserRequest, HttpServletRequest httpServletRequest
     ) {
         logger.info(getClass(), "Signup request received: {}", registerUserRequest);
-
         UserUtils.checkRegisterUserRequest(registerUserRequest);
-        String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
+        final String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
 
-        return ResponseEntity.status(201).body(TodoUtils.generateTodoApiResponse(REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email), null, 201));
+        return ResponseEntity.status(201)
+                .body(UserUtils.generateSignupResponse(
+                              REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email),
+                              201
+                      )
+                );
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         UserUtils.checkLoginRequest(loginRequest);
         logger.info(getClass(), "Login request received: {}", loginRequest.getEmail());
-
-        String token = this.userService.login(loginRequest);
+        final String token = this.userService.login(loginRequest);
 
         return ResponseEntity.ok(UserUtils.generateLoginSuccessRequest(token));
     }

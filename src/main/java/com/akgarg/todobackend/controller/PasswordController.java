@@ -36,11 +36,9 @@ public class PasswordController {
             @RequestBody ForgotPasswordEmailRequest forgotPasswordEmailRequest, HttpServletRequest request
     ) {
         logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordEmailRequest);
-
         UserUtils.checkForgotPasswordRequest(forgotPasswordEmailRequest);
-
-        String email = forgotPasswordEmailRequest.getEmail();
-        boolean forgotPasswordEmailResponse = this.userService.sendForgotPasswordEmail(email, UrlUtils.getUrl(request));
+        final String email = forgotPasswordEmailRequest.getEmail();
+        final boolean forgotPasswordEmailResponse = this.userService.sendForgotPasswordEmail(email, UrlUtils.getUrl(request));
 
         return UserUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
     }
@@ -48,8 +46,7 @@ public class PasswordController {
     @PostMapping(value = "reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         logger.info(getClass(), "Received resetPassword request for: {}", forgotPasswordRequest.getForgotPasswordToken());
-
-        boolean isRequestValid = PasswordUtils.isForgotPasswordRequestValid(forgotPasswordRequest);
+        final boolean isRequestValid = PasswordUtils.isForgotPasswordRequestValid(forgotPasswordRequest);
         boolean passwordResetResponse = false;
 
         if (isRequestValid) {

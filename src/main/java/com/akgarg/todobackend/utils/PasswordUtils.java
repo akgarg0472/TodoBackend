@@ -16,17 +16,17 @@ public class PasswordUtils {
     private PasswordUtils() {
     }
 
-    public static String generateTokenFromId(String userId) {
+    public static String generateTokenFromId(final String userId) {
         return Base64.getEncoder().encodeToString(userId.getBytes());
     }
 
-    public static String generateIdFromToken(String token) {
-        byte[] decodedToken = Base64.getDecoder().decode(token.getBytes(StandardCharsets.UTF_8));
+    public static String generateIdFromToken(final String token) {
+        final byte[] decodedToken = Base64.getDecoder().decode(token.getBytes(StandardCharsets.UTF_8));
 
         return new String(decodedToken);
     }
 
-    public static boolean isForgotPasswordRequestValid(ForgotPasswordRequest request) {
+    public static boolean isForgotPasswordRequestValid(final ForgotPasswordRequest request) {
         if (request == null) {
             return false;
         }
@@ -40,8 +40,8 @@ public class PasswordUtils {
                 request.getPassword().equals(request.getConfirmPassword());
     }
 
-    public static boolean checkPasswordField(String password) {
-        Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+    public static boolean checkPasswordField(final String password) {
+        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             return false;

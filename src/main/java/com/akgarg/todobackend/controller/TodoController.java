@@ -34,9 +34,8 @@ public class TodoController {
     @GetMapping(value = "/todo/{todoId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> getTodoUsingTodoId(@PathVariable String todoId, Principal principal) {
         logger.info(getClass(), "Request received from {} to getSingleTodo for todoId: {}", principal.getName(), todoId);
-
         TodoUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
-        TodoResponseDto todo = this.todoService.getTodoById(todoId);
+        final TodoResponseDto todo = this.todoService.getTodoById(todoId);
 
         return ResponseEntity.ok(TodoUtils.generateTodoApiResponse(null, todo, 200));
     }
@@ -49,9 +48,8 @@ public class TodoController {
             @RequestParam(value = "offset", defaultValue = "0") int offset
     ) {
         logger.info(getClass(), "Request received to getTodos for userId: {}", userId);
-
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
-        PaginatedTodoResponse response = this.todoService.getTodosForUser(userId, offset, limit);
+        final PaginatedTodoResponse response = this.todoService.getTodosForUser(userId, offset, limit);
 
         return ResponseEntity.ok(response);
     }
@@ -62,22 +60,23 @@ public class TodoController {
             @RequestBody NewTodoRequest newTodoRequest, Principal principal
     ) {
         logger.info(getClass(), "Request received from {} to add new todo: {}", principal.getName(), newTodoRequest);
-
         TodoUtils.checkNewTodoRequest(newTodoRequest);
-        TodoResponseDto insertedTodo = this.todoService.insert(newTodoRequest);
+        final TodoResponseDto insertedTodo = this.todoService.insert(newTodoRequest);
 
-        return ResponseEntity.status(201).body(TodoUtils.generateTodoApiResponse(TODO_CREATED_SUCCESSFULLY, insertedTodo, 201));
+        return ResponseEntity
+                .status(201)
+                .body(TodoUtils.generateTodoApiResponse(TODO_CREATED_SUCCESSFULLY, insertedTodo, 201));
     }
 
 
     @DeleteMapping(value = "/{todoId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> removeTodoNote(@PathVariable String todoId, Principal principal) {
         logger.info(getClass(), "Request received from {} to remove todo with todoId: {}", principal.getName(), todoId);
-
         TodoUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
         this.todoService.delete(todoId);
 
-        return ResponseEntity.ok(TodoUtils.generateTodoApiResponse("Todo deleted successfully", null, 200));
+        return ResponseEntity
+                .ok(TodoUtils.generateTodoApiResponse("Todo deleted successfully", null, 200));
     }
 
 
@@ -86,10 +85,9 @@ public class TodoController {
             @RequestBody UpdateTodoRequest updateTodoRequest, @PathVariable String todoId, Principal principal
     ) {
         logger.info(getClass(), "Request received from {} to update todo with todoId: {}", principal.getName(), todoId);
-
         TodoUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
         TodoUtils.checkUpdateTodoRequest(updateTodoRequest);
-        TodoResponseDto updatedTodo = this.todoService.update(todoId, updateTodoRequest);
+        final TodoResponseDto updatedTodo = this.todoService.update(todoId, updateTodoRequest);
 
         return ResponseEntity.ok(TodoUtils.generateTodoApiResponse(TODO_UPDATED_SUCCESSFULLY, updatedTodo, 200));
     }
@@ -100,10 +98,9 @@ public class TodoController {
             @PathVariable String todoId, @RequestBody UpdateTodoStatusRequest request, Principal principal
     ) {
         logger.info(getClass(), "Request received from {} to update todo status with todoId: {}", principal.getName(), todoId);
-
         TodoUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
         TodoUtils.checkUpdateTodoStatusRequest(request);
-        TodoResponseDto updatedTodo = this.todoService.updateTodoStatus(todoId, request);
+        final TodoResponseDto updatedTodo = this.todoService.updateTodoStatus(todoId, request);
 
         return ResponseEntity.ok(TodoUtils.generateTodoApiResponse(TODO_STATUS_UPDATED_SUCCESSFULLY, updatedTodo, 200));
     }

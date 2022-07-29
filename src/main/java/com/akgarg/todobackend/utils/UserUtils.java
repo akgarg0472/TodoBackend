@@ -5,6 +5,7 @@ import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
+import com.akgarg.todobackend.response.SignupResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
@@ -28,14 +29,14 @@ public class UserUtils {
     private UserUtils() {
     }
 
-    public static void checkRegisterUserRequest(RegisterUserRequest request) {
+    public static void checkRegisterUserRequest(final RegisterUserRequest request) {
         if (request == null) {
             throw new UserException(NULL_OR_INVALID_REQUEST);
         }
 
-        String email = request.getEmail();
-        String password = request.getPassword();
-        String lastName = request.getLastName();
+        final String email = request.getEmail();
+        final String password = request.getPassword();
+        final String lastName = request.getLastName();
 
         checkEmailField(email);
         checkPasswordField(password);
@@ -45,8 +46,9 @@ public class UserUtils {
         }
     }
 
-    public static LoginResponse generateLoginSuccessRequest(String token) {
-        LoginResponse response = new LoginResponse();
+    public static LoginResponse generateLoginSuccessRequest(final String token) {
+        final LoginResponse response = new LoginResponse();
+
         response.setToken(token);
         response.setSuccess(true);
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
@@ -54,29 +56,28 @@ public class UserUtils {
         return response;
     }
 
-    public static void checkLoginRequest(LoginRequest loginRequest) {
+    public static void checkLoginRequest(final LoginRequest loginRequest) {
         if (loginRequest == null) {
             throw new UserException(NULL_OR_INVALID_REQUEST);
         }
 
-        String email = loginRequest.getEmail();
-        String password = loginRequest.getPassword();
+        final String email = loginRequest.getEmail();
+        final String password = loginRequest.getPassword();
 
         checkEmailField(email);
         checkPasswordField(password);
     }
 
-    public static void checkForgotPasswordRequest(ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
+    public static void checkForgotPasswordRequest(final ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
         if (forgotPasswordEmailRequest == null) {
             throw new UserException(NULL_OR_INVALID_REQUEST);
         }
 
-        String email = forgotPasswordEmailRequest.getEmail();
-        checkEmailField(email);
+        checkEmailField(forgotPasswordEmailRequest.getEmail());
     }
 
-    private static void checkEmailField(String email) {
-        Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private static void checkEmailField(final String email) {
+        final Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
         if (email == null || email.trim().isBlank()) {
             throw new UserException(NULL_OR_EMPTY_EMAIL);
@@ -87,8 +88,8 @@ public class UserUtils {
         }
     }
 
-    private static void checkPasswordField(String password) {
-        Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+    private static void checkPasswordField(final String password) {
+        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             throw new UserException(NULL_OR_EMPTY_PASSWORD);
@@ -99,10 +100,12 @@ public class UserUtils {
         }
     }
 
-    public static Map<String, Object> generateForgotPasswordResponse(boolean emailResponse, String email) {
-        Map<String, Object> response = new HashMap<>();
+    public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
+        final Map<String, Object> response = new HashMap<>();
 
-        String responseMessage = emailResponse ? FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) : FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
+        final String responseMessage = emailResponse ?
+                FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) :
+                FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
 
         response.put(MESSAGE, responseMessage);
         response.put(SUCCESS, emailResponse);
@@ -112,9 +115,9 @@ public class UserUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateAccountVerificationResponse(
-            boolean isTokenValid, String verifiedAccountEmail
+            final boolean isTokenValid, final String verifiedAccountEmail
     ) {
-        Map<String, Object> response = new HashMap<>();
+        final Map<String, Object> response = new HashMap<>();
 
         String responseMessage;
         int responseStatusCode;
@@ -137,14 +140,14 @@ public class UserUtils {
         return ResponseEntity.status(responseStatusCode).body(response);
     }
 
-    public static boolean checkForNullOrInvalidToken(String token) {
+    public static boolean checkForNullOrInvalidToken(final String token) {
         return token != null && !token.isBlank();
     }
 
     public static ResponseEntity<Map<String, Object>> generateForgotPasswordCompleteResponse(
-            boolean isRequestValid, boolean passwordResetResponse
+            final boolean isRequestValid, final boolean passwordResetResponse
     ) {
-        Map<String, Object> response = new HashMap<>();
+        final Map<String, Object> response = new HashMap<>();
         String responseMessage;
         int statusCode;
 
@@ -166,12 +169,12 @@ public class UserUtils {
         return ResponseEntity.status(statusCode).body(response);
     }
 
-    public static boolean isValidStringInput(String str) {
+    public static boolean isValidStringInput(final String str) {
         return str != null && !str.isBlank();
     }
 
-    public static ResponseEntity<Map<String, Object>> generateUpdateProfileResponse(String updateResponse) {
-        Map<String, Object> response = new HashMap<>();
+    public static ResponseEntity<Map<String, Object>> generateUpdateProfileResponse(final String updateResponse) {
+        final Map<String, Object> response = new HashMap<>();
         int statusCode;
 
         switch (updateResponse) {
@@ -199,6 +202,16 @@ public class UserUtils {
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
+    }
+
+    public static SignupResponse generateSignupResponse(final String message, final int status) {
+        final SignupResponse signupResponse = new SignupResponse();
+
+        signupResponse.setMessage(message);
+        signupResponse.setStatus(status);
+        signupResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return signupResponse;
     }
 
 }

@@ -12,6 +12,10 @@ import java.time.ZonedDateTime;
  */
 public class DateTimeUtils {
 
+    private DateTimeUtils() {
+        super();
+    }
+
     public static long getCurrentDateTimeInMilliseconds() {
         return System.currentTimeMillis();
     }
@@ -20,9 +24,9 @@ public class DateTimeUtils {
         return getCurrentDateTimeFromMilliseconds(System.currentTimeMillis());
     }
 
-    public static LocalDateTime getCurrentDateTimeFromMilliseconds(long milliseconds) {
-        Instant instant = Instant.ofEpochMilli(milliseconds);
-        ZonedDateTime indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
+    public static LocalDateTime getCurrentDateTimeFromMilliseconds(final long milliseconds) {
+        final Instant instant = Instant.ofEpochMilli(milliseconds);
+        final ZonedDateTime indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
 
         return indianZonedTime.toLocalDateTime();
     }
