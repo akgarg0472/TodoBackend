@@ -22,7 +22,7 @@ public final class ApplicationConstants {
     public static final String TODO_UPDATED_SUCCESSFULLY = "Todo successfully updated";
     public static final String TODO_STATUS_UPDATED_SUCCESSFULLY = "Todo status successfully updated";
     public static final String NO_TODO_FOUND_FOR_USER = "No todos found for the user";
-    public static final String REGISTRATION_SUCCESS_CONFIRM_ACCOUNT = "Registration successful. We have sent an confirm email to $email. Please click on the link to verify your account.";
+    public static final String REGISTRATION_SUCCESS_CONFIRM_ACCOUNT = "Please verify your account by clicking on the verification email sent to your email $email";
     public static final String NULL_OR_EMPTY_EMAIL = "Invalid email provided";
     public static final String INVALID_EMAIL_FORMAT = "Email provided is in invalid format";
     public static final String NULL_OR_EMPTY_PASSWORD = "Invalid password";
@@ -30,10 +30,10 @@ public final class ApplicationConstants {
     public static final String INVALID_USER_LAST_NAME = "Last name is invalid";
     public static final String EMAIL_ALREADY_REGISTERED = "email-id is already registered";
     public static final String USER_ROLE = "ROLE_USER";
-    public static final String USER_NOT_FOUND_BY_EMAIL = "No account is associated with provided email";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "Email provided is not associated with any account";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
     public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "No account found with token provided";
-    public static final String INVALID_EMAIL_OR_PASSWORD = "Email or password is invalid";
+    public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid Login Credentials";
     public static final String USER_ACCOUNT_DISABLED = "Your account is disabled";
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
     public static final String EXPIRED_JWT_TOKEN = "Token expired. Please login again";
@@ -61,6 +61,10 @@ public final class ApplicationConstants {
     public static final String INVALID_PASSWORD_CHANGE_REQUEST = "Invalid password change request";
     public static final String USER_PROFILE_DELETED_SUCCESSFULLY = "Account deleted successfully";
     public static final String USER_NOT_FOUND_BY_EMAIL_AND_ID = "No user found with provided userId & email";
+
+    public static final String LOGIN_SUCCESS_RESPONSE_TOKEN = "authToken";
+    public static final String LOGIN_SUCCESS_RESPONSE_ROLE = "role";
+    public static final String LOGIN_SUCCESS_RESPONSE_USERID = "userId";
 
     private ApplicationConstants() {
     }

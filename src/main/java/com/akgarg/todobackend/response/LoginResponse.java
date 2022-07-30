@@ -18,8 +18,9 @@ public class LoginResponse implements Serializable {
 
     private static final long serialVersionUID = 297587284585L;
 
-    private String token;
-    private boolean success;
+    private String authToken;
+    private String role;
+    private String userId;
     private long timestamp;
 
 }

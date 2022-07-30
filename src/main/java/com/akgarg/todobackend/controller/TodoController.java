@@ -54,7 +54,6 @@ public class TodoController {
         return ResponseEntity.ok(response);
     }
 
-
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> addTodoNote(
             @RequestBody NewTodoRequest newTodoRequest, Principal principal

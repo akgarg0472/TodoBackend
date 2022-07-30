@@ -49,11 +49,12 @@ public class AccountController {
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
-        UserUtils.checkLoginRequest(loginRequest);
-        logger.info(getClass(), "Login request received: {}", loginRequest.getEmail());
-        final String token = this.userService.login(loginRequest);
+        logger.info(getClass(), "Login request received: {}", loginRequest);
 
-        return ResponseEntity.ok(UserUtils.generateLoginSuccessRequest(token));
+        UserUtils.checkLoginRequest(loginRequest);
+        final Map<String, String> loginResponse = this.userService.login(loginRequest);
+
+        return ResponseEntity.ok(UserUtils.generateLoginSuccessRequest(loginResponse));
     }
 
     @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)

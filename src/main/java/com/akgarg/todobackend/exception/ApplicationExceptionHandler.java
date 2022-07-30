@@ -60,6 +60,8 @@ public class ApplicationExceptionHandler {
             case INVALID_JWT_TOKEN:
             case UNKNOWN_JWT_TOKEN:
             case ACCOUNT_NOT_FOUND_BY_TOKEN:
+            case PASSWORDS_MISMATCHED:
+            case USER_NOT_FOUND_BY_EMAIL:
             case USER_NOT_FOUND_BY_EMAIL_AND_ID:
                 errorStatusCode = 400;
                 break;

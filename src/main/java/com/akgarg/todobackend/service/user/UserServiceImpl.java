@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
@@ -146,7 +147,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(LoginRequest loginRequest) {
+    public Map<String, String> login(LoginRequest loginRequest) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
             this.authenticationManager.authenticate(authenticationToken);
@@ -168,12 +169,19 @@ public class UserServiceImpl implements UserService {
 
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
+        String userRole = "ROLE_USER";
+        String userId = null;
+
         if (userDetails instanceof UserDetailsImpl) {
             cache.insertKeyValue(((UserDetailsImpl) userDetails).getUser().getId(), ((UserDetailsImpl) userDetails).getUser());
             cache.insertKeyValue(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getUser());
+            userRole = ((UserDetailsImpl) userDetails).getUser().getRole();
+            userId = ((UserDetailsImpl) userDetails).getUser().getId();
         }
 
-        return this.jwtUtils.generateToken(userDetails);
+        return Map.of(LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtUtils.generateToken(userDetails),
+                      LOGIN_SUCCESS_RESPONSE_ROLE, userRole, LOGIN_SUCCESS_RESPONSE_USERID, userId
+        );
     }
 
     @Override

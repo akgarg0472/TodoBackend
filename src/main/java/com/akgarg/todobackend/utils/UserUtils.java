@@ -36,21 +36,28 @@ public class UserUtils {
 
         final String email = request.getEmail();
         final String password = request.getPassword();
+        final String confirmPassword = request.getConfirmPassword();
         final String lastName = request.getLastName();
 
         checkEmailField(email);
         checkPasswordField(password);
+        checkPasswordField(confirmPassword);
 
         if (lastName == null || lastName.trim().isBlank()) {
             throw new UserException(INVALID_USER_LAST_NAME);
         }
+
+        if (!password.equals(confirmPassword)) {
+            throw new UserException(PASSWORDS_MISMATCHED);
+        }
     }
 
-    public static LoginResponse generateLoginSuccessRequest(final String token) {
+    public static LoginResponse generateLoginSuccessRequest(final Map<String, String> loginProps) {
         final LoginResponse response = new LoginResponse();
 
-        response.setToken(token);
-        response.setSuccess(true);
+        response.setAuthToken(loginProps.get(LOGIN_SUCCESS_RESPONSE_TOKEN));
+        response.setRole(loginProps.get(LOGIN_SUCCESS_RESPONSE_ROLE));
+        response.setUserId(loginProps.get(LOGIN_SUCCESS_RESPONSE_USERID));
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;

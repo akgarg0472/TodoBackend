@@ -3,6 +3,8 @@ package com.akgarg.todobackend.service.user;
 import com.akgarg.todobackend.request.*;
 import com.akgarg.todobackend.response.UserResponseDto;
 
+import java.util.Map;
+
 /**
  * Author: Akhilesh Garg
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
@@ -20,7 +22,7 @@ public interface UserService {
 
     void deleteUser(String userId, String email);
 
-    String login(LoginRequest loginRequest);
+    Map<String, String> login(LoginRequest loginRequest);
 
     boolean sendForgotPasswordEmail(String email, String url);
 
