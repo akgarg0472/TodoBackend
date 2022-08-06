@@ -8,6 +8,7 @@ import com.akgarg.todobackend.response.LoginResponse;
 import com.akgarg.todobackend.response.SignupResponse;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -58,6 +59,8 @@ public class UserUtils {
         response.setAuthToken(loginProps.get(LOGIN_SUCCESS_RESPONSE_TOKEN));
         response.setRole(loginProps.get(LOGIN_SUCCESS_RESPONSE_ROLE));
         response.setUserId(loginProps.get(LOGIN_SUCCESS_RESPONSE_USERID));
+        response.setName(loginProps.get(LOGIN_SUCCESS_RESPONSE_NAME));
+        response.setEmail(loginProps.get(LOGIN_SUCCESS_RESPONSE_EMAIL));
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
@@ -219,6 +222,15 @@ public class UserUtils {
         signupResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return signupResponse;
+    }
+
+    public static Map<String, Object> generateLogoutResponse() {
+        return Map.of(
+                MESSAGE, LOGOUT_SUCCESS_RESPONSE_MESSAGE,
+                STATUS, 200,
+                TIMESTAMP, LocalDateTime.now().toString(),
+                SUCCESS, true
+        );
     }
 
 }

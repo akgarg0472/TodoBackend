@@ -38,7 +38,8 @@ public final class ApplicationConstants {
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
     public static final String EXPIRED_JWT_TOKEN = "Token expired. Please login again";
     public static final String INVALID_JWT_TOKEN = "Token is invalid";
-    public static final String UNKNOWN_JWT_TOKEN = "Token is invalid or malicious";
+    public static final String UNKNOWN_JWT_TOKEN = "Token is invalid or malicious or expired";
+    public static final String INVALID_AUTH_TOKEN = "Authentication token is invalid";
     public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "An email has been sent to $email. Please follow instruction on email to reset your account password";
     public static final String FORGOT_PASSWORD_EMAIL_FAILURE = "Error occurred while sending forgot password email to $email. Please try again once. If problem persists then try again after sometime";
     public static final String ACCOUNT_VERIFICATION_EMAIL_SUBJECT = "Verify Account";
@@ -65,6 +66,12 @@ public final class ApplicationConstants {
     public static final String LOGIN_SUCCESS_RESPONSE_TOKEN = "authToken";
     public static final String LOGIN_SUCCESS_RESPONSE_ROLE = "role";
     public static final String LOGIN_SUCCESS_RESPONSE_USERID = "userId";
+    public static final String LOGIN_SUCCESS_RESPONSE_EMAIL = "emailId";
+    public static final String LOGIN_SUCCESS_RESPONSE_NAME = "name";
+
+    public static final String LOGOUT_REQUEST_TOKEN = "authToken";
+    public static final String INVALID_LOGOUT_REQUEST = "Invalid logout request";
+    public static final String LOGOUT_SUCCESS_RESPONSE_MESSAGE = "Logout successful";
 
     private ApplicationConstants() {
     }

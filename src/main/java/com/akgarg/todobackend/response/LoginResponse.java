@@ -21,6 +21,8 @@ public class LoginResponse implements Serializable {
     private String authToken;
     private String role;
     private String userId;
+    private String email;
+    private String name;
     private long timestamp;
 
 }

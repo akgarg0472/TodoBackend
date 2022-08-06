@@ -21,8 +21,12 @@ public class TodoConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        final String[] requestMethods = {"GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"};
         WebMvcConfigurer.super.addCorsMappings(registry);
-        registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods(requestMethods);
     }
 
 }

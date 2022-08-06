@@ -42,4 +42,18 @@ public class TodoUser {
     private String approvedAsAdminBy;
     private Long approvedAsAdminOn;
 
+    public String getName() {
+        return this.getFirstName().isBlank() ?
+                this.getLastName() :
+                this.getFirstName().concat(" ").concat(this.getLastName());
+    }
+
+    @Override
+    public String toString() {
+        return "TodoUser{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
 }

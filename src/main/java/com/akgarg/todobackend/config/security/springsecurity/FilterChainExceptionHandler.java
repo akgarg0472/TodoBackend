@@ -44,6 +44,7 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
 
                 case "MalformedJwtException":
                     resolver.resolveException(request, response, null, new UserException(INVALID_JWT_TOKEN));
+                    break;
 
                 default:
                     resolver.resolveException(request, response, null, e);

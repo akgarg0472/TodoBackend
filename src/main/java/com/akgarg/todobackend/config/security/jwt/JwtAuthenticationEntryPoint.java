@@ -27,10 +27,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     ) throws IOException {
         Map<String, Object> errorsMap = new HashMap<>();
 
-        errorsMap.put("message", "Please login to access requested resource");
-        errorsMap.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+        errorsMap.put("error_message", "Please login to access requested resource");
+        errorsMap.put("error_status", HttpServletResponse.SC_UNAUTHORIZED);
         errorsMap.put("success", false);
-        errorsMap.put("data", null);
         errorsMap.put("timestamp", DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         String errorJsonString = new ObjectMapper().writeValueAsString(errorsMap);

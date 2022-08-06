@@ -63,6 +63,8 @@ public class ApplicationExceptionHandler {
             case PASSWORDS_MISMATCHED:
             case USER_NOT_FOUND_BY_EMAIL:
             case USER_NOT_FOUND_BY_EMAIL_AND_ID:
+            case INVALID_AUTH_TOKEN:
+            case INVALID_LOGOUT_REQUEST:
                 errorStatusCode = 400;
                 break;
 

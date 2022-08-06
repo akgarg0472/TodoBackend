@@ -1,5 +1,7 @@
 package com.akgarg.todobackend.config.security.jwt;
 
+import com.akgarg.todobackend.cache.JwtTokenBlackList;
+import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.utils.JwtUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.akgarg.todobackend.constants.ApplicationConstants.INVALID_AUTH_TOKEN;
+
 /**
  * Author: Akhilesh Garg
  * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
@@ -28,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
     private final JwtUtils jwtUtils;
+    private final JwtTokenBlackList tokenBlackList;
 
     @Override
     protected void doFilterInternal(
@@ -38,6 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
+
+            if (this.tokenBlackList.containsToken(jwtToken)) {
+                throw new UserException(INVALID_AUTH_TOKEN);
+            }
+
             String username = this.jwtUtils.extractUsername(jwtToken);
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);

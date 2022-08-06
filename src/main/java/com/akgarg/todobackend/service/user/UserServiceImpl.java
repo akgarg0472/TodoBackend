@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.service.user;
 
+import com.akgarg.todobackend.cache.JwtTokenBlackList;
 import com.akgarg.todobackend.cache.TodoUserCache;
 import com.akgarg.todobackend.config.security.springsecurity.UserDetailsImpl;
 import com.akgarg.todobackend.entity.TodoUser;
@@ -48,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
     private final TodoUserCache cache;
+    private final JwtTokenBlackList jwtTokenBlackList;
     private final EmailService emailService;
 
     @Override
@@ -171,16 +173,21 @@ public class UserServiceImpl implements UserService {
 
         String userRole = "ROLE_USER";
         String userId = null;
+        String email = null;
+        String name = null;
 
         if (userDetails instanceof UserDetailsImpl) {
             cache.insertKeyValue(((UserDetailsImpl) userDetails).getUser().getId(), ((UserDetailsImpl) userDetails).getUser());
             cache.insertKeyValue(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getUser());
             userRole = ((UserDetailsImpl) userDetails).getUser().getRole();
             userId = ((UserDetailsImpl) userDetails).getUser().getId();
+            email = ((UserDetailsImpl) userDetails).getUser().getEmail();
+            name = ((UserDetailsImpl) userDetails).getUser().getName();
         }
 
         return Map.of(LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtUtils.generateToken(userDetails),
-                      LOGIN_SUCCESS_RESPONSE_ROLE, userRole, LOGIN_SUCCESS_RESPONSE_USERID, userId
+                      LOGIN_SUCCESS_RESPONSE_ROLE, userRole, LOGIN_SUCCESS_RESPONSE_USERID, userId,
+                      LOGIN_SUCCESS_RESPONSE_EMAIL, email, LOGIN_SUCCESS_RESPONSE_NAME, name
         );
     }
 
@@ -291,6 +298,19 @@ public class UserServiceImpl implements UserService {
         }
 
         return ERROR_CHANGING_PASSWORD;
+    }
+
+    @Override
+    public void logout(final Map<String, String> logoutParams) {
+        String jwtToken = logoutParams.get(LOGOUT_REQUEST_TOKEN);
+
+        if (jwtToken == null || jwtToken.isBlank()) {
+            throw new UserException(INVALID_JWT_TOKEN);
+        } else if (this.jwtTokenBlackList.containsToken(jwtToken)) {
+            throw new UserException(UNKNOWN_JWT_TOKEN);
+        }
+
+        this.jwtTokenBlackList.addToken(jwtToken);
     }
 
     private boolean updateUserEntity(TodoUser user, String firstName, String lastName, String avatar) {
