@@ -29,4 +29,8 @@ public interface TodoService {
 
     void removeAllTodoByUserId(String userId);
 
+    PaginatedTodoResponse getCompletedTodosForUser(String userId, int offset, int limit);
+
+    PaginatedTodoResponse getPendingTodosForUser(String userId, int offset, int limit);
+
 }

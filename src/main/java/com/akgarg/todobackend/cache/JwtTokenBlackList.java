@@ -30,14 +30,6 @@ public class JwtTokenBlackList {
         this.jwtBlackList.put(token, getTokenExpirationTime());
     }
 
-    public void removeToken(String token) {
-        this.jwtBlackList.remove(token);
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        return this.jwtBlackList.get(token) != null;
-    }
-
     private LocalDateTime getTokenExpirationTime() {
         return Instant.ofEpochMilli(System.currentTimeMillis())
                 .atZone(ZoneId.of("Asia/Kolkata"))

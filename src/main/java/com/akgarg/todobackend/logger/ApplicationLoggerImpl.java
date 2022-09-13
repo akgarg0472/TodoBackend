@@ -2,7 +2,6 @@ package com.akgarg.todobackend.logger;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +14,11 @@ import java.util.Map;
  * Date: 16-07-2022
  */
 @Component
-public class TodoLoggerImpl implements TodoLogger {
+public class ApplicationLoggerImpl implements ApplicationLogger {
 
     private final Map<TodoLogLevel, Level> levelMap;
-    private final Logger logger;
 
-    public TodoLoggerImpl() {
-        logger = LogManager.getLogger(getClass().getSimpleName());
+    public ApplicationLoggerImpl() {
         levelMap = new HashMap<>();
         initLogMap();
     }
@@ -39,7 +36,7 @@ public class TodoLoggerImpl implements TodoLogger {
     @Override
     public void log(Class<?> className, TodoLogLevel logLevel, String message, Object... params) {
         ParameterizedMessage pMessage = new ParameterizedMessage(className.getSimpleName() + " -> " + message, params, null);
-        logger.log(levelMap.get(logLevel), pMessage);
+        LogManager.getLogger(className).log(levelMap.get(logLevel), pMessage);
     }
 
 }

@@ -2,7 +2,7 @@ package com.akgarg.todobackend.service.admin;
 
 import com.akgarg.todobackend.entity.TodoEntity;
 import com.akgarg.todobackend.entity.TodoUser;
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.repository.TodoRepository;
 import com.akgarg.todobackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
     private final TodoRepository todoRepository;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
 
     @Override
     public List<TodoEntity> getAllTodos() {

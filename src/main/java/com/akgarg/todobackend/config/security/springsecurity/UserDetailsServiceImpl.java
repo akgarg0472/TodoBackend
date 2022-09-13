@@ -2,7 +2,7 @@ package com.akgarg.todobackend.config.security.springsecurity;
 
 import com.akgarg.todobackend.cache.TodoUserCache;
 import com.akgarg.todobackend.entity.TodoUser;
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TodoUserCache cache;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
 
-    public UserDetailsServiceImpl(UserRepository userRepository, @Lazy TodoUserCache cache, TodoLogger logger) {
+    public UserDetailsServiceImpl(UserRepository userRepository, @Lazy TodoUserCache cache, ApplicationLogger logger) {
         this.userRepository = userRepository;
         this.cache = cache;
         this.logger = logger;

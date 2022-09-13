@@ -1,11 +1,10 @@
 package com.akgarg.todobackend.service.user;
 
-import com.akgarg.todobackend.cache.JwtTokenBlackList;
 import com.akgarg.todobackend.cache.TodoUserCache;
 import com.akgarg.todobackend.config.security.springsecurity.UserDetailsImpl;
 import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.UserException;
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.repository.UserRepository;
 import com.akgarg.todobackend.request.*;
 import com.akgarg.todobackend.response.UserResponseDto;
@@ -44,12 +43,11 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TodoService todoService;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
     private final TodoUserCache cache;
-    private final JwtTokenBlackList jwtTokenBlackList;
     private final EmailService emailService;
 
     @Override
@@ -84,9 +82,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(String userId) {
         logger.info(getClass(), "Fetching user with userId: {}", userId);
-        TodoUser user = this.fetchUserEntityById(userId, USER_NOT_FOUND_BY_EMAIL);
+        TodoUser user = this.fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
 
-        return convertEntityToDto(user);
+        return convertUserEntityToDto(user);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class UserServiceImpl implements UserService {
             user = this.fetchUserEntityByEmail(username);
         }
 
-        return convertEntityToDto(user);
+        return convertUserEntityToDto(user);
     }
 
     @Override
@@ -300,19 +298,6 @@ public class UserServiceImpl implements UserService {
         return ERROR_CHANGING_PASSWORD;
     }
 
-    @Override
-    public void logout(final Map<String, String> logoutParams) {
-        String jwtToken = logoutParams.get(LOGOUT_REQUEST_TOKEN);
-
-        if (jwtToken == null || jwtToken.isBlank()) {
-            throw new UserException(INVALID_JWT_TOKEN);
-        } else if (this.jwtTokenBlackList.containsToken(jwtToken)) {
-            throw new UserException(UNKNOWN_JWT_TOKEN);
-        }
-
-        this.jwtTokenBlackList.addToken(jwtToken);
-    }
-
     private boolean updateUserEntity(TodoUser user, String firstName, String lastName, String avatar) {
         boolean isNewUpdate = false;
 
@@ -356,7 +341,7 @@ public class UserServiceImpl implements UserService {
         return this.modelMapper.map(request, TodoUser.class);
     }
 
-    private UserResponseDto convertEntityToDto(TodoUser user) {
+    private UserResponseDto convertUserEntityToDto(TodoUser user) {
         return this.modelMapper.map(user, UserResponseDto.class);
     }
 

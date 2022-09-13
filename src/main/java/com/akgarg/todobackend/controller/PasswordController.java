@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.controller;
 
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.service.user.UserService;
@@ -28,7 +28,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class PasswordController {
 
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
     private final UserService userService;
 
     @PostMapping(value = "/forgot-password", consumes = MediaType.APPLICATION_JSON_VALUE)

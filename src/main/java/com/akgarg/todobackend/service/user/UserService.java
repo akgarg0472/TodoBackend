@@ -32,6 +32,4 @@ public interface UserService {
 
     String changeProfilePassword(String userId, ChangePasswordRequest request);
 
-    void logout(Map<String, String> logoutParams);
-
 }

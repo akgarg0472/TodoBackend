@@ -6,7 +6,7 @@ package com.akgarg.todobackend.logger;
  * Date: 16-07-2022
  */
 @SuppressWarnings("unused")
-public interface TodoLogger {
+public interface ApplicationLogger {
 
     void log(
             Class<?> className, TodoLogLevel logLevel, String message, Object... params

@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.service.email;
 
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,7 +20,7 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender javaMailSender;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
 
     @Override
     public boolean send(String toEmail, String subject, String message) {

@@ -2,7 +2,7 @@ package com.akgarg.todobackend.service.todo;
 
 import com.akgarg.todobackend.entity.TodoEntity;
 import com.akgarg.todobackend.exception.TodoException;
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.repository.TodoRepository;
 import com.akgarg.todobackend.request.NewTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoRequest;
@@ -30,7 +30,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
     private final ModelMapper modelMapper;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
 
     @Override
     public TodoResponseDto insert(NewTodoRequest request) {
@@ -105,6 +105,28 @@ public class TodoServiceImpl implements TodoService {
         logger.warn(getClass(), "Deleted todos for {}: {}", userId, todos);
 
         this.todoRepository.deleteAll(todos);
+    }
+
+    @Override
+    public PaginatedTodoResponse getCompletedTodosForUser(final String userId, final int offset, final int limit) {
+        PaginatedTodoResponse completedTodos = this.todoRepository.findCompletedTodosByUserId(userId, offset, limit);
+
+        if (completedTodos == null || completedTodos.getTodos() == null || completedTodos.getTodos().isEmpty()) {
+            throw new TodoException(NO_TODO_FOUND_FOR_USER);
+        }
+
+        return completedTodos;
+    }
+
+    @Override
+    public PaginatedTodoResponse getPendingTodosForUser(final String userId, final int offset, final int limit) {
+        PaginatedTodoResponse pendingTodos = this.todoRepository.findPendingTodosByUserId(userId, offset, limit);
+
+        if (pendingTodos == null || pendingTodos.getTodos() == null || pendingTodos.getTodos().isEmpty()) {
+            throw new TodoException(NO_TODO_FOUND_FOR_USER);
+        }
+
+        return pendingTodos;
     }
 
     private TodoEntity getTodoEntityById(String todoId, String exceptionMessage) {

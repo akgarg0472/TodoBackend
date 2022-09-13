@@ -23,6 +23,11 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
 
     Page<TodoEntity> findAllByUserId(String userId, Pageable pageable);
 
+    Page<TodoEntity> findAllByUserIdAndCompletedTrue(String userId, Pageable pageable);
+
+    Page<TodoEntity> findAllByUserIdAndCompletedFalse(String userId, Pageable pageable);
+
+
     default PaginatedTodoResponse findAllTodosByUserId(String userId, int offset, int limit) {
         if (limit <= 0) {
             limit = 10;
@@ -37,6 +42,44 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
         Pageable pageable = PageRequest.of(offset, limit);
         Page<TodoEntity> entities = this.findAllByUserId(userId, pageable);
 
+        return getPaginatedTodoResponse(entities);
+    }
+
+    default PaginatedTodoResponse findCompletedTodosByUserId(String userId, int offset, int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        } else if (limit > 20) {
+            limit = 20;
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<TodoEntity> entities = this.findAllByUserIdAndCompletedTrue(userId, pageable);
+
+        return getPaginatedTodoResponse(entities);
+    }
+
+    default PaginatedTodoResponse findPendingTodosByUserId(String userId, int offset, int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        } else if (limit > 20) {
+            limit = 20;
+        }
+
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<TodoEntity> entities = this.findAllByUserIdAndCompletedFalse(userId, pageable);
+
+        return getPaginatedTodoResponse(entities);
+    }
+
+    private PaginatedTodoResponse getPaginatedTodoResponse(final Page<TodoEntity> entities) {
         long totalTodos = entities.getTotalElements();
         int totalPages = entities.getTotalPages();
         int currentPage = entities.getNumber();
@@ -47,6 +90,5 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
 
         return new PaginatedTodoResponse(currentPage, totalTodos, totalPages, todos);
     }
-
 
 }

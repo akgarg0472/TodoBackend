@@ -6,9 +6,9 @@ import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
 import com.akgarg.todobackend.response.SignupResponse;
+import com.akgarg.todobackend.response.UserResponseDto;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -224,13 +224,15 @@ public class UserUtils {
         return signupResponse;
     }
 
-    public static Map<String, Object> generateLogoutResponse() {
-        return Map.of(
-                MESSAGE, LOGOUT_SUCCESS_RESPONSE_MESSAGE,
-                STATUS, 200,
-                TIMESTAMP, LocalDateTime.now().toString(),
-                SUCCESS, true
-        );
+    public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final UserResponseDto userProfile) {
+        Map<String, Object> response = new HashMap<>();
+        int statusCode = userProfile == null ? 404 : 200;
+
+        response.put("user", userProfile);
+        response.put(STATUS, statusCode);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.status(statusCode).body(response);
     }
 
 }

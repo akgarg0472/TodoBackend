@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.controller;
 
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
@@ -29,7 +29,7 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.REGISTRATION
 public class AccountController {
 
     private final UserService userService;
-    private final TodoLogger logger;
+    private final ApplicationLogger logger;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupResponse> registerUser(

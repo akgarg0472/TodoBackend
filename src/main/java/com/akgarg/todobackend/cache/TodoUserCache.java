@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.cache;
 
-import com.akgarg.todobackend.logger.TodoLogger;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.utils.TodoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class TodoUserCache {
 
     @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
-    private TodoLogger logger;
+    private ApplicationLogger logger;
 
     public TodoUserCache() {
         this.cacheMap = new HashMap<>();
