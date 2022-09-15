@@ -101,7 +101,7 @@ public class TodoController {
         return ResponseEntity.ok(TodoUtils.generateTodoApiResponse("Todo deleted successfully", null, 200));
     }
 
-    @PutMapping(value = "todo/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/todo/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> updateTodo(
             @RequestBody UpdateTodoRequest updateTodoRequest, @PathVariable String todoId, Principal principal) {
         logger.info(getClass(), "Request received from {} to update todo with todoId: {}", principal.getName(), todoId);

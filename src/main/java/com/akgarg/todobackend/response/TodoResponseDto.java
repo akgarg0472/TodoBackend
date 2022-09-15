@@ -32,7 +32,7 @@ public class TodoResponseDto implements Serializable {
         this.id = todo.getId();
         this.title = todo.getTitle();
         this.description = todo.getDescription();
-        this.completed = todo.isCompleted();
+        this.completed = todo.getCompleted();
         this.createdAt = todo.getCreatedAt();
         this.updatedAt = todo.getUpdatedAt();
     }
