@@ -16,5 +16,6 @@ public class UpdateTodoRequest {
 
     private String title;
     private String description;
+    private Boolean completed;
 
 }

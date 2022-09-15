@@ -28,14 +28,20 @@ public class TodoUtils {
 
         final String title = newTodoRequest.getTitle();
         final String userId = newTodoRequest.getUserId();
+        final String description = newTodoRequest.getDescription();
+
+        if (userId == null || userId.trim().isBlank() || !ObjectId.isValid(userId)) {
+            throw new TodoException(NULL_OR_INVALID_USER_ID);
+        }
 
         if (title == null || title.trim().isBlank()) {
             throw new TodoException(NULL_OR_INVALID_TODO_TITLE);
         }
 
-        if (userId == null || userId.trim().isBlank() || !ObjectId.isValid(userId)) {
-            throw new TodoException(NULL_OR_INVALID_USER_ID);
+        if (description == null || description.trim().isBlank()) {
+            throw new TodoException(NULL_OR_INVALID_TODO_DESCRIPTION);
         }
+
     }
 
     public static TodoApiResponse generateTodoApiResponse(final String message, final Object data, final int status) {
@@ -73,6 +79,7 @@ public class TodoUtils {
 
         final String title = updateTodoRequest.getTitle();
         final String description = updateTodoRequest.getDescription();
+        final Boolean completed = updateTodoRequest.getCompleted();
 
         if (title == null || title.trim().isBlank()) {
             throw new TodoException(NULL_OR_INVALID_TODO_TITLE);
@@ -82,6 +89,9 @@ public class TodoUtils {
             throw new TodoException(NULL_OR_INVALID_TODO_DESCRIPTION);
         }
 
+        if (completed == null) {
+            throw new TodoException(NULL_OR_INVALID_TODO_COMPLETED);
+        }
     }
 
     public static void checkUpdateTodoStatusRequest(final UpdateTodoStatusRequest request) {

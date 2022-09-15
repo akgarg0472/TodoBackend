@@ -38,9 +38,9 @@ public class TodoServiceImpl implements TodoService {
 
         todo.setId(ObjectId.get().toString());
         todo.setCompleted(false);
-        todo.setDescription(null);
+        todo.setDescription(request.getDescription());
         todo.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
-        todo.setUpdatedAt(null);
+        todo.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         TodoEntity insertedEntity = todoRepository.insert(todo);
 
@@ -77,6 +77,7 @@ public class TodoServiceImpl implements TodoService {
         TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setDescription(updateDto.getDescription());
         todoEntity.setTitle(updateDto.getTitle());
+        todoEntity.setCompleted(updateDto.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         TodoEntity updatedEntity = todoRepository.save(todoEntity);

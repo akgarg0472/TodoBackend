@@ -16,8 +16,9 @@ import java.io.Serializable;
 @ToString
 public class NewTodoRequest implements Serializable {
 
-    private String title;
     private String userId;
+    private String title;
+    private String description;
 
 }
 
