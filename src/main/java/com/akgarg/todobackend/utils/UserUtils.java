@@ -17,15 +17,19 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
  * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
+ * GitHub:
+ * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
  * Date: 16-07-2022
  */
 public class UserUtils {
 
-    public static final String MESSAGE = "message";
-    public static final String SUCCESS = "success";
-    public static final String TIMESTAMP = "timestamp";
-    public static final String STATUS = "status";
+    private static final String MESSAGE = "message";
+    private static final String SUCCESS = "success";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String STATUS = "status";
+    private static final String ERROR_MESSAGE = "error_message";
+    private static final String ERROR_STATUS = "error_status";
+
 
     private UserUtils() {
     }
@@ -113,9 +117,7 @@ public class UserUtils {
     public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
         final Map<String, Object> response = new HashMap<>();
 
-        final String responseMessage = emailResponse ?
-                FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) :
-                FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
+        final String responseMessage = emailResponse ? FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) : FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
 
         response.put(MESSAGE, responseMessage);
         response.put(SUCCESS, emailResponse);
@@ -129,22 +131,22 @@ public class UserUtils {
     ) {
         final Map<String, Object> response = new HashMap<>();
 
-        String responseMessage;
         int responseStatusCode;
 
         if (!isTokenValid) {
-            responseMessage = ACCOUNT_VERIFICATION_TOKEN_INVALID;
             responseStatusCode = 400;
+            response.put(ERROR_STATUS, responseStatusCode);
+            response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_TOKEN_INVALID);
         } else if (verifiedAccountEmail != null) {
-            responseMessage = ACCOUNT_VERIFIED_SUCCESSFUL.replace("$EMAIL", verifiedAccountEmail);
             responseStatusCode = 200;
+            response.put(STATUS, responseStatusCode);
+            response.put(MESSAGE, ACCOUNT_VERIFIED_SUCCESSFUL.replace("$EMAIL", verifiedAccountEmail));
         } else {
-            responseMessage = ACCOUNT_VERIFICATION_FAILED;
             responseStatusCode = 400;
+            response.put(ERROR_STATUS, responseStatusCode);
+            response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_FAILED);
         }
 
-        response.put(MESSAGE, responseMessage);
-        response.put(STATUS, responseStatusCode);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(responseStatusCode).body(response);
@@ -158,22 +160,22 @@ public class UserUtils {
             final boolean isRequestValid, final boolean passwordResetResponse
     ) {
         final Map<String, Object> response = new HashMap<>();
-        String responseMessage;
         int statusCode;
 
         if (!isRequestValid) {
-            responseMessage = INVALID_FORGOT_PASSWORD_REQUEST;
             statusCode = 400;
+            response.put(ERROR_STATUS, statusCode);
+            response.put(ERROR_MESSAGE, INVALID_FORGOT_PASSWORD_REQUEST);
         } else if (!passwordResetResponse) {
-            responseMessage = PASSWORD_RESET_FAILED;
             statusCode = 400;
+            response.put(ERROR_STATUS, statusCode);
+            response.put(ERROR_MESSAGE, PASSWORD_RESET_FAILED);
         } else {
-            responseMessage = PASSWORD_RESET_SUCCESS;
             statusCode = 200;
+            response.put(MESSAGE, PASSWORD_RESET_SUCCESS);
+            response.put(STATUS, statusCode);
         }
 
-        response.put(MESSAGE, responseMessage);
-        response.put(SUCCESS, isRequestValid);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
@@ -192,6 +194,8 @@ public class UserUtils {
             case PASSWORD_CHANGED_SUCCESSFULLY:
             case USER_PROFILE_DELETED_SUCCESSFULLY:
                 statusCode = 200;
+                response.put(MESSAGE, updateResponse);
+                response.put(STATUS, statusCode);
                 break;
 
             case REDUNDANT_PROFILE_UPDATE_REQUEST:
@@ -200,16 +204,16 @@ public class UserUtils {
             case NULL_OR_INVALID_REQUEST:
             case INVALID_PASSWORD_CHANGE_REQUEST:
                 statusCode = 400;
+                response.put(ERROR_MESSAGE, updateResponse);
+                response.put(ERROR_STATUS, statusCode);
                 break;
 
             default:
                 statusCode = 500;
+                response.put(ERROR_MESSAGE, updateResponse);
+                response.put(ERROR_STATUS, statusCode);
                 break;
         }
-
-        response.put(MESSAGE, updateResponse);
-        response.put(STATUS, statusCode);
-        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
     }
@@ -228,8 +232,13 @@ public class UserUtils {
         Map<String, Object> response = new HashMap<>();
         int statusCode = userProfile == null ? 404 : 200;
 
+        if (statusCode == 200) {
+            response.put(STATUS, statusCode);
+        } else {
+            response.put(ERROR_STATUS, statusCode);
+        }
+        
         response.put("user", userProfile);
-        response.put(STATUS, statusCode);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);

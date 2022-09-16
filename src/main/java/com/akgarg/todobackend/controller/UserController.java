@@ -44,7 +44,8 @@ public class UserController {
 
     @PostMapping(value = "/{userId}/update-profile")
     public ResponseEntity<Map<String, Object>> updateUserProfile(
-            @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("userId") String userId) {
+            @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("userId") String userId
+    ) {
         logger.info(getClass(), "Received update profile request for {}: {}", userId, updateUserRequest);
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
         final String updateProfileResponse = this.userService.updateUserProfile(userId, updateUserRequest);
@@ -55,7 +56,8 @@ public class UserController {
 
     @PostMapping(value = "/{userId}/change-password")
     public ResponseEntity<Map<String, Object>> changeUserPassword(
-            @PathVariable("userId") String userId, @RequestBody ChangePasswordRequest changePasswordRequest) {
+            @PathVariable("userId") String userId, @RequestBody ChangePasswordRequest changePasswordRequest
+    ) {
         logger.info(getClass(), "Received change password changePasswordRequest for {}", userId);
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
         final String changePasswordResponse = this.userService.changeProfilePassword(userId, changePasswordRequest);
@@ -66,7 +68,8 @@ public class UserController {
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Map<String, Object>> deleteUserAccount(
-            @PathVariable("userId") String userId, Principal principal) {
+            @PathVariable("userId") String userId, Principal principal
+    ) {
         logger.warn(getClass(), "Received delete account request for {}: {}", userId, principal.getName());
         TodoUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
         this.userService.deleteUser(userId, principal.getName());

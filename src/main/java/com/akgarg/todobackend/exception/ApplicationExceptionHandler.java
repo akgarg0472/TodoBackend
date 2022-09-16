@@ -56,20 +56,20 @@ public class ApplicationExceptionHandler {
             case INVALID_USER_LAST_NAME:
             case NULL_OR_EMPTY_EMAIL:
             case NULL_OR_EMPTY_PASSWORD:
-            case EXPIRED_JWT_TOKEN:
-            case INVALID_JWT_TOKEN:
-            case UNKNOWN_JWT_TOKEN:
             case ACCOUNT_NOT_FOUND_BY_TOKEN:
             case PASSWORDS_MISMATCHED:
             case USER_NOT_FOUND_BY_EMAIL:
             case USER_NOT_FOUND_BY_EMAIL_AND_ID:
-            case INVALID_AUTH_TOKEN:
             case INVALID_LOGOUT_REQUEST:
                 errorStatusCode = 400;
                 break;
 
             case INVALID_EMAIL_OR_PASSWORD:
             case USER_ACCOUNT_LOCKED:
+            case EXPIRED_JWT_TOKEN:
+            case INVALID_AUTH_TOKEN:
+            case INVALID_JWT_TOKEN:
+            case UNKNOWN_JWT_TOKEN:
                 errorStatusCode = 401;
                 break;
 

@@ -21,7 +21,8 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
  * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
+ * GitHub:
+ * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
  * Date: 16-07-2022
  */
 @Service
@@ -65,7 +66,7 @@ public class TodoServiceImpl implements TodoService {
     public PaginatedTodoResponse getTodosForUser(String userId, int offset, int limit) {
         PaginatedTodoResponse userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
 
-        if (userTodos == null || userTodos.getTodos() == null || userTodos.getTodos().isEmpty()) {
+        if (userTodos == null || userTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
         }
 
@@ -112,7 +113,7 @@ public class TodoServiceImpl implements TodoService {
     public PaginatedTodoResponse getCompletedTodosForUser(final String userId, final int offset, final int limit) {
         PaginatedTodoResponse completedTodos = this.todoRepository.findCompletedTodosByUserId(userId, offset, limit);
 
-        if (completedTodos == null || completedTodos.getTodos() == null || completedTodos.getTodos().isEmpty()) {
+        if (completedTodos == null || completedTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
         }
 
@@ -123,7 +124,7 @@ public class TodoServiceImpl implements TodoService {
     public PaginatedTodoResponse getPendingTodosForUser(final String userId, final int offset, final int limit) {
         PaginatedTodoResponse pendingTodos = this.todoRepository.findPendingTodosByUserId(userId, offset, limit);
 
-        if (pendingTodos == null || pendingTodos.getTodos() == null || pendingTodos.getTodos().isEmpty()) {
+        if (pendingTodos == null || pendingTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
         }
 
