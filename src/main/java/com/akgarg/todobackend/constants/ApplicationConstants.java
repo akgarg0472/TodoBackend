@@ -2,7 +2,8 @@ package com.akgarg.todobackend.constants;
 
 /**
  * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
+ * GitHub:
+ * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
  * Date: 16-07-2022
  */
 public final class ApplicationConstants {
@@ -28,9 +29,9 @@ public final class ApplicationConstants {
     public static final String NULL_OR_EMPTY_PASSWORD = "Invalid password";
     public static final String INVALID_PASSWORD_FORMAT = "Password provided is in invalid format";
     public static final String INVALID_USER_LAST_NAME = "Last name is invalid";
-    public static final String EMAIL_ALREADY_REGISTERED = "email-id is already registered";
+    public static final String EMAIL_ALREADY_REGISTERED = "Email-id is already registered";
     public static final String USER_ROLE = "ROLE_USER";
-    public static final String USER_NOT_FOUND_BY_EMAIL = "Email provided is not associated with any account";
+    public static final String USER_NOT_FOUND_BY_EMAIL = "No account found with email";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
     public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "No account found with token provided";
     public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid Login Credentials";
@@ -40,7 +41,7 @@ public final class ApplicationConstants {
     public static final String INVALID_JWT_TOKEN = "Token is invalid";
     public static final String UNKNOWN_JWT_TOKEN = "Token is invalid or malicious or expired";
     public static final String INVALID_AUTH_TOKEN = "Authentication token is invalid";
-    public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "An email has been sent to $email. Please follow instruction on email to reset your account password";
+    public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "Forgot password email sent to $email. Please follow instruction to reset your account password";
     public static final String FORGOT_PASSWORD_EMAIL_FAILURE = "Error occurred while sending forgot password email to $email. Please try again once. If problem persists then try again after sometime";
     public static final String ACCOUNT_VERIFICATION_EMAIL_SUBJECT = "Verify Account";
     public static final String ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT = "Congratulations 🎉, Account activated successfully";
@@ -48,7 +49,7 @@ public final class ApplicationConstants {
     public static final String ACCOUNT_VERIFICATION_FAILED = "No verification token provided. Account verification failed";
     public static final String ACCOUNT_VERIFICATION_TOKEN_INVALID = "Verification token is invalid or expired. Account verification failed";
     public static final String PASSWORD_RESET_SUCCESS = "Password change successfully";
-    public static final String PASSWORD_RESET_FAILED = "Error changing password. Token provided might be invalid or expired";
+    public static final String PASSWORD_RESET_FAILED = "Forgot Token provided is invalid or expired";
     public static final String INVALID_FORGOT_PASSWORD_REQUEST = "Invalid forgot password request";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT = "Password changed successfully";
     public static final String INVALID_TOKEN_BIT_PROVIDED = "Last unit does not have enough valid bits";
@@ -71,7 +72,7 @@ public final class ApplicationConstants {
 
     public static final String LOGOUT_REQUEST_TOKEN = "authToken";
     public static final String INVALID_LOGOUT_REQUEST = "Invalid logout request";
-    public static final String LOGOUT_SUCCESS_RESPONSE_MESSAGE = "Logout successful";
+    public static final String INVALID_FORGOT_PASSWORD_TOKEN = "Invalid forgot password token";
 
     private ApplicationConstants() {
     }

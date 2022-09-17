@@ -43,8 +43,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean sendForgotPasswordEmail(String url, String email, String forgotPasswordToken) {
-        String forgotPasswordEmailMessage = "Your forgot password token is: " + forgotPasswordToken;
+    public boolean sendForgotPasswordEmail(String name, String url, String email, String forgotPasswordToken) {
+        String forgotPasswordEmailMessage = "Hi: " + name + "\nPlease click on following link to change your password" +
+                url + forgotPasswordToken;
 
         return this.send(email, "Forgot Password", forgotPasswordEmailMessage);
     }

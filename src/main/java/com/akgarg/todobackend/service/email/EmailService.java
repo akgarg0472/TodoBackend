@@ -9,7 +9,7 @@ public interface EmailService {
 
     boolean send(String toEmail, String subject, String message);
 
-    boolean sendForgotPasswordEmail(String url, String email, String forgotPasswordToken);
+    boolean sendForgotPasswordEmail(String name, String url, String email, String forgotPasswordToken);
 
     boolean sendAccountVerificationEmail(String email, String url, String accountVerificationToken);
 

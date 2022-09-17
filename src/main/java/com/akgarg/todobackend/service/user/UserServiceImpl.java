@@ -193,13 +193,16 @@ public class UserServiceImpl implements UserService {
     public boolean sendForgotPasswordEmail(String email, String url) {
         TodoUser user = fetchUserEntityByEmail(email);
 
-        String forgotPasswordToken = generateTokenFromUserId(user.getId());
+        String forgotPasswordToken = PasswordUtils.generateForgotPasswordToken();
 
         try {
             user.setForgotPasswordToken(forgotPasswordToken);
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
             TodoUser updatedUser = this.userRepository.save(user);
-            return this.emailService.sendForgotPasswordEmail(url, updatedUser.getEmail(), forgotPasswordToken);
+
+            String hashedToken = PasswordUtils.hashForgotPasswordToken(forgotPasswordToken, updatedUser.getId());
+
+            return this.emailService.sendForgotPasswordEmail(updatedUser.getName(), url, updatedUser.getEmail(), hashedToken);
         } catch (Exception e) {
             logger.error(getClass(), "Something went wrong sending forgot password email to {}", user.getEmail());
         }
@@ -236,12 +239,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean processForgotPasswordRequest(ForgotPasswordRequest request) {
         logger.info(getClass(), "Forgot password process request received for: {}", request.getForgotPasswordToken());
-        String forgotPasswordToken = request.getForgotPasswordToken();
-        String userId = getUserIdFromToken(forgotPasswordToken);
+        final String requestForgotPasswordToken = request.getForgotPasswordToken();
+
+        final String[] decodedForgotPasswordToken = PasswordUtils.decodeForgotPasswordToken(requestForgotPasswordToken);
+        String forgotPasswordToken = decodedForgotPasswordToken[0];
+        String userId = decodedForgotPasswordToken[1];
 
         TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
 
-        if (forgotPasswordToken.equals(user.getForgotPasswordToken()) && request.getPassword().equals(request.getConfirmPassword())) {
+        if (forgotPasswordToken != null &&
+                forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
+                request.getPassword().equals(request.getConfirmPassword())) {
             user.setForgotPasswordToken(null);
             user.setPassword(this.passwordEncoder.encode(request.getPassword()));
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
@@ -350,7 +358,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private String generateTokenFromUserId(String userId) {
-        return PasswordUtils.generateTokenFromId(userId);
+        final String encodedUserId = PasswordUtils.generateTokenFromId(userId);
+        return encodedUserId;
     }
 
     private String getUserIdFromToken(String token) {

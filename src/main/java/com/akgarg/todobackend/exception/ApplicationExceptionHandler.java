@@ -10,7 +10,8 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
  * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
+ * GitHub:
+ * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
  * Date: 16-07-2022
  */
 @ControllerAdvice
@@ -58,9 +59,8 @@ public class ApplicationExceptionHandler {
             case NULL_OR_EMPTY_PASSWORD:
             case ACCOUNT_NOT_FOUND_BY_TOKEN:
             case PASSWORDS_MISMATCHED:
-            case USER_NOT_FOUND_BY_EMAIL:
-            case USER_NOT_FOUND_BY_EMAIL_AND_ID:
             case INVALID_LOGOUT_REQUEST:
+            case INVALID_FORGOT_PASSWORD_TOKEN:
                 errorStatusCode = 400;
                 break;
 
@@ -71,6 +71,11 @@ public class ApplicationExceptionHandler {
             case INVALID_JWT_TOKEN:
             case UNKNOWN_JWT_TOKEN:
                 errorStatusCode = 401;
+                break;
+
+            case USER_NOT_FOUND_BY_EMAIL:
+            case USER_NOT_FOUND_BY_EMAIL_AND_ID:
+                errorStatusCode = 404;
                 break;
 
             case EMAIL_ALREADY_REGISTERED:

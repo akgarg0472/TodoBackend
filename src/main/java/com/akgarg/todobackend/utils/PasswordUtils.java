@@ -1,10 +1,14 @@
 package com.akgarg.todobackend.utils;
 
+import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.request.ForgotPasswordRequest;
+import org.modelmapper.internal.bytebuddy.utility.RandomString;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Pattern;
+
+import static com.akgarg.todobackend.constants.ApplicationConstants.INVALID_FORGOT_PASSWORD_TOKEN;
 
 /**
  * Author: Akhilesh Garg
@@ -35,9 +39,7 @@ public class PasswordUtils {
             return false;
         }
 
-        return checkPasswordField(request.getPassword()) &&
-                checkPasswordField(request.getConfirmPassword()) &&
-                request.getPassword().equals(request.getConfirmPassword());
+        return checkPasswordField(request.getPassword()) && checkPasswordField(request.getConfirmPassword()) && request.getPassword().equals(request.getConfirmPassword());
     }
 
     public static boolean checkPasswordField(final String password) {
@@ -48,6 +50,30 @@ public class PasswordUtils {
         }
 
         return passwordRegexPattern.matcher(password).matches();
+    }
+
+    public static String generateForgotPasswordToken() {
+        return RandomString.make(48);
+    }
+
+    public static String hashForgotPasswordToken(String token, String userId) {
+        String rawToken = userId.substring(0, 12) + token + userId.substring(12);
+
+        return Base64.getEncoder().encodeToString(rawToken.getBytes());
+    }
+
+    public static String[] decodeForgotPasswordToken(String token) {
+        final byte[] decodedTokenBytes = Base64.getDecoder().decode(token);
+        final String decodedToken = new String(decodedTokenBytes);
+
+        if (decodedToken.length() != 72) {
+            throw new UserException(INVALID_FORGOT_PASSWORD_TOKEN);
+        }
+
+        String userId = decodedToken.substring(0, 12) + decodedToken.substring(60);
+        String passwordResetToken = decodedToken.substring(12, 60);
+
+        return new String[]{passwordResetToken, userId};
     }
 
 }
