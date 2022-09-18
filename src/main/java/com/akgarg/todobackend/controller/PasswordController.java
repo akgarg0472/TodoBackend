@@ -5,8 +5,9 @@ import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.PasswordUtils;
+import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
-import com.akgarg.todobackend.utils.UserUtils;
+import com.akgarg.todobackend.utils.ValidationUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,16 +37,18 @@ public class PasswordController {
             @RequestBody ForgotPasswordEmailRequest forgotPasswordEmailRequest, HttpServletRequest request
     ) {
         logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordEmailRequest);
-        UserUtils.checkForgotPasswordRequest(forgotPasswordEmailRequest);
+        ValidationUtils.checkForgotPasswordRequest(forgotPasswordEmailRequest);
+
         final String email = forgotPasswordEmailRequest.getEmail();
         final boolean forgotPasswordEmailResponse = this.userService.sendForgotPasswordEmail(email, UrlUtils.getUrl(request));
 
-        return UserUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
+        return ResponseUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
     }
 
     @PostMapping(value = "reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         logger.info(getClass(), "Received resetPassword request for: {}", forgotPasswordRequest.getForgotPasswordToken());
+
         final boolean isRequestValid = PasswordUtils.isForgotPasswordRequestValid(forgotPasswordRequest);
         boolean passwordResetResponse = false;
 
@@ -53,7 +56,7 @@ public class PasswordController {
             passwordResetResponse = this.userService.processForgotPasswordRequest(forgotPasswordRequest);
         }
 
-        return UserUtils.generateForgotPasswordCompleteResponse(isRequestValid, passwordResetResponse);
+        return ResponseUtils.generateForgotPasswordCompleteResponse(isRequestValid, passwordResetResponse);
     }
 
 }

@@ -1,9 +1,7 @@
 package com.akgarg.todobackend.service.admin;
 
-import com.akgarg.todobackend.entity.TodoEntity;
-import com.akgarg.todobackend.entity.TodoUser;
-
-import java.util.List;
+import com.akgarg.todobackend.response.PaginatedUserResponse;
+import com.akgarg.todobackend.response.UserResponseDto;
 
 /**
  * Author: Akhilesh Garg
@@ -12,16 +10,18 @@ import java.util.List;
  */
 public interface AdminService {
 
-    List<TodoEntity> getAllTodos();
+    UserResponseDto getAdminProfile(String adminId);
 
-    List<TodoUser> getAllUsers();
+    PaginatedUserResponse getAllUsers(int offset, int limit);
 
-    List<TodoEntity> getAllTodosByUserId(String userId);
+    boolean lockUserAccount(String userId, String reason, String by);
 
-    boolean lockUserAccount(String userId);
+    boolean unlockUserAccount(String userId, String reason, String by);
 
-    boolean terminateUserAccount(String userId);
+    boolean terminateUserAccount(String userId, String reason, String by);
 
-    boolean changeUserAccountType(String userId, String accountType);
+    boolean enableUserAccount(String userId, String reason, String by);
+
+    boolean changeAccountType(String userId, String accountType);
 
 }

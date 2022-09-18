@@ -1,27 +1,19 @@
 package com.akgarg.todobackend.utils;
 
-import com.akgarg.todobackend.exception.UserException;
-import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
-import com.akgarg.todobackend.request.LoginRequest;
-import com.akgarg.todobackend.request.RegisterUserRequest;
-import com.akgarg.todobackend.response.LoginResponse;
-import com.akgarg.todobackend.response.SignupResponse;
-import com.akgarg.todobackend.response.UserResponseDto;
+import com.akgarg.todobackend.response.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
  * Author: Akhilesh Garg
- * GitHub:
- * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
+ * Date: 18-09-2022
  */
-public class UserUtils {
+public class ResponseUtils {
 
     private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
@@ -30,31 +22,7 @@ public class UserUtils {
     private static final String ERROR_MESSAGE = "error_message";
     private static final String ERROR_STATUS = "error_status";
 
-
-    private UserUtils() {
-    }
-
-    public static void checkRegisterUserRequest(final RegisterUserRequest request) {
-        if (request == null) {
-            throw new UserException(NULL_OR_INVALID_REQUEST);
-        }
-
-        final String email = request.getEmail();
-        final String password = request.getPassword();
-        final String confirmPassword = request.getConfirmPassword();
-        final String lastName = request.getLastName();
-
-        checkEmailField(email);
-        checkPasswordField(password);
-        checkPasswordField(confirmPassword);
-
-        if (lastName == null || lastName.trim().isBlank()) {
-            throw new UserException(INVALID_USER_LAST_NAME);
-        }
-
-        if (!password.equals(confirmPassword)) {
-            throw new UserException(PASSWORDS_MISMATCHED);
-        }
+    private ResponseUtils() {
     }
 
     public static LoginResponse generateLoginSuccessRequest(final Map<String, String> loginProps) {
@@ -68,50 +36,6 @@ public class UserUtils {
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return response;
-    }
-
-    public static void checkLoginRequest(final LoginRequest loginRequest) {
-        if (loginRequest == null) {
-            throw new UserException(NULL_OR_INVALID_REQUEST);
-        }
-
-        final String email = loginRequest.getEmail();
-        final String password = loginRequest.getPassword();
-
-        checkEmailField(email);
-        checkPasswordField(password);
-    }
-
-    public static void checkForgotPasswordRequest(final ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
-        if (forgotPasswordEmailRequest == null) {
-            throw new UserException(NULL_OR_INVALID_REQUEST);
-        }
-
-        checkEmailField(forgotPasswordEmailRequest.getEmail());
-    }
-
-    private static void checkEmailField(final String email) {
-        final Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-
-        if (email == null || email.trim().isBlank()) {
-            throw new UserException(NULL_OR_EMPTY_EMAIL);
-        }
-
-        if (!emailRegexPattern.matcher(email).matches()) {
-            throw new UserException(INVALID_EMAIL_FORMAT);
-        }
-    }
-
-    private static void checkPasswordField(final String password) {
-        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
-
-        if (password == null || password.trim().isBlank()) {
-            throw new UserException(NULL_OR_EMPTY_PASSWORD);
-        }
-
-        if (!passwordRegexPattern.matcher(password).matches()) {
-            throw new UserException(INVALID_PASSWORD_FORMAT);
-        }
     }
 
     public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
@@ -152,10 +76,6 @@ public class UserUtils {
         return ResponseEntity.status(responseStatusCode).body(response);
     }
 
-    public static boolean checkForNullOrInvalidToken(final String token) {
-        return token != null && !token.isBlank();
-    }
-
     public static ResponseEntity<Map<String, Object>> generateForgotPasswordCompleteResponse(
             final boolean isRequestValid, final boolean passwordResetResponse
     ) {
@@ -179,10 +99,6 @@ public class UserUtils {
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
-    }
-
-    public static boolean isValidStringInput(final String str) {
-        return str != null && !str.isBlank();
     }
 
     public static ResponseEntity<Map<String, Object>> generateUpdateProfileResponse(final String updateResponse) {
@@ -230,18 +146,100 @@ public class UserUtils {
 
     public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final UserResponseDto userProfile) {
         Map<String, Object> response = new HashMap<>();
-        int statusCode = userProfile == null ? 404 : 200;
+        int statusCode = userProfile != null ? 200 : 404;
 
         if (statusCode == 200) {
             response.put(STATUS, statusCode);
         } else {
             response.put(ERROR_STATUS, statusCode);
         }
-        
+
         response.put("user", userProfile);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
+    }
+
+    public static Map<String, Object> generateGetAllUsersResponse(final PaginatedUserResponse users) {
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("users", users);
+        response.put(SUCCESS, true);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return response;
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateChangeAccountTypeResponse(final boolean changeAccountTypeResponse) {
+        Map<String, Object> response = new HashMap<>();
+        int responseStatusCode;
+
+        if (changeAccountTypeResponse) {
+            response.put(MESSAGE, ACCOUNT_TYPE_UPDATED_SUCCESS);
+            responseStatusCode = 200;
+            response.put(STATUS, responseStatusCode);
+        } else {
+            response.put(ERROR_MESSAGE, ERROR_UPDATING_ACC_TYPE);
+            responseStatusCode = 500;
+            response.put(ERROR_STATUS, responseStatusCode);
+        }
+
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        response.put(SUCCESS, changeAccountTypeResponse);
+
+        return ResponseEntity.status(responseStatusCode).body(response);
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateAccountLockStateChangeResponse(final boolean lockStateChangeResponse) {
+        return getAccountStateChangeResponse(lockStateChangeResponse, ACCOUNT_LOCK_STATE_UPDATED_SUCCESS, ACCOUNT_LOCK_STATE_UPDATED_FAILED);
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateAccountEnabledStateChangeResponse(final boolean enableStateChangeResponse) {
+        return getAccountStateChangeResponse(enableStateChangeResponse, ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS, ACCOUNT_ENABLED_STATE_CHANGE_FAILED);
+    }
+
+    private static ResponseEntity<Map<String, Object>> getAccountStateChangeResponse(
+            boolean state, String successMessage, String errorMessage
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        int responseStatusCode;
+
+        if (state) {
+            response.put(MESSAGE, successMessage);
+            responseStatusCode = 200;
+            response.put(STATUS, responseStatusCode);
+        } else {
+            response.put(ERROR_MESSAGE, errorMessage);
+            responseStatusCode = 200;
+            response.put(ERROR_STATUS, responseStatusCode);
+        }
+
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        response.put(SUCCESS, state);
+
+        return ResponseEntity.status(responseStatusCode).body(response);
+    }
+
+    public static TodoApiResponse generateTodoApiResponse(final String message, final Object data, final int status) {
+        final TodoApiResponse response = new TodoApiResponse();
+
+        response.setSuccess(status < 400 || status > 599);
+        response.setMessage(message);
+        response.setData(data);
+        response.setStatus(status);
+        response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return response;
+    }
+
+    public static ApiErrorResponse generateApiErrorResponse(final String errorMessage, final int errorCode) {
+        final ApiErrorResponse errorResponse = new ApiErrorResponse();
+
+        errorResponse.setErrorMessage(errorMessage);
+        errorResponse.setErrorCode(errorCode);
+        errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return errorResponse;
     }
 
 }

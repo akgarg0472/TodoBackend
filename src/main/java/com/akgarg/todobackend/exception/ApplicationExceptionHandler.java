@@ -1,7 +1,8 @@
 package com.akgarg.todobackend.exception;
 
 import com.akgarg.todobackend.response.ApiErrorResponse;
-import com.akgarg.todobackend.utils.TodoUtils;
+import com.akgarg.todobackend.utils.DateTimeUtils;
+import com.akgarg.todobackend.utils.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,7 +45,7 @@ public class ApplicationExceptionHandler {
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
+                .body(ResponseUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
     }
 
     @ExceptionHandler(UserException.class)
@@ -89,7 +90,27 @@ public class ApplicationExceptionHandler {
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
+                .body(ResponseUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleBadRequestException(BadRequestException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse();
+        errorResponse.setErrorCode(400);
+        errorResponse.setErrorMessage(e.getMessage());
+        errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(GenericException e) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse();
+        errorResponse.setErrorCode(500);
+        errorResponse.setErrorMessage(e.getMessage());
+        errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
@@ -127,7 +148,7 @@ public class ApplicationExceptionHandler {
 
         return ResponseEntity
                 .status(errorStatusCode)
-                .body(TodoUtils.generateApiErrorResponse(errorMessage, errorStatusCode));
+                .body(ResponseUtils.generateApiErrorResponse(errorMessage, errorStatusCode));
     }
 
 }

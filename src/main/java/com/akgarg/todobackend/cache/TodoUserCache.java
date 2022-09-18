@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.cache;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.utils.TodoUtils;
+import com.akgarg.todobackend.utils.ValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +15,7 @@ import java.util.Optional;
  * Date: 16-07-2022
  */
 @Component
+@SuppressWarnings("unused")
 public class TodoUserCache {
 
     private final Map<String, Object> cacheMap;
@@ -29,9 +30,9 @@ public class TodoUserCache {
 
     public void insertKeyValue(String key, Object value) {
         logger.info(getClass(), "Inserting {} -> {} into cache", key, value);
+        ValidationUtils.checkForNullOrInvalidValue(key);
+        ValidationUtils.checkForNullOrInvalidValue(value);
 
-        TodoUtils.checkForNullOrInvalidValue(key);
-        TodoUtils.checkForNullOrInvalidValue(value);
         this.cacheMap.put(key, value);
     }
 
@@ -46,7 +47,7 @@ public class TodoUserCache {
     public boolean removeValue(String key) {
         logger.info(getClass(), "Removing {} entry from cache", key);
 
-        TodoUtils.checkForNullOrInvalidValue(key);
+        ValidationUtils.checkForNullOrInvalidValue(key);
         Object value = this.cacheMap.remove(key);
 
         return value != null;

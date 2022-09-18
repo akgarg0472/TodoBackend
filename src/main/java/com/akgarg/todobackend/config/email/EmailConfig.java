@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.config.email;
 
-import com.akgarg.todobackend.utils.EmailUtils;
+import com.akgarg.todobackend.utils.ValidationUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ public class EmailConfig {
 
     @Bean
     public JavaMailSender javaMailSender() {
-        EmailUtils.checkEmailSenderProperties(config);
+        ValidationUtils.checkEmailSenderProperties(config);
 
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 

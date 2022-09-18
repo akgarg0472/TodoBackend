@@ -6,8 +6,9 @@ import com.akgarg.todobackend.request.RegisterUserRequest;
 import com.akgarg.todobackend.response.LoginResponse;
 import com.akgarg.todobackend.response.SignupResponse;
 import com.akgarg.todobackend.service.user.UserService;
+import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
-import com.akgarg.todobackend.utils.UserUtils;
+import com.akgarg.todobackend.utils.ValidationUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +37,12 @@ public class AccountController {
             @RequestBody RegisterUserRequest registerUserRequest, HttpServletRequest httpServletRequest
     ) {
         logger.info(getClass(), "Signup request received: {}", registerUserRequest);
-        UserUtils.checkRegisterUserRequest(registerUserRequest);
+        ValidationUtils.checkRegisterUserRequest(registerUserRequest);
+
         final String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
 
         return ResponseEntity.status(201)
-                .body(UserUtils.generateSignupResponse(
+                .body(ResponseUtils.generateSignupResponse(
                               REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email),
                               201
                       )
@@ -50,23 +52,24 @@ public class AccountController {
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         logger.info(getClass(), "Login request received: {}", loginRequest);
+        ValidationUtils.checkLoginRequest(loginRequest);
 
-        UserUtils.checkLoginRequest(loginRequest);
         final Map<String, String> loginResponse = this.userService.login(loginRequest);
 
-        return ResponseEntity.ok(UserUtils.generateLoginSuccessRequest(loginResponse));
+        return ResponseEntity.ok(ResponseUtils.generateLoginSuccessRequest(loginResponse));
     }
 
     @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> verifyUserAccount(@PathVariable String accountVerificationToken) {
-        boolean isTokenValid = UserUtils.checkForNullOrInvalidToken(accountVerificationToken);
+        boolean isTokenValid = ValidationUtils.checkForNullOrInvalidToken(accountVerificationToken);
+
         String verifiedAccountEmail = null;
 
         if (isTokenValid) {
             verifiedAccountEmail = this.userService.verifyUserAccount(accountVerificationToken);
         }
 
-        return UserUtils.generateAccountVerificationResponse(isTokenValid, verifiedAccountEmail);
+        return ResponseUtils.generateAccountVerificationResponse(isTokenValid, verifiedAccountEmail);
     }
 
 }

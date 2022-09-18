@@ -25,16 +25,16 @@ import java.util.function.Function;
 public class JwtUtils implements InitializingBean {
 
     @Value("${todo.security.jwt.secret}")
-    private String SECRET_KEY;
+    private String secretKey;
     @Value("${todo.security.jwt.token-expiry}")
-    private long JWT_TOKEN_VALIDITY;
+    private long jwtTokenValidity;
 
     @Value("${todo.security.jwt.token-issuer}")
-    private String JWT_ISSUER;
+    private String jwtIssuer;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        this.SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    public void afterPropertiesSet() {
+        this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String extractUsername(final String token) {
@@ -52,7 +52,7 @@ public class JwtUtils implements InitializingBean {
 
     private Claims extractAllClaims(final String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(this.secretKey)
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -71,9 +71,9 @@ public class JwtUtils implements InitializingBean {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setIssuer(JWT_ISSUER)
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setIssuer(this.jwtIssuer)
+                .setExpiration(new Date(System.currentTimeMillis() + this.jwtTokenValidity))
+                .signWith(SignatureAlgorithm.HS256, this.secretKey)
                 .compact();
     }
 

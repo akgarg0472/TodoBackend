@@ -67,7 +67,7 @@ public class TodoServiceImpl implements TodoService {
         PaginatedTodoResponse userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
 
         if (userTodos == null || userTodos.getTodos() == null) {
-            throw new TodoException(NO_TODO_FOUND_FOR_USER);
+            return PaginatedTodoResponse.emptyResponse();
         }
 
         return userTodos;
@@ -101,8 +101,7 @@ public class TodoServiceImpl implements TodoService {
     public void removeAllTodoByUserId(String userId) {
         logger.warn(getClass(), "Deleting all todos for userId {}", userId);
 
-        List<TodoEntity> todos = this.todoRepository.findAllByUserId(userId)
-                .orElseThrow(() -> new TodoException(NO_TODO_FOUND_FOR_USER));
+        List<TodoEntity> todos = this.todoRepository.findAllByUserId(userId).orElseThrow(() -> new TodoException(NO_TODO_FOUND_FOR_USER));
 
         logger.warn(getClass(), "Deleted todos for {}: {}", userId, todos);
 

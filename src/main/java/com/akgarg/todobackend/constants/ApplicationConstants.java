@@ -31,6 +31,7 @@ public final class ApplicationConstants {
     public static final String INVALID_USER_LAST_NAME = "Last name is invalid";
     public static final String EMAIL_ALREADY_REGISTERED = "Email-id is already registered";
     public static final String USER_ROLE = "ROLE_USER";
+    public static final String ADMIN_ROLE = "ADMIN_ROLE";
     public static final String USER_NOT_FOUND_BY_EMAIL = "No account found with email";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
     public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "No account found with token provided";
@@ -73,6 +74,13 @@ public final class ApplicationConstants {
     public static final String LOGOUT_REQUEST_TOKEN = "authToken";
     public static final String INVALID_LOGOUT_REQUEST = "Invalid logout request";
     public static final String INVALID_FORGOT_PASSWORD_TOKEN = "Invalid forgot password token";
+    public static final String ACCOUNT_LOCK_STATE_UPDATED_FAILED = "Error updating account lock state";
+    public static final String ACCOUNT_ENABLED_STATE_CHANGE_FAILED = "Error updating account terminate state";
+    public static final String ERROR_UPDATING_ACC_TYPE = "Error updating account type";
+    public static final String ACCOUNT_TYPE_UPDATED_SUCCESS = "Account type successfully updated";
+    public static final String ACCOUNT_LOCK_STATE_UPDATED_SUCCESS = "Account lock state updated successfully";
+    public static final String INVALID_ACCOUNT_TYPE = "Invalid account type";
+    public static final String ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS ="Account enabled state changed successfully";
 
     private ApplicationConstants() {
     }

@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.response;
 
+import com.akgarg.todobackend.entity.TodoUser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,5 +26,15 @@ public class UserResponseDto implements Serializable {
     private String avatar;
     private Long createdAt;
     private Long lastUpdatedAt;
+
+    public UserResponseDto(TodoUser user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.avatar = user.getAvatar();
+        this.createdAt = user.getCreatedAt();
+        this.lastUpdatedAt = user.getLastUpdatedAt();
+    }
 
 }

@@ -16,17 +16,17 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaginatedTodoResponse implements Serializable {
+public class PaginatedUserResponse implements Serializable {
 
-    private static final long serialVersionUID = -72735473573465354L;
+    private static final long serialVersionUID = -364893465734657L;
 
     private int currentPage;
-    private long totalTodos;
+    private long totalUsers;
     private int totalPages;
-    private List<TodoResponseDto> todos;
+    private List<UserResponseDto> todos;
 
-    public static PaginatedTodoResponse emptyResponse() {
-        return new PaginatedTodoResponse(0, 0, 0, Collections.emptyList());
+    public static PaginatedUserResponse emptyResponse() {
+        return new PaginatedUserResponse(0, 0, 0, Collections.emptyList());
     }
 
 }

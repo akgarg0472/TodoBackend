@@ -13,7 +13,7 @@ import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.akgarg.todobackend.utils.JwtUtils;
 import com.akgarg.todobackend.utils.PasswordUtils;
-import com.akgarg.todobackend.utils.UserUtils;
+import com.akgarg.todobackend.utils.ValidationUtils;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -309,17 +309,17 @@ public class UserServiceImpl implements UserService {
     private boolean updateUserEntity(TodoUser user, String firstName, String lastName, String avatar) {
         boolean isNewUpdate = false;
 
-        if (UserUtils.isValidStringInput(firstName) && !firstName.equals(user.getFirstName())) {
+        if (!ValidationUtils.isStringInvalid(firstName) && !firstName.equals(user.getFirstName())) {
             user.setFirstName(firstName);
             isNewUpdate = true;
         }
 
-        if (UserUtils.isValidStringInput(lastName) && !lastName.equals(user.getLastName())) {
+        if (!ValidationUtils.isStringInvalid(lastName) && !lastName.equals(user.getLastName())) {
             user.setLastName(lastName);
             isNewUpdate = true;
         }
 
-        if (UserUtils.isValidStringInput(avatar) && !avatar.equals(user.getAvatar())) {
+        if (!ValidationUtils.isStringInvalid(avatar) && !avatar.equals(user.getAvatar())) {
             user.setAvatar(avatar);
             isNewUpdate = true;
         }

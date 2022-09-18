@@ -29,7 +29,16 @@ public class TodoUser {
     private String avatar;
 
     private Boolean isEnabled;
+    private String disabledBy;
+    private String disableReason;
+    private String enabledBy;
+    private String enableReason;
+
     private Boolean isAccountNonLocked;
+    private String lockedBy;
+    private String lockReason;
+    private String unlockedBy;
+    private String unlockReason;
 
     private String accountVerificationToken;
     private String forgotPasswordToken;
