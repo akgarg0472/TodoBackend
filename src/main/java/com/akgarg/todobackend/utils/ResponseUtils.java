@@ -50,27 +50,13 @@ public class ResponseUtils {
         return response;
     }
 
-    public static ResponseEntity<Map<String, Object>> generateAccountVerificationResponse(
-            final boolean isTokenValid, final String verifiedAccountEmail
+    public static ResponseEntity<Map<String, Object>> generateAccountVerificationFailResponse(
     ) {
         final Map<String, Object> response = new HashMap<>();
+        int responseStatusCode = 400;
 
-        int responseStatusCode;
-
-        if (!isTokenValid) {
-            responseStatusCode = 400;
-            response.put(ERROR_STATUS, responseStatusCode);
-            response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_TOKEN_INVALID);
-        } else if (verifiedAccountEmail != null) {
-            responseStatusCode = 200;
-            response.put(STATUS, responseStatusCode);
-            response.put(MESSAGE, ACCOUNT_VERIFIED_SUCCESSFUL.replace("$EMAIL", verifiedAccountEmail));
-        } else {
-            responseStatusCode = 400;
-            response.put(ERROR_STATUS, responseStatusCode);
-            response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_FAILED);
-        }
-
+        response.put(ERROR_STATUS, responseStatusCode);
+        response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_FAILED);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(responseStatusCode).body(response);

@@ -1,8 +1,8 @@
 package com.akgarg.todobackend.cache;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
+import com.akgarg.todobackend.repository.ConfigRepository;
 import com.akgarg.todobackend.utils.ValidationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -16,16 +16,31 @@ import java.util.Optional;
  */
 @Component
 @SuppressWarnings("unused")
-public class TodoUserCache {
+public class ApplicationCache {
+
+    private final ApplicationLogger logger;
+    private final ConfigRepository configRepository;
 
     private final Map<String, Object> cacheMap;
+    private final Map<String, String> configsMap;
 
-    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-    @Autowired
-    private ApplicationLogger logger;
+    public ApplicationCache(final ApplicationLogger logger, final ConfigRepository configRepository) {
+        this.logger = logger;
+        this.configRepository = configRepository;
 
-    public TodoUserCache() {
         this.cacheMap = new HashMap<>();
+        this.configsMap = new HashMap<>();
+
+        initConfigsMap();
+    }
+
+    private void initConfigsMap() {
+        try {
+            this.configRepository.findAll().forEach(config -> this.addConfig(config.getKey(), config.getValue()));
+            this.logger.info(getClass(), "Config props loaded successfully. Loaded {} props", this.configsMap.size());
+        } catch (Exception e) {
+            this.logger.error(getClass(), "Error fetching configs from DB: {}", e.getMessage());
+        }
     }
 
     public void insertKeyValue(String key, Object value) {
@@ -57,6 +72,22 @@ public class TodoUserCache {
         logger.warn(getClass(), "Clearing cache memory");
 
         this.cacheMap.clear();
+        this.configsMap.clear();
+    }
+
+    public void reloadCache() {
+        initConfigsMap();
+        logger.info(getClass(), "Cache reload success");
+    }
+
+    public void addConfig(String key, String value) {
+        this.configsMap.put(key, value);
+    }
+
+    public String getConfig(final String propName, final String defaultValue) {
+        logger.info(getClass(), "Fetching value of {} from configs cache", propName);
+
+        return this.configsMap.getOrDefault(propName, defaultValue);
     }
 
 }

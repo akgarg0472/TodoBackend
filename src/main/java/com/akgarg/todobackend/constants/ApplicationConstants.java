@@ -23,6 +23,7 @@ public final class ApplicationConstants {
     public static final String TODO_UPDATED_SUCCESSFULLY = "Todo successfully updated";
     public static final String TODO_STATUS_UPDATED_SUCCESSFULLY = "Todo status successfully updated";
     public static final String NO_TODO_FOUND_FOR_USER = "No todos found for the user";
+    public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
     public static final String REGISTRATION_SUCCESS_CONFIRM_ACCOUNT = "Please verify your account by clicking on the verification email sent to your email $email";
     public static final String NULL_OR_EMPTY_EMAIL = "Invalid email provided";
     public static final String INVALID_EMAIL_FORMAT = "Email provided is in invalid format";
@@ -34,7 +35,7 @@ public final class ApplicationConstants {
     public static final String ADMIN_ROLE = "ADMIN_ROLE";
     public static final String USER_NOT_FOUND_BY_EMAIL = "No account found with email";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
-    public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "No account found with token provided";
+    public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "Invalid verification token";
     public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid Login Credentials";
     public static final String USER_ACCOUNT_DISABLED = "Your account is disabled";
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
@@ -44,15 +45,11 @@ public final class ApplicationConstants {
     public static final String INVALID_AUTH_TOKEN = "Authentication token is invalid";
     public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "Forgot password email sent to $email. Please follow instruction to reset your account password";
     public static final String FORGOT_PASSWORD_EMAIL_FAILURE = "Error occurred while sending forgot password email to $email. Please try again once. If problem persists then try again after sometime";
-    public static final String ACCOUNT_VERIFICATION_EMAIL_SUBJECT = "Verify Account";
-    public static final String ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT = "Congratulations 🎉, Account activated successfully";
-    public static final String ACCOUNT_VERIFIED_SUCCESSFUL = "Account $EMAIL verified successfully";
-    public static final String ACCOUNT_VERIFICATION_FAILED = "No verification token provided. Account verification failed";
+    public static final String ACCOUNT_VERIFICATION_FAILED = "Account verification failed. Either account is already verified or verification token is invalid";
     public static final String ACCOUNT_VERIFICATION_TOKEN_INVALID = "Verification token is invalid or expired. Account verification failed";
     public static final String PASSWORD_RESET_SUCCESS = "Password change successfully";
     public static final String PASSWORD_RESET_FAILED = "Forgot Token provided is invalid or expired";
     public static final String INVALID_FORGOT_PASSWORD_REQUEST = "Invalid forgot password request";
-    public static final String PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT = "Password changed successfully";
     public static final String INVALID_TOKEN_BIT_PROVIDED = "Last unit does not have enough valid bits";
     public static final String PROFILE_UPDATED_SUCCESSFULLY = "Profile updated successfully";
     public static final String PROFILE_UPDATE_FAILED = "Failed to update profile";
@@ -80,7 +77,8 @@ public final class ApplicationConstants {
     public static final String ACCOUNT_TYPE_UPDATED_SUCCESS = "Account type successfully updated";
     public static final String ACCOUNT_LOCK_STATE_UPDATED_SUCCESS = "Account lock state updated successfully";
     public static final String INVALID_ACCOUNT_TYPE = "Invalid account type";
-    public static final String ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS ="Account enabled state changed successfully";
+    public static final String ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS = "Account enabled state changed successfully";
+
 
     private ApplicationConstants() {
     }

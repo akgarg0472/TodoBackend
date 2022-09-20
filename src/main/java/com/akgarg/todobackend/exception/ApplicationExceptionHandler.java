@@ -141,7 +141,7 @@ public class ApplicationExceptionHandler {
                 errorStatusCode = 400;
                 break;
             default:
-                errorMessage = e.getMessage();
+                errorMessage = INTERNAL_SERVER_ERROR;
                 errorStatusCode = 500;
                 break;
         }

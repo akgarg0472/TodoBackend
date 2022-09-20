@@ -1,7 +1,8 @@
 package com.akgarg.todobackend.service.user;
 
-import com.akgarg.todobackend.cache.TodoUserCache;
+import com.akgarg.todobackend.cache.ApplicationCache;
 import com.akgarg.todobackend.config.security.springsecurity.UserDetailsImpl;
+import com.akgarg.todobackend.constants.CacheConfigKey;
 import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.logger.ApplicationLogger;
@@ -28,6 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
+import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
+import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_PASSWORD_RESET_ENDPOINT_URL;
 
 /**
  * Author: Akhilesh Garg
@@ -47,7 +50,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    private final TodoUserCache cache;
+    private final ApplicationCache cache;
     private final EmailService emailService;
 
     @Override
@@ -65,7 +68,7 @@ public class UserServiceImpl implements UserService {
         try {
             TodoUser insertedUser = this.userRepository.insert(user);
             logger.info(getClass(), "New user {} saved in database", insertedUser);
-            boolean confirmSuccessEmail = emailService.sendAccountVerificationEmail(insertedUser.getEmail(), url, insertedUser.getAccountVerificationToken());
+            boolean confirmSuccessEmail = emailService.sendAccountVerificationEmail(insertedUser.getEmail(), insertedUser.getName(), url, insertedUser.getAccountVerificationToken());
             logger.info(getClass(), "Account confirm email sent successfully: {}", confirmSuccessEmail);
             return insertedUser.getEmail();
         } catch (Exception e) {
@@ -202,7 +205,9 @@ public class UserServiceImpl implements UserService {
 
             String hashedToken = PasswordUtils.hashForgotPasswordToken(forgotPasswordToken, updatedUser.getId());
 
-            return this.emailService.sendForgotPasswordEmail(updatedUser.getName(), url, updatedUser.getEmail(), hashedToken);
+            final String frontEndResetPasswordEndpointUrl = getFrontEndResetPasswordEndpointUrl();
+
+            return this.emailService.sendForgotPasswordEmail(frontEndResetPasswordEndpointUrl, updatedUser.getName(), updatedUser.getEmail(), hashedToken);
         } catch (Exception e) {
             logger.error(getClass(), "Something went wrong sending forgot password email to {}", user.getEmail());
         }
@@ -223,7 +228,7 @@ public class UserServiceImpl implements UserService {
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
             TodoUser updatedUser = this.userRepository.save(user);
-            this.emailService.sendAccountConfirmSuccessEmail(updatedUser.getEmail());
+            this.emailService.sendAccountVerificationSuccessEmail(updatedUser.getEmail(), updatedUser.getName());
 
             logger.info(getClass(), "User {} verified successfully: {}", userId, updatedUser);
             this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
@@ -255,7 +260,7 @@ public class UserServiceImpl implements UserService {
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
             TodoUser updatedUser = this.userRepository.save(user);
-            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail());
+            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail(), updatedUser.getName());
 
             logger.info(getClass(), "Forgot password success for {}: {}", forgotPasswordToken, user.getEmail());
             this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
@@ -296,7 +301,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             TodoUser updatedUser = this.userRepository.save(user);
-            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail());
+            this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail(), updatedUser.getName());
             logger.info(getClass(), "Password changed successfully for {}", userId);
             return PASSWORD_CHANGED_SUCCESSFULLY;
         } catch (Exception e) {
@@ -304,6 +309,13 @@ public class UserServiceImpl implements UserService {
         }
 
         return ERROR_CHANGING_PASSWORD;
+    }
+
+    private String getFrontEndResetPasswordEndpointUrl() {
+        final Object frontEndBaseUrl = this.cache.getConfig(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
+        final Object frontendPasswordResetEndpointUrl = this.cache.getConfig(CacheConfigKey.RESET_PASSWORD_PAGE_URL.name(), DEFAULT_PASSWORD_RESET_ENDPOINT_URL);
+
+        return frontEndBaseUrl + "/" + frontendPasswordResetEndpointUrl;
     }
 
     private boolean updateUserEntity(TodoUser user, String firstName, String lastName, String avatar) {

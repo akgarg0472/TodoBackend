@@ -2,6 +2,7 @@ package com.akgarg.todobackend.response;
 
 import com.akgarg.todobackend.entity.TodoUser;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class UserResponseDto implements Serializable {
 
     private static final long serialVersionUID = -668638513628765L;

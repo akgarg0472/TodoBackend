@@ -1,5 +1,7 @@
 package com.akgarg.todobackend.service.email;
 
+import com.akgarg.todobackend.cache.ApplicationCache;
+import com.akgarg.todobackend.constants.CacheConfigKey;
 import com.akgarg.todobackend.logger.ApplicationLogger;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 
-import static com.akgarg.todobackend.constants.ApplicationConstants.*;
+import static com.akgarg.todobackend.constants.EmailConstants.*;
 
 /**
  * Author: Akhilesh Garg
@@ -19,8 +21,10 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
+
     private final JavaMailSender javaMailSender;
     private final ApplicationLogger logger;
+    private final ApplicationCache cache;
 
     @Override
     public boolean send(String toEmail, String subject, String message) {
@@ -28,10 +32,13 @@ public class EmailServiceImpl implements EmailService {
 
         try {
             MimeMessage emailMessage = this.javaMailSender.createMimeMessage();
+            emailMessage.setSubject(subject);
+
             MimeMessageHelper messageHelper = new MimeMessageHelper(emailMessage, true);
+
             messageHelper.setTo(toEmail);
-            messageHelper.setSubject(subject);
-            messageHelper.setText(message);
+            messageHelper.setText(message, true);
+
             this.javaMailSender.send(emailMessage);
             logger.info(getClass(), "{}: email successfully sent to -> {}", subject, toEmail);
             return true;
@@ -43,53 +50,40 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean sendForgotPasswordEmail(String name, String url, String email, String forgotPasswordToken) {
-        String forgotPasswordEmailMessage = "Hi: " + name + "\nPlease click on following link to change your password" +
-                url + forgotPasswordToken;
+    public boolean sendForgotPasswordEmail(
+            String frontEndResetPasswordEndpointUrl, String name, String email, String forgotPasswordToken
+    ) {
+        final Object forgotPasswordEmailMessage = this.cache.getConfig(CacheConfigKey.FORGOT_PASSWORD_EMAIL_MESSAGE.name(), DEFAULT_FORGOT_PASSWORD_EMAIL_MESSAGE);
 
-        return this.send(email, "Forgot Password", forgotPasswordEmailMessage);
+        return this.send(email, FORGOT_PASSWORD_EMAIL_SUBJECT, forgotPasswordEmailMessage.toString().replace(NAME_PLACEHOLDER, name).replace(FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL_PLACEHOLDER, frontEndResetPasswordEndpointUrl).replace(FORGOT_PASSWORD_TOKEN_PLACEHOLDER, forgotPasswordToken));
     }
 
     @Override
-    public boolean sendAccountVerificationEmail(String email, String url, String accountVerificationToken) {
-        String sendAccountVerificationEmailMessage = "Congratulations, your account is created successfully." +
-                "Please click on following link to verify your account.<br>" +
-                "<a href='" +
-                url + "/api/v1/account/verify/" + accountVerificationToken +
-                "'>Verify Account</a>" +
-                "<br>" +
-                "<br>" +
-                "Regards" +
-                "Admin";
+    public boolean sendAccountVerificationEmail(
+            String email, String name, String url, String accountVerificationToken
+    ) {
+        String sendAccountVerificationEmailMessage = this.cache.getConfig(CacheConfigKey.ACCOUNT_VERIFICATION_EMAIL.name(), DEFAULT_ACCOUNT_VERIFICATION_EMAIL);
 
-        return this.send(email, ACCOUNT_VERIFICATION_EMAIL_SUBJECT, sendAccountVerificationEmailMessage);
+        return this.send(email, ACCOUNT_VERIFICATION_EMAIL_SUBJECT, sendAccountVerificationEmailMessage.replace(NAME_PLACEHOLDER, name).replace(BASE_URL_PLACEHOLDER, url).replace(ACCOUNT_VERIFICATION_TOKEN_PLACEHOLDER, accountVerificationToken));
     }
 
     @Override
-    public void sendAccountConfirmSuccessEmail(String email) {
-        String accountConfirmSuccessEmailMessage = "Congratulations, your account is activated successfully." +
-                "You can now use our todo service.<br>" +
-                "Thanks" +
-                "<br>" +
-                "<br>" +
-                "Regards" +
-                "Admin";
+    public void sendAccountVerificationSuccessEmail(String email, String name) {
+        String accountConfirmSuccessEmailMessage = this.cache.getConfig(CacheConfigKey.ACCOUNT_VERIFY_SUCCESS_EMAIL.name(), DEFAULT_ACCOUNT_VERIFY_SUCCESS_EMAIL);
 
-        this.send(email, ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT, accountConfirmSuccessEmailMessage);
+        this.send(email, ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT, accountConfirmSuccessEmailMessage.replace(NAME_PLACEHOLDER, name));
     }
 
     @Override
-    public void sendPasswordSuccessfullyUpdatedEmail(String email) {
-        String passwordSuccessfullyUpdatedEmailMessage = "Dear " + email + ". " +
-                "Password of your account is successfully changed..";
+    public void sendPasswordSuccessfullyUpdatedEmail(String email, String name) {
+        String passwordSuccessfullyUpdatedEmailMessage = this.cache.getConfig(CacheConfigKey.PASSWORD_CHANGED_SUCCESS_EMAIL.name(), DEFAULT_PASSWORD_CHANGED_SUCCESS_EMAIL);
 
-        this.send(email, PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT, passwordSuccessfullyUpdatedEmailMessage);
+        this.send(email, PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT, passwordSuccessfullyUpdatedEmailMessage.replace(NAME_PLACEHOLDER, name));
     }
 
     @Override
-    public boolean sendAccountDeletedSuccessfullyEmail(String email) {
+    public boolean sendAccountDeletedSuccessfullyEmail(String email, String name) {
         return false;
     }
-
 
 }

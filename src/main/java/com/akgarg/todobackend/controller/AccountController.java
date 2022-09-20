@@ -1,5 +1,7 @@
 package com.akgarg.todobackend.controller;
 
+import com.akgarg.todobackend.cache.ApplicationCache;
+import com.akgarg.todobackend.constants.CacheConfigKey;
 import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.LoginRequest;
 import com.akgarg.todobackend.request.RegisterUserRequest;
@@ -10,6 +12,8 @@ import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.REGISTRATION_SUCCESS_CONFIRM_ACCOUNT;
+import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
 
 /**
  * Author: Akhilesh Garg
@@ -31,6 +36,7 @@ public class AccountController {
 
     private final UserService userService;
     private final ApplicationLogger logger;
+    private final ApplicationCache cache;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupResponse> registerUser(
@@ -60,7 +66,7 @@ public class AccountController {
     }
 
     @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> verifyUserAccount(@PathVariable String accountVerificationToken) {
+    public ResponseEntity<?> verifyUserAccount(@PathVariable String accountVerificationToken) {
         boolean isTokenValid = ValidationUtils.checkForNullOrInvalidToken(accountVerificationToken);
 
         String verifiedAccountEmail = null;
@@ -69,7 +75,16 @@ public class AccountController {
             verifiedAccountEmail = this.userService.verifyUserAccount(accountVerificationToken);
         }
 
-        return ResponseUtils.generateAccountVerificationResponse(isTokenValid, verifiedAccountEmail);
+        if (isTokenValid && verifiedAccountEmail != null) {
+            final String frontendBaseUrl = this.cache.getConfig(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", frontendBaseUrl);
+
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        }
+
+        return ResponseUtils.generateAccountVerificationFailResponse();
     }
 
 }
