@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.REGISTRATION_SUCCESS_CONFIRM_ACCOUNT;
 import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
@@ -60,7 +59,7 @@ public class AccountController {
         logger.info(getClass(), "Login request received: {}", loginRequest);
         ValidationUtils.checkLoginRequest(loginRequest);
 
-        final Map<String, String> loginResponse = this.userService.login(loginRequest);
+        final var loginResponse = this.userService.login(loginRequest);
 
         return ResponseEntity.ok(ResponseUtils.generateLoginSuccessRequest(loginResponse));
     }

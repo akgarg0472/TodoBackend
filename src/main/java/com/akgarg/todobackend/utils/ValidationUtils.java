@@ -162,7 +162,7 @@ public class ValidationUtils {
     }
 
     private static void checkEmailField(final String email) {
-        final Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        final var emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
         if (email == null || email.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_EMAIL);
@@ -172,7 +172,7 @@ public class ValidationUtils {
     }
 
     private static void checkPasswordField(final String password) {
-        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+        final var passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_PASSWORD);

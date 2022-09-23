@@ -9,6 +9,6 @@ import java.util.Map;
  */
 public interface LogoutService {
 
-    void logout(Map<String, String> token);
+    void doLogout(Map<String, String> token);
 
 }

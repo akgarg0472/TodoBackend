@@ -1,11 +1,11 @@
 package com.akgarg.todobackend.repository;
 
+import com.akgarg.todobackend.dto.AdminDashboardUserInfoDto;
 import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.response.PaginatedUserResponse;
 import com.akgarg.todobackend.response.UserResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -32,8 +32,8 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
             offset = 0;
         }
 
-        Pageable pageable = PageRequest.of(offset, limit);
-        Page<TodoUser> entities = this.findAll(pageable);
+        final var pageable = PageRequest.of(offset, limit);
+        final var entities = this.findAll(pageable);
 
         return getPaginatedUserResponse(entities);
     }
@@ -43,7 +43,7 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
         int totalPages = entities.getTotalPages();
         int currentPage = entities.getNumber();
 
-        List<UserResponseDto> users = entities.getContent()
+        final var users = entities.getContent()
                 .stream()
                 .map(UserResponseDto::new)
                 .collect(Collectors.toList());
@@ -54,5 +54,11 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
     Optional<TodoUser> findByEmail(String email);
 
     Optional<TodoUser> findByIdAndEmail(String id, String email);
+
+    List<AdminDashboardUserInfoDto> findAllBy();
+
+    default List<AdminDashboardUserInfoDto> getAdminDashboardInfo() {
+        return this.findAllBy();
+    }
 
 }

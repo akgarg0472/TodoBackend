@@ -3,7 +3,6 @@ package com.akgarg.todobackend.utils;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  * Author: Akhilesh Garg
@@ -25,8 +24,8 @@ public class DateTimeUtils {
     }
 
     public static LocalDateTime getCurrentDateTimeFromMilliseconds(final long milliseconds) {
-        final Instant instant = Instant.ofEpochMilli(milliseconds);
-        final ZonedDateTime indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
+        final var instant = Instant.ofEpochMilli(milliseconds);
+        final var indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
 
         return indianZonedTime.toLocalDateTime();
     }

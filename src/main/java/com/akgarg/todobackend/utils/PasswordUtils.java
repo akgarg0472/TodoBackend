@@ -43,7 +43,7 @@ public class PasswordUtils {
     }
 
     public static boolean checkPasswordField(final String password) {
-        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+        final var passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             return false;
@@ -57,7 +57,7 @@ public class PasswordUtils {
     }
 
     public static String hashForgotPasswordToken(String token, String userId) {
-        String rawToken = userId.substring(0, 12) + token + userId.substring(12);
+        final String rawToken = userId.substring(0, 12) + token + userId.substring(12);
 
         return Base64.getEncoder().encodeToString(rawToken.getBytes());
     }
@@ -70,8 +70,8 @@ public class PasswordUtils {
             throw new UserException(INVALID_FORGOT_PASSWORD_TOKEN);
         }
 
-        String userId = decodedToken.substring(0, 12) + decodedToken.substring(60);
-        String passwordResetToken = decodedToken.substring(12, 60);
+        final String userId = decodedToken.substring(0, 12) + decodedToken.substring(60);
+        final String passwordResetToken = decodedToken.substring(12, 60);
 
         return new String[]{passwordResetToken, userId};
     }

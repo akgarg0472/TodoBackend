@@ -20,13 +20,11 @@ import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
@@ -55,18 +53,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String addNewUser(RegisterUserRequest request, String url) {
-        TodoUser user = convertRequestToEntity(request);
+        final var user = convertRequestToEntity(request);
 
         user.setId(generateUserId());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(USER_ROLE);
+        user.setRole(ROLE_USER);
         user.setIsEnabled(true);
         user.setIsAccountNonLocked(false);
         user.setAccountVerificationToken(generateTokenFromUserId(user.getId()));
         user.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         try {
-            TodoUser insertedUser = this.userRepository.insert(user);
+            final var insertedUser = this.userRepository.insert(user);
             logger.info(getClass(), "New user {} saved in database", insertedUser);
             boolean confirmSuccessEmail = emailService.sendAccountVerificationEmail(insertedUser.getEmail(), insertedUser.getName(), url, insertedUser.getAccountVerificationToken());
             logger.info(getClass(), "Account confirm email sent successfully: {}", confirmSuccessEmail);
@@ -85,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(String userId) {
         logger.info(getClass(), "Fetching user with userId: {}", userId);
-        TodoUser user = this.fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
+        final var user = this.fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
 
         return convertUserEntityToDto(user);
     }
@@ -96,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
         TodoUser user;
 
-        Optional<Object> cacheUser = this.cache.getValue(username);
+        final var cacheUser = this.cache.getValue(username);
         if (cacheUser.isPresent()) {
             user = (TodoUser) cacheUser.get();
         } else {
@@ -110,20 +108,19 @@ public class UserServiceImpl implements UserService {
     public String updateUserProfile(String userId, UpdateUserRequest updateUserRequest) {
         logger.info(getClass(), "Updating user {} profile: {}", userId, updateUserRequest);
 
-        TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
-
-        String firstName = updateUserRequest.getFirstName();
-        String lastName = updateUserRequest.getLastName();
-        String avatar = updateUserRequest.getAvatar();
+        final var user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
+        final String firstName = updateUserRequest.getFirstName();
+        final String lastName = updateUserRequest.getLastName();
+        final String avatar = updateUserRequest.getAvatar();
 
         boolean isThereAnyUpdate = updateUserEntity(user, firstName, lastName, avatar);
         System.out.println("AnyNewUpdate: " + isThereAnyUpdate);
 
         if (isThereAnyUpdate) {
             try {
-                TodoUser updatedUser = this.userRepository.save(user);
+                final var updatedUser = this.userRepository.save(user);
                 logger.info(getClass(), "User {} updated successfully: {}", userId, updatedUser);
-                this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+                this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
                 return PROFILE_UPDATED_SUCCESSFULLY;
             } catch (Exception e) {
                 logger.error(getClass(), "Error updating user {}: {}", userId, e.getMessage());
@@ -140,10 +137,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId, String email) {
         logger.warn(getClass(), "Deleting user with userId {}", userId);
 
-        TodoUser user = this.userRepository.findByIdAndEmail(userId, email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL_AND_ID));
+        final var user = this.userRepository
+                .findByIdAndEmail(userId, email)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL_AND_ID));
 
         this.todoService.removeAllTodoByUserId(userId);
-
         this.userRepository.delete(user);
 
         logger.warn(getClass(), "User {} and related info removed from database", user);
@@ -152,7 +150,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> login(LoginRequest loginRequest) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+            final var authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
             this.authenticationManager.authenticate(authenticationToken);
         } catch (Exception e) {
             switch (e.getClass().getSimpleName()) {
@@ -170,7 +169,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(loginRequest.getEmail());
+        final var userDetails = this.userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
         String userRole = "ROLE_USER";
         String userId = null;
@@ -178,8 +177,8 @@ public class UserServiceImpl implements UserService {
         String name = null;
 
         if (userDetails instanceof UserDetailsImpl) {
-            cache.insertKeyValue(((UserDetailsImpl) userDetails).getUser().getId(), ((UserDetailsImpl) userDetails).getUser());
-            cache.insertKeyValue(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getUser());
+            cache.insertOrUpdateUserKeyValue(((UserDetailsImpl) userDetails).getUser().getId(), ((UserDetailsImpl) userDetails).getUser());
+            cache.insertOrUpdateUserKeyValue(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getUser());
             userRole = ((UserDetailsImpl) userDetails).getUser().getRole();
             userId = ((UserDetailsImpl) userDetails).getUser().getId();
             email = ((UserDetailsImpl) userDetails).getUser().getEmail();
@@ -194,17 +193,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean sendForgotPasswordEmail(String email, String url) {
-        TodoUser user = fetchUserEntityByEmail(email);
-
-        String forgotPasswordToken = PasswordUtils.generateForgotPasswordToken();
+        final var user = fetchUserEntityByEmail(email);
+        final String forgotPasswordToken = PasswordUtils.generateForgotPasswordToken();
 
         try {
             user.setForgotPasswordToken(forgotPasswordToken);
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
-            TodoUser updatedUser = this.userRepository.save(user);
 
-            String hashedToken = PasswordUtils.hashForgotPasswordToken(forgotPasswordToken, updatedUser.getId());
-
+            final var updatedUser = this.userRepository.save(user);
+            final String hashedToken = PasswordUtils.hashForgotPasswordToken(forgotPasswordToken, updatedUser.getId());
             final String frontEndResetPasswordEndpointUrl = getFrontEndResetPasswordEndpointUrl();
 
             return this.emailService.sendForgotPasswordEmail(frontEndResetPasswordEndpointUrl, updatedUser.getName(), updatedUser.getEmail(), hashedToken);
@@ -218,9 +215,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String verifyUserAccount(String accountVerificationToken) {
         logger.info(getClass(), "Account verification request received for token: {}", accountVerificationToken);
-        String userId = getUserIdFromToken(accountVerificationToken);
 
-        TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
+        final String userId = getUserIdFromToken(accountVerificationToken);
+        final var user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
 
         if (accountVerificationToken.equals(user.getAccountVerificationToken())) {
             user.setAccountVerificationToken(null);
@@ -231,7 +228,7 @@ public class UserServiceImpl implements UserService {
             this.emailService.sendAccountVerificationSuccessEmail(updatedUser.getEmail(), updatedUser.getName());
 
             logger.info(getClass(), "User {} verified successfully: {}", userId, updatedUser);
-            this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+            this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
             logger.info(getClass(), "Cache updated for user {}", user.getEmail());
 
             return user.getEmail();
@@ -244,13 +241,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean processForgotPasswordRequest(ForgotPasswordRequest request) {
         logger.info(getClass(), "Forgot password process request received for: {}", request.getForgotPasswordToken());
+
         final String requestForgotPasswordToken = request.getForgotPasswordToken();
-
-        final String[] decodedForgotPasswordToken = PasswordUtils.decodeForgotPasswordToken(requestForgotPasswordToken);
-        String forgotPasswordToken = decodedForgotPasswordToken[0];
-        String userId = decodedForgotPasswordToken[1];
-
-        TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
+        final var decodedForgotPasswordToken = PasswordUtils.decodeForgotPasswordToken(requestForgotPasswordToken);
+        final String forgotPasswordToken = decodedForgotPasswordToken[0];
+        final String userId = decodedForgotPasswordToken[1];
+        final TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
 
         if (forgotPasswordToken != null &&
                 forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
@@ -259,11 +255,11 @@ public class UserServiceImpl implements UserService {
             user.setPassword(this.passwordEncoder.encode(request.getPassword()));
             user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-            TodoUser updatedUser = this.userRepository.save(user);
+            final TodoUser updatedUser = this.userRepository.save(user);
             this.emailService.sendPasswordSuccessfullyUpdatedEmail(updatedUser.getEmail(), updatedUser.getName());
 
             logger.info(getClass(), "Forgot password success for {}: {}", forgotPasswordToken, user.getEmail());
-            this.cache.insertKeyValue(updatedUser.getEmail(), updatedUser);
+            this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
             logger.info(getClass(), "Cache updated for user {}", user.getEmail());
 
             return true;
@@ -344,7 +340,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private TodoUser fetchUserEntityByEmail(String email) {
-        Optional<Object> cachedUser = this.cache.getValue(email);
+        final var cachedUser = this.cache.getValue(email);
 
         if (cachedUser.isPresent()) {
             return (TodoUser) cachedUser.get();

@@ -74,6 +74,10 @@ public class ApplicationExceptionHandler {
                 errorStatusCode = 401;
                 break;
 
+            case ACCESS_DENIED:
+                errorStatusCode = 403;
+                break;
+
             case USER_NOT_FOUND_BY_EMAIL:
             case USER_NOT_FOUND_BY_EMAIL_AND_ID:
                 errorStatusCode = 404;
@@ -95,7 +99,8 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiErrorResponse> handleBadRequestException(BadRequestException e) {
-        ApiErrorResponse errorResponse = new ApiErrorResponse();
+        var errorResponse = new ApiErrorResponse();
+
         errorResponse.setErrorCode(400);
         errorResponse.setErrorMessage(e.getMessage());
         errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
@@ -105,7 +110,8 @@ public class ApplicationExceptionHandler {
 
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(GenericException e) {
-        ApiErrorResponse errorResponse = new ApiErrorResponse();
+        var errorResponse = new ApiErrorResponse();
+
         errorResponse.setErrorCode(500);
         errorResponse.setErrorMessage(e.getMessage());
         errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());

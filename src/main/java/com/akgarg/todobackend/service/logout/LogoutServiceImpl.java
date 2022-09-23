@@ -21,8 +21,8 @@ public class LogoutServiceImpl implements LogoutService {
     private final JwtTokenBlackList jwtTokenBlackList;
 
     @Override
-    public void logout(final Map<String, String> logoutParams) {
-        String jwtToken = logoutParams.get(LOGOUT_REQUEST_TOKEN);
+    public void doLogout(final Map<String, String> logoutParams) {
+        final String jwtToken = logoutParams.get(LOGOUT_REQUEST_TOKEN);
 
         if (jwtToken == null || jwtToken.isBlank()) {
             throw new UserException(INVALID_JWT_TOKEN);

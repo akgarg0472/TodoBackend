@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.service.admin;
 
+import com.akgarg.todobackend.response.AdminDashboardInfo;
 import com.akgarg.todobackend.response.PaginatedUserResponse;
 import com.akgarg.todobackend.response.UserResponseDto;
 
@@ -10,11 +11,13 @@ import com.akgarg.todobackend.response.UserResponseDto;
  */
 public interface AdminService {
 
+    AdminDashboardInfo adminDashboard();
+
     UserResponseDto getAdminProfile(String adminId);
 
     PaginatedUserResponse getAllUsers(int offset, int limit);
 
-    boolean lockUserAccount(String userId, String reason, String by);
+    boolean lockUserAccount(String userId, String reason, String lockedBy);
 
     boolean unlockUserAccount(String userId, String reason, String by);
 
@@ -22,6 +25,6 @@ public interface AdminService {
 
     boolean enableUserAccount(String userId, String reason, String by);
 
-    boolean changeAccountType(String userId, String accountType);
+    boolean changeAccountType(String userId, String accountType, final String by);
 
 }

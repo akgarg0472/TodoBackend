@@ -3,8 +3,6 @@ package com.akgarg.todobackend.controller;
 import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.ChangeAccountStateRequest;
 import com.akgarg.todobackend.request.ChangeAccountTypeRequest;
-import com.akgarg.todobackend.response.PaginatedUserResponse;
-import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.admin.AdminService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -27,11 +25,20 @@ public class AdminController {
     private final ApplicationLogger logger;
     private final AdminService adminService;
 
+    @GetMapping("/admin/dashboard")
+    public ResponseEntity<Map<String, Object>> dashboard() {
+        this.logger.debug(getClass(), "Admin dashboard request");
+
+        final var adminDashboard = this.adminService.adminDashboard();
+
+        return ResponseUtils.generateAdminDashboardResponse(adminDashboard);
+    }
+
     @GetMapping("/admin/{adminId}")
     public ResponseEntity<Map<String, Object>> getAdminProfile(@PathVariable("adminId") final String adminId) {
         this.logger.debug(getClass(), "getAdminProfile(): {}", adminId);
 
-        final UserResponseDto profile = this.adminService.getAdminProfile(adminId);
+        final var profile = this.adminService.getAdminProfile(adminId);
 
         return ResponseUtils.generateGetProfileResponse(profile);
     }
@@ -43,11 +50,10 @@ public class AdminController {
     ) {
         this.logger.debug(getClass(), "getAllUsers(): {}->{}", offset, limit);
 
-        final PaginatedUserResponse users = this.adminService.getAllUsers(offset, limit);
+        final var users = this.adminService.getAllUsers(offset, limit);
 
         return ResponseUtils.generateGetAllUsersResponse(users);
     }
-
 
     @PatchMapping("/changeAccountType")
     public ResponseEntity<Map<String, Object>> changeAccountType(@RequestBody ChangeAccountTypeRequest request) {
@@ -55,7 +61,7 @@ public class AdminController {
         ValidationUtils.validateChangeAccountTypeRequest(request);
 
         final boolean changeAccountTypeResponse = this.adminService
-                .changeAccountType(request.getUserId(), request.getAccountType());
+                .changeAccountType(request.getUserId(), request.getAccountType(), request.getBy());
 
         return ResponseUtils.generateChangeAccountTypeResponse(changeAccountTypeResponse);
     }

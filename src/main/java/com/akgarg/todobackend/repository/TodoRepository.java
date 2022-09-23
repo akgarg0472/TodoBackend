@@ -41,8 +41,8 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        Pageable pageable = PageRequest.of(offset, limit);
-        Page<TodoEntity> entities = this.findAllByUserId(userId, pageable);
+        final var pageable = PageRequest.of(offset, limit);
+        final var entities = this.findAllByUserId(userId, pageable);
 
         return getPaginatedTodoResponse(entities);
     }
@@ -58,8 +58,8 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        Pageable pageable = PageRequest.of(offset, limit);
-        Page<TodoEntity> entities = this.findAllByUserIdAndCompletedTrue(userId, pageable);
+        final var pageable = PageRequest.of(offset, limit);
+        final var entities = this.findAllByUserIdAndCompletedTrue(userId, pageable);
 
         return getPaginatedTodoResponse(entities);
     }
@@ -75,8 +75,8 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        Pageable pageable = PageRequest.of(offset, limit);
-        Page<TodoEntity> entities = this.findAllByUserIdAndCompletedFalse(userId, pageable);
+        final var pageable = PageRequest.of(offset, limit);
+        final var entities = this.findAllByUserIdAndCompletedFalse(userId, pageable);
 
         return getPaginatedTodoResponse(entities);
     }
@@ -85,7 +85,8 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
         long totalTodos = entities.getTotalElements();
         int totalPages = entities.getTotalPages();
         int currentPage = entities.getNumber();
-        List<TodoResponseDto> todos = entities.getContent()
+
+        final var todos = entities.getContent()
                 .stream()
                 .map(TodoResponseDto::new)
                 .collect(Collectors.toList());

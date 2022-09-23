@@ -47,7 +47,6 @@ public class TodoUser {
     private Long lastUpdatedAt;
 
     // admin related fields
-    private Boolean isAdmin;
     private String approvedAsAdminBy;
     private Long approvedAsAdminOn;
 

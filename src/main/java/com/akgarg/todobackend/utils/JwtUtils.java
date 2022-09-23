@@ -28,7 +28,6 @@ public class JwtUtils implements InitializingBean {
     private String secretKey;
     @Value("${todo.security.jwt.token-expiry}")
     private long jwtTokenValidity;
-
     @Value("${todo.security.jwt.token-issuer}")
     private String jwtIssuer;
 
@@ -46,7 +45,7 @@ public class JwtUtils implements InitializingBean {
     }
 
     public <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        final var claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
@@ -62,7 +61,7 @@ public class JwtUtils implements InitializingBean {
     }
 
     public String generateToken(final UserDetails userDetails) {
-        final Map<String, Object> claims = new HashMap<>();
+        final var claims = new HashMap<String, Object>();
         return this.createToken(claims, userDetails.getUsername());
     }
 

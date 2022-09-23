@@ -15,8 +15,6 @@ import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
@@ -35,7 +33,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoResponseDto insert(NewTodoRequest request) {
-        TodoEntity todo = convertRequestDtoToEntity(request);
+        final TodoEntity todo = convertRequestDtoToEntity(request);
 
         todo.setId(ObjectId.get().toString());
         todo.setCompleted(false);
@@ -43,28 +41,28 @@ public class TodoServiceImpl implements TodoService {
         todo.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
         todo.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        TodoEntity insertedEntity = todoRepository.insert(todo);
+        final var insertedEntity = todoRepository.insert(todo);
 
         return convertEntityToDto(insertedEntity);
     }
 
     @Override
     public void delete(String todoId) {
-        TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
 
         this.todoRepository.delete(todoEntity);
     }
 
     @Override
     public TodoResponseDto getTodoById(String todoId) {
-        TodoEntity todo = this.getTodoEntityById(todoId, TODO_NOT_FOUND);
+        final var todo = this.getTodoEntityById(todoId, TODO_NOT_FOUND);
 
         return convertEntityToDto(todo);
     }
 
     @Override
     public PaginatedTodoResponse getTodosForUser(String userId, int offset, int limit) {
-        PaginatedTodoResponse userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
+        final var userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
 
         if (userTodos == null || userTodos.getTodos() == null) {
             return PaginatedTodoResponse.emptyResponse();
@@ -75,24 +73,24 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoResponseDto update(String todoId, UpdateTodoRequest updateDto) {
-        TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setDescription(updateDto.getDescription());
         todoEntity.setTitle(updateDto.getTitle());
         todoEntity.setCompleted(updateDto.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        TodoEntity updatedEntity = todoRepository.save(todoEntity);
+        final var updatedEntity = todoRepository.save(todoEntity);
 
         return convertEntityToDto(updatedEntity);
     }
 
     @Override
     public TodoResponseDto updateTodoStatus(String todoId, UpdateTodoStatusRequest request) {
-        TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setCompleted(request.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        TodoEntity updatedEntity = todoRepository.save(todoEntity);
+        final var updatedEntity = todoRepository.save(todoEntity);
 
         return convertEntityToDto(updatedEntity);
     }
@@ -101,7 +99,7 @@ public class TodoServiceImpl implements TodoService {
     public void removeAllTodoByUserId(String userId) {
         logger.warn(getClass(), "Deleting all todos for userId {}", userId);
 
-        List<TodoEntity> todos = this.todoRepository.findAllByUserId(userId).orElseThrow(() -> new TodoException(NO_TODO_FOUND_FOR_USER));
+        final var todos = this.todoRepository.findAllByUserId(userId).orElseThrow(() -> new TodoException(NO_TODO_FOUND_FOR_USER));
 
         logger.warn(getClass(), "Deleted todos for {}: {}", userId, todos);
 
@@ -110,7 +108,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public PaginatedTodoResponse getCompletedTodosForUser(final String userId, final int offset, final int limit) {
-        PaginatedTodoResponse completedTodos = this.todoRepository.findCompletedTodosByUserId(userId, offset, limit);
+        final var completedTodos = this.todoRepository.findCompletedTodosByUserId(userId, offset, limit);
 
         if (completedTodos == null || completedTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
@@ -121,7 +119,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public PaginatedTodoResponse getPendingTodosForUser(final String userId, final int offset, final int limit) {
-        PaginatedTodoResponse pendingTodos = this.todoRepository.findPendingTodosByUserId(userId, offset, limit);
+        final var pendingTodos = this.todoRepository.findPendingTodosByUserId(userId, offset, limit);
 
         if (pendingTodos == null || pendingTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);

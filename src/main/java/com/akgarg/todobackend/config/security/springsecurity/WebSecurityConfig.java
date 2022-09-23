@@ -10,7 +10,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +31,7 @@ public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final FilterChainExceptionHandler filterChainExceptionHandler;
+    private final AccessDeniedExceptionHandler accessDeniedExceptionHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,13 +40,17 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider getDaoAuthenticationProvider(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder
+            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder
     ) {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        final var daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -56,33 +60,24 @@ public class WebSecurityConfig {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers(
-                        "/api/v1/account/**",
-                        "/api/v1/password/**"
-                ).permitAll()
+                .antMatchers("/api/v1/account/**", "/api/v1/password/**").permitAll()
                 .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
+                .antMatchers("/api/v1/cache/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasRole("USER")
-                .antMatchers("/api/v1/**").authenticated()
+                .antMatchers("/api/v1/**")
+                .authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.exceptionHandling().authenticationEntryPoint(this.jwtAuthenticationEntryPoint);
         http.addFilterBefore(filterChainExceptionHandler, LogoutFilter.class);
+
+        http.exceptionHandling()
+                .authenticationEntryPoint(this.jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(this.accessDeniedExceptionHandler);
 
         return http.build();
     }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**");
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
 
 }

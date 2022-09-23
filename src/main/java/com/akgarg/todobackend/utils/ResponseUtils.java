@@ -26,7 +26,7 @@ public class ResponseUtils {
     }
 
     public static LoginResponse generateLoginSuccessRequest(final Map<String, String> loginProps) {
-        final LoginResponse response = new LoginResponse();
+        final var response = new LoginResponse();
 
         response.setAuthToken(loginProps.get(LOGIN_SUCCESS_RESPONSE_TOKEN));
         response.setRole(loginProps.get(LOGIN_SUCCESS_RESPONSE_ROLE));
@@ -39,7 +39,7 @@ public class ResponseUtils {
     }
 
     public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
-        final Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
 
         final String responseMessage = emailResponse ? FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) : FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
 
@@ -52,7 +52,7 @@ public class ResponseUtils {
 
     public static ResponseEntity<Map<String, Object>> generateAccountVerificationFailResponse(
     ) {
-        final Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int responseStatusCode = 400;
 
         response.put(ERROR_STATUS, responseStatusCode);
@@ -65,7 +65,7 @@ public class ResponseUtils {
     public static ResponseEntity<Map<String, Object>> generateForgotPasswordCompleteResponse(
             final boolean isRequestValid, final boolean passwordResetResponse
     ) {
-        final Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int statusCode;
 
         if (!isRequestValid) {
@@ -88,7 +88,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateUpdateProfileResponse(final String updateResponse) {
-        final Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int statusCode;
 
         switch (updateResponse) {
@@ -121,7 +121,7 @@ public class ResponseUtils {
     }
 
     public static SignupResponse generateSignupResponse(final String message, final int status) {
-        final SignupResponse signupResponse = new SignupResponse();
+        final var signupResponse = new SignupResponse();
 
         signupResponse.setMessage(message);
         signupResponse.setStatus(status);
@@ -131,7 +131,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final UserResponseDto userProfile) {
-        Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int statusCode = userProfile != null ? 200 : 404;
 
         if (statusCode == 200) {
@@ -147,7 +147,7 @@ public class ResponseUtils {
     }
 
     public static Map<String, Object> generateGetAllUsersResponse(final PaginatedUserResponse users) {
-        Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
 
         response.put("users", users);
         response.put(SUCCESS, true);
@@ -156,8 +156,18 @@ public class ResponseUtils {
         return response;
     }
 
+    public static ResponseEntity<Map<String, Object>> generateAdminDashboardResponse(final AdminDashboardInfo adminDashboard) {
+        final var response = new HashMap<String, Object>();
+
+        response.put("data", adminDashboard);
+        response.put(SUCCESS, true);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.ok(response);
+    }
+
     public static ResponseEntity<Map<String, Object>> generateChangeAccountTypeResponse(final boolean changeAccountTypeResponse) {
-        Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int responseStatusCode;
 
         if (changeAccountTypeResponse) {
@@ -187,7 +197,7 @@ public class ResponseUtils {
     private static ResponseEntity<Map<String, Object>> getAccountStateChangeResponse(
             boolean state, String successMessage, String errorMessage
     ) {
-        Map<String, Object> response = new HashMap<>();
+        final var response = new HashMap<String, Object>();
         int responseStatusCode;
 
         if (state) {
@@ -207,7 +217,7 @@ public class ResponseUtils {
     }
 
     public static TodoApiResponse generateTodoApiResponse(final String message, final Object data, final int status) {
-        final TodoApiResponse response = new TodoApiResponse();
+        final var response = new TodoApiResponse();
 
         response.setSuccess(status < 400 || status > 599);
         response.setMessage(message);
@@ -219,7 +229,7 @@ public class ResponseUtils {
     }
 
     public static ApiErrorResponse generateApiErrorResponse(final String errorMessage, final int errorCode) {
-        final ApiErrorResponse errorResponse = new ApiErrorResponse();
+        final var errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorMessage(errorMessage);
         errorResponse.setErrorCode(errorCode);

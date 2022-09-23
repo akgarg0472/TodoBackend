@@ -8,8 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
-
 import static com.akgarg.todobackend.constants.EmailConstants.*;
 
 /**
@@ -21,7 +19,6 @@ import static com.akgarg.todobackend.constants.EmailConstants.*;
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-
     private final JavaMailSender javaMailSender;
     private final ApplicationLogger logger;
     private final ApplicationCache cache;
@@ -31,16 +28,16 @@ public class EmailServiceImpl implements EmailService {
         logger.info(getClass(), "Send email request received: [to: {}, subject: {}, message: {}]", toEmail, subject, message);
 
         try {
-            MimeMessage emailMessage = this.javaMailSender.createMimeMessage();
+            final var emailMessage = this.javaMailSender.createMimeMessage();
             emailMessage.setSubject(subject);
 
-            MimeMessageHelper messageHelper = new MimeMessageHelper(emailMessage, true);
-
+            final var messageHelper = new MimeMessageHelper(emailMessage, true);
             messageHelper.setTo(toEmail);
             messageHelper.setText(message, true);
 
             this.javaMailSender.send(emailMessage);
             logger.info(getClass(), "{}: email successfully sent to -> {}", subject, toEmail);
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,16 +50,16 @@ public class EmailServiceImpl implements EmailService {
     public boolean sendForgotPasswordEmail(
             String frontEndResetPasswordEndpointUrl, String name, String email, String forgotPasswordToken
     ) {
-        final Object forgotPasswordEmailMessage = this.cache.getConfig(CacheConfigKey.FORGOT_PASSWORD_EMAIL_MESSAGE.name(), DEFAULT_FORGOT_PASSWORD_EMAIL_MESSAGE);
+        final String forgotPasswordEmailMessage = this.cache.getConfig(CacheConfigKey.FORGOT_PASSWORD_EMAIL_MESSAGE.name(), DEFAULT_FORGOT_PASSWORD_EMAIL_MESSAGE);
 
-        return this.send(email, FORGOT_PASSWORD_EMAIL_SUBJECT, forgotPasswordEmailMessage.toString().replace(NAME_PLACEHOLDER, name).replace(FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL_PLACEHOLDER, frontEndResetPasswordEndpointUrl).replace(FORGOT_PASSWORD_TOKEN_PLACEHOLDER, forgotPasswordToken));
+        return this.send(email, FORGOT_PASSWORD_EMAIL_SUBJECT, forgotPasswordEmailMessage.replace(NAME_PLACEHOLDER, name).replace(FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL_PLACEHOLDER, frontEndResetPasswordEndpointUrl).replace(FORGOT_PASSWORD_TOKEN_PLACEHOLDER, forgotPasswordToken));
     }
 
     @Override
     public boolean sendAccountVerificationEmail(
             String email, String name, String url, String accountVerificationToken
     ) {
-        String sendAccountVerificationEmailMessage = this.cache.getConfig(CacheConfigKey.ACCOUNT_VERIFICATION_EMAIL.name(), DEFAULT_ACCOUNT_VERIFICATION_EMAIL);
+        final String sendAccountVerificationEmailMessage = this.cache.getConfig(CacheConfigKey.ACCOUNT_VERIFICATION_EMAIL.name(), DEFAULT_ACCOUNT_VERIFICATION_EMAIL);
 
         return this.send(email, ACCOUNT_VERIFICATION_EMAIL_SUBJECT, sendAccountVerificationEmailMessage.replace(NAME_PLACEHOLDER, name).replace(BASE_URL_PLACEHOLDER, url).replace(ACCOUNT_VERIFICATION_TOKEN_PLACEHOLDER, accountVerificationToken));
     }

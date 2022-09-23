@@ -43,8 +43,8 @@ public class ApplicationCache {
         }
     }
 
-    public void insertKeyValue(String key, Object value) {
-        logger.info(getClass(), "Inserting {} -> {} into cache", key, value);
+    public void insertOrUpdateUserKeyValue(String key, Object value) {
+        logger.info(getClass(), "Inserting/Updating {} -> {} into cache", key, value);
         ValidationUtils.checkForNullOrInvalidValue(key);
         ValidationUtils.checkForNullOrInvalidValue(value);
 
@@ -54,16 +54,16 @@ public class ApplicationCache {
     public Optional<Object> getValue(String key) {
         logger.info(getClass(), "Fetching value of {} from cache", key);
 
-        Object value = this.cacheMap.get(key);
+        final var value = this.cacheMap.get(key);
 
         return Optional.ofNullable(value);
     }
 
     public boolean removeValue(String key) {
         logger.info(getClass(), "Removing {} entry from cache", key);
-
         ValidationUtils.checkForNullOrInvalidValue(key);
-        Object value = this.cacheMap.remove(key);
+
+        final var value = this.cacheMap.remove(key);
 
         return value != null;
     }

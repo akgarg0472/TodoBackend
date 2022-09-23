@@ -26,18 +26,20 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
     )
             throws IOException {
-        ApiErrorResponse errorResponse = new ApiErrorResponse();
+        exception.printStackTrace();
+
+        final var errorResponse = new ApiErrorResponse();
         errorResponse.setErrorMessage("Please login to access requested resource");
         errorResponse.setErrorCode(HttpServletResponse.SC_UNAUTHORIZED);
         errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        String errorJsonString = new ObjectMapper().writeValueAsString(errorResponse);
+        final String errorJsonString = new ObjectMapper().writeValueAsString(errorResponse);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         out.print(errorJsonString);
         out.flush();
     }

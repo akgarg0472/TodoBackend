@@ -35,7 +35,7 @@ public class LogoutController {
             throw new UserException(INVALID_LOGOUT_REQUEST);
         }
 
-        this.logoutService.logout(logoutRequestBody);
+        this.logoutService.doLogout(logoutRequestBody);
     }
 
 }

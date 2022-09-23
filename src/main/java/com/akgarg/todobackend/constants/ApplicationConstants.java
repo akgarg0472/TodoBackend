@@ -31,8 +31,8 @@ public final class ApplicationConstants {
     public static final String INVALID_PASSWORD_FORMAT = "Password provided is in invalid format";
     public static final String INVALID_USER_LAST_NAME = "Last name is invalid";
     public static final String EMAIL_ALREADY_REGISTERED = "Email-id is already registered";
-    public static final String USER_ROLE = "ROLE_USER";
-    public static final String ADMIN_ROLE = "ADMIN_ROLE";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String USER_NOT_FOUND_BY_EMAIL = "No account found with email";
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
     public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "Invalid verification token";
@@ -40,13 +40,12 @@ public final class ApplicationConstants {
     public static final String USER_ACCOUNT_DISABLED = "Your account is disabled";
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
     public static final String EXPIRED_JWT_TOKEN = "Token expired. Please login again";
-    public static final String INVALID_JWT_TOKEN = "Token is invalid";
-    public static final String UNKNOWN_JWT_TOKEN = "Token is invalid or malicious or expired";
+    public static final String INVALID_JWT_TOKEN = "Auth token is invalid";
+    public static final String UNKNOWN_JWT_TOKEN = "Auth token is invalid or malicious or expired";
     public static final String INVALID_AUTH_TOKEN = "Authentication token is invalid";
     public static final String FORGOT_PASSWORD_EMAIL_SUCCESS = "Forgot password email sent to $email. Please follow instruction to reset your account password";
     public static final String FORGOT_PASSWORD_EMAIL_FAILURE = "Error occurred while sending forgot password email to $email. Please try again once. If problem persists then try again after sometime";
     public static final String ACCOUNT_VERIFICATION_FAILED = "Account verification failed. Either account is already verified or verification token is invalid";
-    public static final String ACCOUNT_VERIFICATION_TOKEN_INVALID = "Verification token is invalid or expired. Account verification failed";
     public static final String PASSWORD_RESET_SUCCESS = "Password change successfully";
     public static final String PASSWORD_RESET_FAILED = "Forgot Token provided is invalid or expired";
     public static final String INVALID_FORGOT_PASSWORD_REQUEST = "Invalid forgot password request";
@@ -61,13 +60,11 @@ public final class ApplicationConstants {
     public static final String INVALID_PASSWORD_CHANGE_REQUEST = "Invalid password change request";
     public static final String USER_PROFILE_DELETED_SUCCESSFULLY = "Account deleted successfully";
     public static final String USER_NOT_FOUND_BY_EMAIL_AND_ID = "No user found with provided userId & email";
-
     public static final String LOGIN_SUCCESS_RESPONSE_TOKEN = "authToken";
     public static final String LOGIN_SUCCESS_RESPONSE_ROLE = "role";
     public static final String LOGIN_SUCCESS_RESPONSE_USERID = "userId";
     public static final String LOGIN_SUCCESS_RESPONSE_EMAIL = "emailId";
     public static final String LOGIN_SUCCESS_RESPONSE_NAME = "name";
-
     public static final String LOGOUT_REQUEST_TOKEN = "authToken";
     public static final String INVALID_LOGOUT_REQUEST = "Invalid logout request";
     public static final String INVALID_FORGOT_PASSWORD_TOKEN = "Invalid forgot password token";
@@ -78,7 +75,7 @@ public final class ApplicationConstants {
     public static final String ACCOUNT_LOCK_STATE_UPDATED_SUCCESS = "Account lock state updated successfully";
     public static final String INVALID_ACCOUNT_TYPE = "Invalid account type";
     public static final String ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS = "Account enabled state changed successfully";
-
+    public static final String ACCESS_DENIED = "Access denied. Authorization failed";
 
     private ApplicationConstants() {
     }

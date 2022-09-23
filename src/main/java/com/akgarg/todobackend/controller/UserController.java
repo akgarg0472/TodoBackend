@@ -3,7 +3,6 @@ package com.akgarg.todobackend.controller;
 import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.ChangePasswordRequest;
 import com.akgarg.todobackend.request.UpdateUserRequest;
-import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -36,7 +35,7 @@ public class UserController {
         logger.info(getClass(), "Received get profile request for {}", userId);
         ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        final UserResponseDto userProfile = this.userService.getUserById(userId);
+        final var userProfile = this.userService.getUserById(userId);
         logger.info(getClass(), "Get profile response {}: {}", userId, userProfile);
 
         return ResponseUtils.generateGetProfileResponse(userProfile);

@@ -26,7 +26,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final ApplicationCache cache;
     private final ApplicationLogger logger;
 
-    public UserDetailsServiceImpl(UserRepository userRepository, @Lazy ApplicationCache cache, ApplicationLogger logger) {
+    public UserDetailsServiceImpl(
+            UserRepository userRepository,
+            @Lazy ApplicationCache cache,
+            ApplicationLogger logger
+    ) {
         this.userRepository = userRepository;
         this.cache = cache;
         this.logger = logger;
@@ -48,7 +52,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new UserDetailsImpl((TodoUser) cachedUser.get());
         }
 
-        Optional<TodoUser> databaseUser = userRepository.findByEmail(username);
+        final var databaseUser = userRepository.findByEmail(username);
 
         if (databaseUser.isEmpty()) {
             logger.error(getClass(), "loadUserByUsername() -> No user found with email: {}", username);
@@ -59,7 +63,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         logger.debug(getClass(), "loadUserByUsername() -> Returning user from db: {}", databaseUser.get());
 
         if (Boolean.TRUE.equals(databaseUser.get().getIsAccountNonLocked())) {
-            this.cache.insertKeyValue(username, databaseUser.get());
+            this.cache.insertOrUpdateUserKeyValue(username, databaseUser.get());
         }
 
         return new UserDetailsImpl(databaseUser.get());

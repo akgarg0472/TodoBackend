@@ -6,7 +6,6 @@ import com.akgarg.todobackend.request.UpdateTodoRequest;
 import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
 import com.akgarg.todobackend.response.PaginatedTodoResponse;
 import com.akgarg.todobackend.response.TodoApiResponse;
-import com.akgarg.todobackend.response.TodoResponseDto;
 import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -43,7 +42,7 @@ public class TodoController {
         );
         ValidationUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
 
-        final TodoResponseDto todo = this.todoService.getTodoById(todoId);
+        final var todo = this.todoService.getTodoById(todoId);
 
         return ResponseEntity.ok(ResponseUtils.generateTodoApiResponse(null, todo, 200));
     }
@@ -57,7 +56,7 @@ public class TodoController {
         logger.info(getClass(), "Request received to getTodos for userId: {}", userId);
         ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        final PaginatedTodoResponse response = this.todoService.getTodosForUser(userId, offset, limit);
+        final var response = this.todoService.getTodosForUser(userId, offset, limit);
 
         return ResponseEntity.ok(response);
     }
@@ -71,7 +70,7 @@ public class TodoController {
         logger.info(getClass(), "Request for completed todos: {}", userId);
         ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        final PaginatedTodoResponse response = this.todoService.getCompletedTodosForUser(userId, offset, limit);
+        final var response = this.todoService.getCompletedTodosForUser(userId, offset, limit);
 
         return ResponseEntity.ok(response);
     }
@@ -85,7 +84,7 @@ public class TodoController {
         logger.info(getClass(), "Request for pending todos: {}", userId);
         ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
 
-        final PaginatedTodoResponse response = this.todoService.getPendingTodosForUser(userId, offset, limit);
+        final var response = this.todoService.getPendingTodosForUser(userId, offset, limit);
 
         return ResponseEntity.ok(response);
     }
@@ -98,7 +97,7 @@ public class TodoController {
         logger.info(getClass(), "Request received from {} to add new todo: {}", principal.getName(), newTodoRequest);
         ValidationUtils.checkNewTodoRequest(newTodoRequest);
 
-        final TodoResponseDto insertedTodo = this.todoService.insert(newTodoRequest);
+        final var insertedTodo = this.todoService.insert(newTodoRequest);
 
         return ResponseEntity.status(201)
                 .body(ResponseUtils.generateTodoApiResponse(TODO_CREATED_SUCCESSFULLY, insertedTodo, 201));
@@ -127,7 +126,7 @@ public class TodoController {
         ValidationUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
         ValidationUtils.checkUpdateTodoRequest(updateTodoRequest);
 
-        final TodoResponseDto updatedTodo = this.todoService.update(todoId, updateTodoRequest);
+        final var updatedTodo = this.todoService.update(todoId, updateTodoRequest);
 
         return ResponseEntity.ok(ResponseUtils.generateTodoApiResponse(TODO_UPDATED_SUCCESSFULLY, updatedTodo, 200));
     }
@@ -143,7 +142,8 @@ public class TodoController {
         );
         ValidationUtils.checkIdForNullOrInvalid(todoId, NULL_OR_INVALID_TODO_ID);
         ValidationUtils.checkUpdateTodoStatusRequest(request);
-        final TodoResponseDto updatedTodo = this.todoService.updateTodoStatus(todoId, request);
+
+        final var updatedTodo = this.todoService.updateTodoStatus(todoId, request);
 
         return ResponseEntity.ok(ResponseUtils.generateTodoApiResponse(TODO_STATUS_UPDATED_SUCCESSFULLY, updatedTodo, 200));
     }

@@ -35,7 +35,7 @@ public class ApplicationLoggerImpl implements ApplicationLogger {
 
     @Override
     public void log(Class<?> className, TodoLogLevel logLevel, String message, Object... params) {
-        ParameterizedMessage pMessage = new ParameterizedMessage(className.getSimpleName() + " -> " + message, params, null);
+        final var pMessage = new ParameterizedMessage(className.getSimpleName() + " -> " + message, params, null);
         LogManager.getLogger(className).log(levelMap.get(logLevel), pMessage);
     }
 
