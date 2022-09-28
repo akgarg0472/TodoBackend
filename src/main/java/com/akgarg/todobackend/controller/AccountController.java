@@ -24,9 +24,8 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.REGISTRATION
 import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @RestController
 @AllArgsConstructor
@@ -39,34 +38,29 @@ public class AccountController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupResponse> registerUser(
-            @RequestBody RegisterUserRequest registerUserRequest, HttpServletRequest httpServletRequest
+            @RequestBody final RegisterUserRequest registerUserRequest, final HttpServletRequest httpServletRequest
     ) {
         logger.info(getClass(), "Signup request received: {}", registerUserRequest);
-        ValidationUtils.checkRegisterUserRequest(registerUserRequest);
+        ValidationUtils.validateRegisterUserRequest(registerUserRequest);
 
         final String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
 
-        return ResponseEntity.status(201)
-                .body(ResponseUtils.generateSignupResponse(
-                              REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email),
-                              201
-                      )
-                );
+        return ResponseUtils.generateSignupSuccessResponse(REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email), 201);
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody final LoginRequest loginRequest) {
         logger.info(getClass(), "Login request received: {}", loginRequest);
-        ValidationUtils.checkLoginRequest(loginRequest);
+        ValidationUtils.validateLoginRequest(loginRequest);
 
         final var loginResponse = this.userService.login(loginRequest);
 
-        return ResponseEntity.ok(ResponseUtils.generateLoginSuccessRequest(loginResponse));
+        return ResponseUtils.generateLoginSuccessRequest(loginResponse);
     }
 
     @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> verifyUserAccount(@PathVariable String accountVerificationToken) {
-        boolean isTokenValid = ValidationUtils.checkForNullOrInvalidToken(accountVerificationToken);
+    public ResponseEntity<?> verifyUserAccount(@PathVariable final String accountVerificationToken) {
+        final boolean isTokenValid = ValidationUtils.checkForNullOrInvalidToken(accountVerificationToken);
 
         String verifiedAccountEmail = null;
 
@@ -75,10 +69,13 @@ public class AccountController {
         }
 
         if (isTokenValid && verifiedAccountEmail != null) {
-            final String frontendBaseUrl = this.cache.getConfig(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
+            final String frontendBaseUrl = this.cache.getConfigValue(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
 
-            HttpHeaders headers = new HttpHeaders();
+            final HttpHeaders headers = new HttpHeaders();
             headers.add("Location", frontendBaseUrl);
+
+            final String cookie = "AccountVerified=true; VerifiedAccountEmail=" + verifiedAccountEmail + ";";
+            headers.add("Set-Cookie", cookie);
 
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }

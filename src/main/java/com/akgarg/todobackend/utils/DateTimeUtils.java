@@ -3,11 +3,11 @@ package com.akgarg.todobackend.utils;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @SuppressWarnings("unused")
 public class DateTimeUtils {
@@ -24,8 +24,8 @@ public class DateTimeUtils {
     }
 
     public static LocalDateTime getCurrentDateTimeFromMilliseconds(final long milliseconds) {
-        final var instant = Instant.ofEpochMilli(milliseconds);
-        final var indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
+        final Instant instant = Instant.ofEpochMilli(milliseconds);
+        final ZonedDateTime indianZonedTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
 
         return indianZonedTime.toLocalDateTime();
     }

@@ -13,9 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 17-09-2022
+ * @author Akhilesh Garg
+ * @since 17-09-2022
  */
 @SpringBootTest
 class PasswordTests {

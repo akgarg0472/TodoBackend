@@ -8,9 +8,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Configuration
 @EnableConfigurationProperties(EmailSenderConfigProperties.class)
@@ -18,13 +17,13 @@ public class EmailConfig {
 
     private final EmailSenderConfigProperties config;
 
-    public EmailConfig(EmailSenderConfigProperties config) {
+    public EmailConfig(final EmailSenderConfigProperties config) {
         this.config = config;
     }
 
     @Bean
     public JavaMailSender javaMailSender() {
-        ValidationUtils.checkEmailSenderProperties(config);
+        ValidationUtils.validateEmailSenderProperties(config);
 
         final var mailSender = new JavaMailSenderImpl();
         mailSender.setHost(config.getHost());

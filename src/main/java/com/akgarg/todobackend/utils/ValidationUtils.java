@@ -13,16 +13,15 @@ import java.util.regex.Pattern;
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 18-09-2022
+ * @author Akhilesh Garg
+ * @since 18-09-2022
  */
 public class ValidationUtils {
 
     private ValidationUtils() {
     }
 
-    public static void checkNewTodoRequest(final NewTodoRequest newTodoRequest) {
+    public static void validateNewTodoRequest(final NewTodoRequest newTodoRequest) {
         if (newTodoRequest == null) {
             throw new BadRequestException(NULL_OR_INVALID_REQUEST);
         }
@@ -40,7 +39,7 @@ public class ValidationUtils {
         }
     }
 
-    public static void checkUpdateTodoRequest(final UpdateTodoRequest updateTodoRequest) {
+    public static void validateUpdateTodoRequest(final UpdateTodoRequest updateTodoRequest) {
         if (updateTodoRequest == null) {
             throw new BadRequestException(NULL_OR_INVALID_REQUEST);
         }
@@ -58,7 +57,7 @@ public class ValidationUtils {
         }
     }
 
-    public static void checkUpdateTodoStatusRequest(final UpdateTodoStatusRequest request) {
+    public static void validateUpdateTodoStatusRequest(final UpdateTodoStatusRequest request) {
         if (request == null) {
             throw new BadRequestException(NULL_OR_INVALID_REQUEST);
         } else if (request.getCompleted() == null) {
@@ -66,7 +65,7 @@ public class ValidationUtils {
         }
     }
 
-    public static void checkRegisterUserRequest(final RegisterUserRequest request) {
+    public static void validateRegisterUserRequest(final RegisterUserRequest request) {
         if (request == null) {
             throw new UserException(NULL_OR_INVALID_REQUEST);
         }
@@ -76,9 +75,9 @@ public class ValidationUtils {
         final String confirmPassword = request.getConfirmPassword();
         final String lastName = request.getLastName();
 
-        checkEmailField(email);
-        checkPasswordField(password);
-        checkPasswordField(confirmPassword);
+        validateRequestEmailField(email);
+        validateRequestPasswordField(password);
+        validateRequestPasswordField(confirmPassword);
 
         if (lastName == null || lastName.trim().isBlank()) {
             throw new BadRequestException(INVALID_USER_LAST_NAME);
@@ -87,7 +86,32 @@ public class ValidationUtils {
         }
     }
 
-    public static void checkLoginRequest(final LoginRequest loginRequest) {
+    public static boolean validateForgotPasswordRequest(final ForgotPasswordRequest request) {
+        if (request == null) {
+            return false;
+        }
+
+        if (request.getForgotPasswordToken() == null || request.getForgotPasswordToken().isBlank()) {
+            return false;
+        }
+
+        return validatePasswordField(request.getPassword()) &&
+                validatePasswordField(request.getConfirmPassword()) &&
+                request.getPassword().equals(request.getConfirmPassword());
+    }
+
+    public static boolean validatePasswordField(final String password) {
+        final var passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+
+        if (password == null || password.trim().isBlank()) {
+            return false;
+        }
+
+        return passwordRegexPattern.matcher(password).matches();
+    }
+
+
+    public static void validateLoginRequest(final LoginRequest loginRequest) {
         if (loginRequest == null) {
             throw new BadRequestException(NULL_OR_INVALID_REQUEST);
         }
@@ -95,16 +119,16 @@ public class ValidationUtils {
         final String email = loginRequest.getEmail();
         final String password = loginRequest.getPassword();
 
-        checkEmailField(email);
-        checkPasswordField(password);
+        validateRequestEmailField(email);
+        validateRequestPasswordField(password);
     }
 
-    public static void checkForgotPasswordRequest(final ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
+    public static void validateForgotPasswordEmailRequest(final ForgotPasswordEmailRequest forgotPasswordEmailRequest) {
         if (forgotPasswordEmailRequest == null) {
             throw new BadRequestException(NULL_OR_INVALID_REQUEST);
         }
 
-        checkEmailField(forgotPasswordEmailRequest.getEmail());
+        validateRequestEmailField(forgotPasswordEmailRequest.getEmail());
     }
 
     public static void validateChangeAccountTypeRequest(final ChangeAccountTypeRequest request) {
@@ -135,13 +159,17 @@ public class ValidationUtils {
         return str == null || str.isBlank();
     }
 
-    public static void checkEmailSenderProperties(final EmailSenderConfigProperties config) {
-        if (config == null || config.getHost() == null || config.getPort() == 0 || config.getSenderEmail() == null || config.getSenderEmailPassword() == null) {
+    public static void validateEmailSenderProperties(final EmailSenderConfigProperties config) {
+        if (config == null ||
+                config.getHost() == null ||
+                config.getPort() == 0 ||
+                config.getSenderEmail() == null ||
+                config.getSenderEmailPassword() == null) {
             throw new NullPointerException("Invalid email config properties");
         }
     }
 
-    public static void checkIdForNullOrInvalid(final String id, final String exceptionMessage) {
+    public static void checkForNullOrInvalidId(final String id, final String exceptionMessage) {
         if (id == null || id.trim().isBlank() || !ObjectId.isValid(id)) {
             throw new GenericException(exceptionMessage);
         }
@@ -161,8 +189,8 @@ public class ValidationUtils {
         return token != null && !token.isBlank();
     }
 
-    private static void checkEmailField(final String email) {
-        final var emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    private static void validateRequestEmailField(final String email) {
+        final Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
         if (email == null || email.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_EMAIL);
@@ -171,8 +199,18 @@ public class ValidationUtils {
         }
     }
 
-    private static void checkPasswordField(final String password) {
-        final var passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+    public static void validateConfigPropUpdateRequest(final ConfigPropUpdateRequest request) {
+        if (request == null) {
+            throw new BadRequestException(NULL_OR_INVALID_REQUEST);
+        } else if (isStringInvalid(request.getKey())) {
+            throw new BadRequestException(INVALID_CONFIG_PROPS_KEY);
+        } else if (isStringInvalid(request.getValue())) {
+            throw new BadRequestException(INVALID_CONFIG_PROPS_VALUE);
+        }
+    }
+
+    private static void validateRequestPasswordField(final String password) {
+        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_PASSWORD);

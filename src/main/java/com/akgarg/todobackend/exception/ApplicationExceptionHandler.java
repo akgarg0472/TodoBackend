@@ -10,96 +10,69 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub:
- * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @ControllerAdvice
 public class ApplicationExceptionHandler {
 
     @ExceptionHandler(TodoException.class)
-    public ResponseEntity<ApiErrorResponse> handleTodoException(TodoException e) {
-        int errorStatusCode;
+    public ResponseEntity<ApiErrorResponse> handleTodoException(final TodoException e) {
+        final int errorStatusCode = switch (e.getMessage()) {
+            case NULL_OR_INVALID_TODO_TITLE,
+                    NULL_OR_INVALID_USER_ID,
+                    NULL_OR_INVALID_REQUEST,
+                    NULL_OR_INVALID_VALUE,
+                    ERROR_UPDATING_TODO,
+                    ERROR_DELETING_TODO,
+                    NULL_OR_INVALID_TODO_COMPLETED -> 400;
 
-        switch (e.getMessage()) {
-            case NULL_OR_INVALID_TODO_TITLE:
-            case NULL_OR_INVALID_USER_ID:
-            case NULL_OR_INVALID_REQUEST:
-            case NULL_OR_INVALID_VALUE:
-            case ERROR_UPDATING_TODO:
-            case ERROR_DELETING_TODO:
-            case NULL_OR_INVALID_TODO_COMPLETED:
-                errorStatusCode = 400;
-                break;
+            case TODO_NOT_FOUND, NO_TODO_FOUND_FOR_USER -> 404;
 
-            case TODO_NOT_FOUND:
-            case NO_TODO_FOUND_FOR_USER:
-                errorStatusCode = 404;
-                break;
+            default -> 500;
+        };
 
-            default:
-                errorStatusCode = 500;
-                break;
-        }
-
-        return ResponseEntity
-                .status(errorStatusCode)
+        return ResponseEntity.status(errorStatusCode)
                 .body(ResponseUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
     }
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ApiErrorResponse> handleUserException(UserException e) {
-        int errorStatusCode;
+    public ResponseEntity<ApiErrorResponse> handleUserException(final UserException e) {
+        final int errorStatusCode = switch (e.getMessage()) {
+            case INVALID_EMAIL_FORMAT,
+                    INVALID_PASSWORD_FORMAT,
+                    INVALID_USER_LAST_NAME,
+                    NULL_OR_EMPTY_EMAIL,
+                    NULL_OR_EMPTY_PASSWORD,
+                    ACCOUNT_NOT_FOUND_BY_TOKEN,
+                    PASSWORDS_MISMATCHED,
+                    INVALID_LOGOUT_REQUEST,
+                    INVALID_FORGOT_PASSWORD_TOKEN -> 400;
 
-        switch (e.getMessage()) {
-            case INVALID_EMAIL_FORMAT:
-            case INVALID_PASSWORD_FORMAT:
-            case INVALID_USER_LAST_NAME:
-            case NULL_OR_EMPTY_EMAIL:
-            case NULL_OR_EMPTY_PASSWORD:
-            case ACCOUNT_NOT_FOUND_BY_TOKEN:
-            case PASSWORDS_MISMATCHED:
-            case INVALID_LOGOUT_REQUEST:
-            case INVALID_FORGOT_PASSWORD_TOKEN:
-                errorStatusCode = 400;
-                break;
+            case INVALID_EMAIL_OR_PASSWORD,
+                    USER_ACCOUNT_LOCKED,
+                    EXPIRED_JWT_TOKEN,
+                    INVALID_AUTH_TOKEN,
+                    INVALID_JWT_TOKEN,
+                    UNKNOWN_JWT_TOKEN -> 401;
 
-            case INVALID_EMAIL_OR_PASSWORD:
-            case USER_ACCOUNT_LOCKED:
-            case EXPIRED_JWT_TOKEN:
-            case INVALID_AUTH_TOKEN:
-            case INVALID_JWT_TOKEN:
-            case UNKNOWN_JWT_TOKEN:
-                errorStatusCode = 401;
-                break;
+            case ACCESS_DENIED -> 403;
 
-            case ACCESS_DENIED:
-                errorStatusCode = 403;
-                break;
+            case USER_NOT_FOUND_BY_EMAIL,
+                    USER_NOT_FOUND_BY_EMAIL_AND_ID -> 404;
 
-            case USER_NOT_FOUND_BY_EMAIL:
-            case USER_NOT_FOUND_BY_EMAIL_AND_ID:
-                errorStatusCode = 404;
-                break;
+            case EMAIL_ALREADY_REGISTERED -> 409;
 
-            case EMAIL_ALREADY_REGISTERED:
-                errorStatusCode = 409;
-                break;
+            default -> 500;
+        };
 
-            default:
-                errorStatusCode = 500;
-                break;
-        }
-
-        return ResponseEntity
-                .status(errorStatusCode)
+        return ResponseEntity.status(errorStatusCode)
                 .body(ResponseUtils.generateApiErrorResponse(e.getMessage(), errorStatusCode));
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiErrorResponse> handleBadRequestException(BadRequestException e) {
-        var errorResponse = new ApiErrorResponse();
+    public ResponseEntity<ApiErrorResponse> handleBadRequestException(final BadRequestException e) {
+        final var errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorCode(400);
         errorResponse.setErrorMessage(e.getMessage());
@@ -109,51 +82,53 @@ public class ApplicationExceptionHandler {
     }
 
     @ExceptionHandler(GenericException.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(GenericException e) {
-        var errorResponse = new ApiErrorResponse();
+    public ResponseEntity<ApiErrorResponse> handleGenericException(final GenericException e) {
+        final var errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorCode(500);
         errorResponse.setErrorMessage(e.getMessage());
         errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception e) {
+    public ResponseEntity<ApiErrorResponse> handleGenericException(final Exception e) {
         String errorMessage;
         int errorStatusCode;
 
         switch (e.getClass().getSimpleName()) {
-            case "IllegalArgumentException":
+            case "IllegalArgumentException" -> {
                 if (INVALID_TOKEN_BIT_PROVIDED.equals(e.getMessage())) {
                     errorMessage = "Invalid token value provided";
                 } else {
                     errorMessage = "Invalid value provided";
                 }
                 errorStatusCode = 400;
-                break;
+            }
 
-            case "HttpRequestMethodNotSupportedException":
+            case "HttpRequestMethodNotSupportedException" -> {
                 errorMessage = "Request Method not allowed";
                 errorStatusCode = 405;
-                break;
-            case "HttpMediaTypeNotSupportedException":
+            }
+
+            case "HttpMediaTypeNotSupportedException" -> {
                 errorMessage = e.getMessage();
                 errorStatusCode = 400;
-                break;
-            case "HttpMessageNotReadableException":
+            }
+
+            case "HttpMessageNotReadableException" -> {
                 errorMessage = "Invalid request body";
                 errorStatusCode = 400;
-                break;
-            default:
+            }
+
+            default -> {
                 errorMessage = INTERNAL_SERVER_ERROR;
                 errorStatusCode = 500;
-                break;
+            }
         }
 
-        return ResponseEntity
-                .status(errorStatusCode)
+        return ResponseEntity.status(errorStatusCode)
                 .body(ResponseUtils.generateApiErrorResponse(errorMessage, errorStatusCode));
     }
 

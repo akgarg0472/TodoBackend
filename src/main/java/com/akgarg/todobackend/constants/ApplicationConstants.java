@@ -76,6 +76,10 @@ public final class ApplicationConstants {
     public static final String INVALID_ACCOUNT_TYPE = "Invalid account type";
     public static final String ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS = "Account enabled state changed successfully";
     public static final String ACCESS_DENIED = "Access denied. Authorization failed";
+    public static final String INVALID_CONFIG_PROPS_KEY = "Config prop key is invalid";
+    public static final String INVALID_CONFIG_PROPS_VALUE = "Config prop value is invalid";
+    public static final String CACHE_RELOAD_SUCCESS = "Cache reloaded successfully";
+    public static final String CACHE_RELOAD_FAILED = "Cache reload failed";
 
     private ApplicationConstants() {
     }

@@ -1,9 +1,8 @@
 package com.akgarg.todobackend.constants;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 19-09-2022
+ * @author Akhilesh Garg
+ * @since 19-09-2022
  */
 public enum CacheConfigKey {
 

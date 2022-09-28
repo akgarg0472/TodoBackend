@@ -21,9 +21,8 @@ import java.io.IOException;
 import static com.akgarg.todobackend.constants.ApplicationConstants.INVALID_AUTH_TOKEN;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Component
 @AllArgsConstructor
@@ -35,7 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
     ) throws ServletException, IOException {
         final String requestTokenHeader = request.getHeader("Authorization");
         String jwtToken;
@@ -47,17 +48,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new UserException(INVALID_AUTH_TOKEN);
             }
 
-            String username = this.jwtUtils.extractUsername(jwtToken);
-
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            final String username = this.jwtUtils.extractUsername(jwtToken);
+            final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (!username.equals("") && SecurityContextHolder.getContext().getAuthentication() == null) {
-                final var authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                final var authenticationDetails =
-                        new WebAuthenticationDetailsSource().buildDetails(request);
+                final var authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                final var authenticationDetails = new WebAuthenticationDetailsSource()
+                        .buildDetails(request);
                 authenticationToken.setDetails(authenticationDetails);
-
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }

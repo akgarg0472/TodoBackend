@@ -10,14 +10,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static com.akgarg.todobackend.constants.ApplicationConstants.USER_NOT_FOUND_BY_EMAIL;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -27,9 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final ApplicationLogger logger;
 
     public UserDetailsServiceImpl(
-            UserRepository userRepository,
-            @Lazy ApplicationCache cache,
-            ApplicationLogger logger
+            final UserRepository userRepository,
+            final @Lazy ApplicationCache cache,
+            final ApplicationLogger logger
     ) {
         this.userRepository = userRepository;
         this.cache = cache;
@@ -37,14 +34,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         logger.debug(getClass(), "loadUserByUsername() called for {}", username);
 
         if (username == null || username.isBlank()) {
             throw new UsernameNotFoundException("No user exists with null/empty username");
         }
 
-        Optional<Object> cachedUser = cache.getValue(username);
+        final var cachedUser = cache.getValue(username);
 
         if (cachedUser.isPresent()) {
             logger.debug(getClass(), "loadUserByUsername() returning user from cache: {}", cachedUser.get());

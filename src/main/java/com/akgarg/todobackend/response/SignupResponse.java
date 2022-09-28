@@ -4,22 +4,23 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 30-07-2022
+ * @author Akhilesh Garg
+ * @since 30-07-2022
  */
 @Getter
 @Setter
 @ToString
 public class SignupResponse implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3578346457L;
 
     private String message;
-    private int status;
-    private long timestamp;
+    private Integer status;
+    private Long timestamp;
 
 }

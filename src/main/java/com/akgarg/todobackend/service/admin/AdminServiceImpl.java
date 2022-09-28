@@ -1,6 +1,8 @@
 package com.akgarg.todobackend.service.admin;
 
 import com.akgarg.todobackend.cache.ApplicationCache;
+import com.akgarg.todobackend.dto.AdminDashboardUserInfoDto;
+import com.akgarg.todobackend.dto.TodoUserDto;
 import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.GenericException;
 import com.akgarg.todobackend.exception.UserException;
@@ -13,6 +15,7 @@ import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
@@ -31,27 +34,28 @@ public class AdminServiceImpl implements AdminService {
     private final TodoRepository todoRepository;
     private final UserService userService;
     private final ApplicationCache cache;
+    private final ModelMapper modelMapper;
 
     @Override
     public AdminDashboardInfo adminDashboard() {
         try {
-            final var response = new AdminDashboardInfo();
-            var adminsCount = 0L;
-            var usersCount = 0L;
-            var todosCount = 0L;
-            var activeAccountsCount = 0L;
+            final AdminDashboardInfo response = new AdminDashboardInfo();
+            long adminsCount = 0L;
+            long usersCount = 0L;
+            long activeAccountsCount = 0L;
+            long todosCount;
 
             final var accounts = this.userRepository.getAdminDashboardInfo();
             todosCount = this.todoRepository.count();
 
-            for (var account : accounts) {
+            for (AdminDashboardUserInfoDto account : accounts) {
                 if (ROLE_USER.equalsIgnoreCase(account.getRole())) {
                     usersCount++;
                 }
                 if (ROLE_ADMIN.equalsIgnoreCase(account.getRole())) {
                     adminsCount++;
                 }
-                if (account.getIsAccountNonLocked()) {
+                if (account.isAccountNonLocked()) {
                     activeAccountsCount++;
                 }
             }
@@ -85,6 +89,13 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             return PaginatedUserResponse.emptyResponse();
         }
+    }
+
+    @Override
+    public TodoUserDto getProfile(final String profileId) {
+        final TodoUser userEntity = this.getUserEntity(profileId);
+
+        return this.modelMapper.map(userEntity, TodoUserDto.class);
     }
 
     @Override
@@ -148,7 +159,7 @@ public class AdminServiceImpl implements AdminService {
                 user.setLockReason(reason);
             }
 
-            final var updatedUser = this.userRepository.save(user);
+            final TodoUser updatedUser = this.userRepository.save(user);
             this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
 
             return true;
@@ -161,7 +172,7 @@ public class AdminServiceImpl implements AdminService {
             final String userId, final boolean enabled, final String reason,
             final String accountStateChangedBy
     ) {
-        final var user = getUserEntity(userId);
+        final TodoUser user = getUserEntity(userId);
 
         try {
             user.setIsEnabled(enabled);
@@ -184,7 +195,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private boolean changeUserAccountType(final String userId, final String accountType, final String by) {
-        final var user = getUserEntity(userId);
+        final TodoUser user = getUserEntity(userId);
 
         try {
             user.setRole(accountType);
@@ -197,7 +208,7 @@ public class AdminServiceImpl implements AdminService {
                 user.setApprovedAsAdminOn(null);
             }
 
-            final var updatedUser = this.userRepository.save(user);
+            final TodoUser updatedUser = this.userRepository.save(user);
             this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
 
             return true;

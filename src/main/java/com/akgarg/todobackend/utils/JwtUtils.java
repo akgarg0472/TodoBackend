@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @SuppressWarnings("unused")
 @Component
@@ -45,7 +44,7 @@ public class JwtUtils implements InitializingBean {
     }
 
     public <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
-        final var claims = extractAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 

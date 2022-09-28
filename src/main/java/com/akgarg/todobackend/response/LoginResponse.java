@@ -4,18 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 17-07-2022
+ * @author Akhilesh Garg
+ * @since 17-07-2022
  */
 @Getter
 @Setter
 @ToString
 public class LoginResponse implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 297587284585L;
 
     private String authToken;
@@ -23,6 +24,6 @@ public class LoginResponse implements Serializable {
     private String userId;
     private String email;
     private String name;
-    private long timestamp;
+    private Long timestamp;
 
 }

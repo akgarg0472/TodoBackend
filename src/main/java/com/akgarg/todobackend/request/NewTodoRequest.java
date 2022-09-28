@@ -4,17 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Getter
 @Setter
 @ToString
-public class NewTodoRequest implements Serializable {
+public class NewTodoRequest {
 
     private String userId;
     private String title;

@@ -4,7 +4,6 @@ import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
 import com.akgarg.todobackend.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.service.user.UserService;
-import com.akgarg.todobackend.utils.PasswordUtils;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -20,9 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 19-07-2022
+ * @author Akhilesh Garg
+ * @since 19-07-2022
  */
 @RestController
 @RequestMapping("/api/v1/password")
@@ -34,22 +32,25 @@ public class PasswordController {
 
     @PostMapping(value = "/forgot-password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> sendForgotPasswordEmail(
-            @RequestBody ForgotPasswordEmailRequest forgotPasswordEmailRequest, HttpServletRequest request
+            @RequestBody final ForgotPasswordEmailRequest forgotPasswordEmailRequest, final HttpServletRequest request
     ) {
         logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordEmailRequest);
-        ValidationUtils.checkForgotPasswordRequest(forgotPasswordEmailRequest);
+        ValidationUtils.validateForgotPasswordEmailRequest(forgotPasswordEmailRequest);
 
-        final String email = forgotPasswordEmailRequest.getEmail();
-        final boolean forgotPasswordEmailResponse = this.userService.sendForgotPasswordEmail(email, UrlUtils.getUrl(request));
+        final boolean forgotPasswordEmailResponse = this.userService
+                .sendForgotPasswordEmail(
+                        forgotPasswordEmailRequest.getEmail(),
+                        UrlUtils.getUrl(request)
+                );
 
         return ResponseUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
     }
 
     @PostMapping(value = "reset-password")
-    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody final ForgotPasswordRequest forgotPasswordRequest) {
         logger.info(getClass(), "Received resetPassword request for: {}", forgotPasswordRequest.getForgotPasswordToken());
 
-        final boolean isRequestValid = PasswordUtils.isForgotPasswordRequestValid(forgotPasswordRequest);
+        final boolean isRequestValid = ValidationUtils.validateForgotPasswordRequest(forgotPasswordRequest);
         boolean passwordResetResponse = false;
 
         if (isRequestValid) {

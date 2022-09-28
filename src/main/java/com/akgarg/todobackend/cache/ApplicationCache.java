@@ -10,17 +10,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Component
-@SuppressWarnings("unused")
-public class ApplicationCache {
+public final class ApplicationCache {
 
     private final ApplicationLogger logger;
     private final ConfigRepository configRepository;
-
     private final Map<String, Object> cacheMap;
     private final Map<String, String> configsMap;
 
@@ -36,14 +33,17 @@ public class ApplicationCache {
 
     private void initConfigsMap() {
         try {
-            this.configRepository.findAll().forEach(config -> this.addConfig(config.getKey(), config.getValue()));
+            this.configRepository
+                    .findAll()
+                    .forEach(config -> this.insertOrUpdateConfig(config.getKey(), config.getValue()));
+
             this.logger.info(getClass(), "Config props loaded successfully. Loaded {} props", this.configsMap.size());
         } catch (Exception e) {
             this.logger.error(getClass(), "Error fetching configs from DB: {}", e.getMessage());
         }
     }
 
-    public void insertOrUpdateUserKeyValue(String key, Object value) {
+    public void insertOrUpdateUserKeyValue(final String key, final Object value) {
         logger.info(getClass(), "Inserting/Updating {} -> {} into cache", key, value);
         ValidationUtils.checkForNullOrInvalidValue(key);
         ValidationUtils.checkForNullOrInvalidValue(value);
@@ -51,43 +51,42 @@ public class ApplicationCache {
         this.cacheMap.put(key, value);
     }
 
-    public Optional<Object> getValue(String key) {
+    public Optional<Object> getValue(final String key) {
         logger.info(getClass(), "Fetching value of {} from cache", key);
 
-        final var value = this.cacheMap.get(key);
+        final Object value = this.cacheMap.get(key);
 
         return Optional.ofNullable(value);
     }
 
-    public boolean removeValue(String key) {
-        logger.info(getClass(), "Removing {} entry from cache", key);
-        ValidationUtils.checkForNullOrInvalidValue(key);
-
-        final var value = this.cacheMap.remove(key);
-
-        return value != null;
-    }
-
     public void clearCache() {
-        logger.warn(getClass(), "Clearing cache memory");
-
+        this.logger.warn(getClass(), "Clearing cache memory");
         this.cacheMap.clear();
         this.configsMap.clear();
     }
 
     public void reloadCache() {
-        initConfigsMap();
+        this.clearCache();
+        this.initConfigsMap();
         logger.info(getClass(), "Cache reload success");
     }
 
-    public void addConfig(String key, String value) {
+    public void insertOrUpdateConfig(final String key, final String value) {
         this.configsMap.put(key, value);
     }
 
-    public String getConfig(final String propName, final String defaultValue) {
+    public String getConfigValue(final String propName, final String defaultValue) {
         logger.info(getClass(), "Fetching value of {} from configs cache", propName);
 
         return this.configsMap.getOrDefault(propName, defaultValue);
+    }
+
+    public Map<String, Object> getCacheMap() {
+        return this.cacheMap;
+    }
+
+    public Map<String, String> getConfigsMap() {
+        return this.configsMap;
     }
 
 }

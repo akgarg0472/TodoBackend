@@ -2,6 +2,7 @@ package com.akgarg.todobackend.service.logout;
 
 import com.akgarg.todobackend.cache.JwtTokenBlackList;
 import com.akgarg.todobackend.exception.UserException;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 public class LogoutServiceImpl implements LogoutService {
 
     private final JwtTokenBlackList jwtTokenBlackList;
+    private final ApplicationLogger logger;
 
     @Override
     public void doLogout(final Map<String, String> logoutParams) {
+        this.logger.info(getClass(), "Logging out: {}", logoutParams);
         final String jwtToken = logoutParams.get(LOGOUT_REQUEST_TOKEN);
 
         if (jwtToken == null || jwtToken.isBlank()) {

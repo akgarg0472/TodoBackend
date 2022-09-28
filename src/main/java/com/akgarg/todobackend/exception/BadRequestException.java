@@ -1,9 +1,8 @@
 package com.akgarg.todobackend.exception;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 18-09-2022
+ * @author Akhilesh Garg
+ * @since 18-09-2022
  */
 @SuppressWarnings("unused")
 public class BadRequestException extends RuntimeException {
@@ -31,4 +30,5 @@ public class BadRequestException extends RuntimeException {
     ) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

@@ -1,9 +1,8 @@
 package com.akgarg.todobackend.exception;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @SuppressWarnings("unused")
 public class GenericException extends RuntimeException {
@@ -11,19 +10,24 @@ public class GenericException extends RuntimeException {
     public GenericException() {
     }
 
-    public GenericException(String message) {
+    public GenericException(final String message) {
         super(message);
     }
 
-    public GenericException(String message, Throwable cause) {
+    public GenericException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public GenericException(Throwable cause) {
+    public GenericException(final Throwable cause) {
         super(cause);
     }
 
-    public GenericException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public GenericException(
+            final String message,
+            final Throwable cause,
+            final boolean enableSuppression,
+            final boolean writableStackTrace
+    ) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

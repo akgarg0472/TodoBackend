@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import static com.akgarg.todobackend.constants.ApplicationConstants.*;
+
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 19-07-2022
+ * @author Akhilesh Garg
+ * @since 19-07-2022
  */
 @RestController
 @RequestMapping("/api/v1/admins")
@@ -37,6 +38,7 @@ public class AdminController {
     @GetMapping("/admin/{adminId}")
     public ResponseEntity<Map<String, Object>> getAdminProfile(@PathVariable("adminId") final String adminId) {
         this.logger.debug(getClass(), "getAdminProfile(): {}", adminId);
+        ValidationUtils.checkForNullOrInvalidId(adminId, NULL_OR_INVALID_USER_ID);
 
         final var profile = this.adminService.getAdminProfile(adminId);
 
@@ -45,8 +47,8 @@ public class AdminController {
 
     @GetMapping
     public Map<String, Object> getAllUsers(
-            @RequestParam(value = "offset", defaultValue = "0") int offset,
-            @RequestParam(value = "offset", defaultValue = "10") int limit
+            @RequestParam(value = "offset", defaultValue = "0") final int offset,
+            @RequestParam(value = "offset", defaultValue = "10") final int limit
     ) {
         this.logger.debug(getClass(), "getAllUsers(): {}->{}", offset, limit);
 
@@ -55,8 +57,18 @@ public class AdminController {
         return ResponseUtils.generateGetAllUsersResponse(users);
     }
 
+    @GetMapping("/profile/{profileId}")
+    public ResponseEntity<Map<String, Object>> getProfile(@PathVariable("profileId") final String profileId) {
+        this.logger.debug(getClass(), "getProfile(): {}", profileId);
+        ValidationUtils.checkForNullOrInvalidId(profileId, NULL_OR_INVALID_USER_ID);
+
+        final var profile = this.adminService.getProfile(profileId);
+
+        return ResponseUtils.generateGetProfileResponse(profile);
+    }
+
     @PatchMapping("/changeAccountType")
-    public ResponseEntity<Map<String, Object>> changeAccountType(@RequestBody ChangeAccountTypeRequest request) {
+    public ResponseEntity<Map<String, Object>> changeAccountType(@RequestBody final ChangeAccountTypeRequest request) {
         this.logger.debug(getClass(), "changeAccountType(): {}", request);
         ValidationUtils.validateChangeAccountTypeRequest(request);
 
@@ -67,47 +79,47 @@ public class AdminController {
     }
 
     @PatchMapping("/user/lockAccount")
-    public ResponseEntity<Map<String, Object>> lockAccount(@RequestBody ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> lockAccount(@RequestBody final ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "lockAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
         final boolean lockStateChangeResponse = this.adminService
                 .lockUserAccount(request.getUserId(), request.getReason(), request.getBy());
 
-        return ResponseUtils.generateAccountLockStateChangeResponse(lockStateChangeResponse);
+        return ResponseUtils.generateBooleanConditionalResponse(lockStateChangeResponse, ACCOUNT_LOCK_STATE_UPDATED_SUCCESS, ACCOUNT_LOCK_STATE_UPDATED_FAILED);
     }
 
     @PatchMapping("/user/unlockAccount")
-    public ResponseEntity<Map<String, Object>> unlockAccount(@RequestBody ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> unlockAccount(@RequestBody final ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "unlockAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
         final boolean lockStateChangeResponse = this.adminService
                 .unlockUserAccount(request.getUserId(), request.getReason(), request.getBy());
 
-        return ResponseUtils.generateAccountLockStateChangeResponse(lockStateChangeResponse);
+        return ResponseUtils.generateBooleanConditionalResponse(lockStateChangeResponse, ACCOUNT_LOCK_STATE_UPDATED_SUCCESS, ACCOUNT_LOCK_STATE_UPDATED_FAILED);
     }
 
     @PatchMapping("/user/disableAccount")
-    public ResponseEntity<Map<String, Object>> disableAccount(@RequestBody ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> disableAccount(@RequestBody final ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "disableAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
         final boolean enableStateChangeResponse = this.adminService
                 .terminateUserAccount(request.getUserId(), request.getReason(), request.getBy());
 
-        return ResponseUtils.generateAccountEnabledStateChangeResponse(enableStateChangeResponse);
+        return ResponseUtils.generateBooleanConditionalResponse(enableStateChangeResponse, ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS, ACCOUNT_ENABLED_STATE_CHANGE_FAILED);
     }
 
     @PatchMapping("/user/enableAccount")
-    public ResponseEntity<Map<String, Object>> enableAccount(@RequestBody ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> enableAccount(@RequestBody final ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "enableAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
         final boolean enableStateChangeResponse = this.adminService
                 .enableUserAccount(request.getUserId(), request.getReason(), request.getBy());
 
-        return ResponseUtils.generateAccountEnabledStateChangeResponse(enableStateChangeResponse);
+        return ResponseUtils.generateBooleanConditionalResponse(enableStateChangeResponse, ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS, ACCOUNT_ENABLED_STATE_CHANGE_FAILED);
     }
 
 }

@@ -19,9 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Configuration
 @EnableWebSecurity
@@ -40,7 +39,7 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider getDaoAuthenticationProvider(
-            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder
+            final UserDetailsService userDetailsService, final PasswordEncoder passwordEncoder
     ) {
         final var daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
@@ -49,7 +48,9 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            final AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

@@ -1,9 +1,9 @@
 package com.akgarg.todobackend.repository;
 
+import com.akgarg.todobackend.adapter.TodoUserToUserResponseDtoAdapter;
 import com.akgarg.todobackend.dto.AdminDashboardUserInfoDto;
 import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.response.PaginatedUserResponse;
-import com.akgarg.todobackend.response.UserResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,10 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
+@SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
 @Repository
 public interface UserRepository extends MongoRepository<TodoUser, String> {
 
@@ -32,28 +32,28 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
             offset = 0;
         }
 
-        final var pageable = PageRequest.of(offset, limit);
+        final PageRequest pageable = PageRequest.of(offset, limit);
         final var entities = this.findAll(pageable);
 
         return getPaginatedUserResponse(entities);
     }
 
     private PaginatedUserResponse getPaginatedUserResponse(final Page<TodoUser> entities) {
-        long totalUsers = entities.getTotalElements();
-        int totalPages = entities.getTotalPages();
-        int currentPage = entities.getNumber();
+        final long totalUsers = entities.getTotalElements();
+        final int totalPages = entities.getTotalPages();
+        final int currentPage = entities.getNumber();
 
         final var users = entities.getContent()
                 .stream()
-                .map(UserResponseDto::new)
+                .map(TodoUserToUserResponseDtoAdapter::convert)
                 .collect(Collectors.toList());
 
         return new PaginatedUserResponse(currentPage, totalUsers, totalPages, users);
     }
 
-    Optional<TodoUser> findByEmail(String email);
+    Optional<TodoUser> findByEmail(final String email);
 
-    Optional<TodoUser> findByIdAndEmail(String id, String email);
+    Optional<TodoUser> findByIdAndEmail(final String id, final String email);
 
     List<AdminDashboardUserInfoDto> findAllBy();
 

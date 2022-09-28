@@ -1,9 +1,8 @@
 package com.akgarg.todobackend.exception;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @SuppressWarnings("unused")
 public class TodoException extends RuntimeException {
@@ -11,19 +10,25 @@ public class TodoException extends RuntimeException {
     public TodoException() {
     }
 
-    public TodoException(String message) {
+    public TodoException(final String message) {
         super(message);
     }
 
-    public TodoException(String message, Throwable cause) {
+    public TodoException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public TodoException(Throwable cause) {
+    public TodoException(final Throwable cause) {
         super(cause);
     }
 
-    public TodoException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public TodoException(
+            final String message,
+            final Throwable cause,
+            final boolean enableSuppression,
+            final boolean writableStackTrace
+    ) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

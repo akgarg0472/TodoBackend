@@ -4,14 +4,14 @@ import com.akgarg.todobackend.response.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 18-09-2022
+ * @author Akhilesh Garg
+ * @since 18-09-2022
  */
 public class ResponseUtils {
 
@@ -25,23 +25,25 @@ public class ResponseUtils {
     private ResponseUtils() {
     }
 
-    public static LoginResponse generateLoginSuccessRequest(final Map<String, String> loginProps) {
+    public static ResponseEntity<LoginResponse> generateLoginSuccessRequest(final Map<String, String> loginResponseProps) {
         final var response = new LoginResponse();
 
-        response.setAuthToken(loginProps.get(LOGIN_SUCCESS_RESPONSE_TOKEN));
-        response.setRole(loginProps.get(LOGIN_SUCCESS_RESPONSE_ROLE));
-        response.setUserId(loginProps.get(LOGIN_SUCCESS_RESPONSE_USERID));
-        response.setName(loginProps.get(LOGIN_SUCCESS_RESPONSE_NAME));
-        response.setEmail(loginProps.get(LOGIN_SUCCESS_RESPONSE_EMAIL));
+        response.setAuthToken(loginResponseProps.get(LOGIN_SUCCESS_RESPONSE_TOKEN));
+        response.setRole(loginResponseProps.get(LOGIN_SUCCESS_RESPONSE_ROLE));
+        response.setUserId(loginResponseProps.get(LOGIN_SUCCESS_RESPONSE_USERID));
+        response.setName(loginResponseProps.get(LOGIN_SUCCESS_RESPONSE_NAME));
+        response.setEmail(loginResponseProps.get(LOGIN_SUCCESS_RESPONSE_EMAIL));
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
         final var response = new HashMap<String, Object>();
 
-        final String responseMessage = emailResponse ? FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) : FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
+        final String responseMessage = emailResponse ?
+                FORGOT_PASSWORD_EMAIL_SUCCESS.replace("$email", email) :
+                FORGOT_PASSWORD_EMAIL_FAILURE.replace("$email", email);
 
         response.put(MESSAGE, responseMessage);
         response.put(SUCCESS, emailResponse);
@@ -53,7 +55,7 @@ public class ResponseUtils {
     public static ResponseEntity<Map<String, Object>> generateAccountVerificationFailResponse(
     ) {
         final var response = new HashMap<String, Object>();
-        int responseStatusCode = 400;
+        final int responseStatusCode = 400;
 
         response.put(ERROR_STATUS, responseStatusCode);
         response.put(ERROR_MESSAGE, ACCOUNT_VERIFICATION_FAILED);
@@ -92,47 +94,47 @@ public class ResponseUtils {
         int statusCode;
 
         switch (updateResponse) {
-            case PROFILE_UPDATED_SUCCESSFULLY:
-            case PASSWORD_CHANGED_SUCCESSFULLY:
-            case USER_PROFILE_DELETED_SUCCESSFULLY:
+            case PROFILE_UPDATED_SUCCESSFULLY,
+                    PASSWORD_CHANGED_SUCCESSFULLY,
+                    USER_PROFILE_DELETED_SUCCESSFULLY -> {
                 statusCode = 200;
                 response.put(MESSAGE, updateResponse);
                 response.put(STATUS, statusCode);
-                break;
+            }
 
-            case REDUNDANT_PROFILE_UPDATE_REQUEST:
-            case INVALID_OLD_PASSWORD:
-            case PASSWORDS_MISMATCHED:
-            case NULL_OR_INVALID_REQUEST:
-            case INVALID_PASSWORD_CHANGE_REQUEST:
+            case REDUNDANT_PROFILE_UPDATE_REQUEST,
+                    INVALID_OLD_PASSWORD,
+                    PASSWORDS_MISMATCHED,
+                    NULL_OR_INVALID_REQUEST,
+                    INVALID_PASSWORD_CHANGE_REQUEST -> {
                 statusCode = 400;
                 response.put(ERROR_MESSAGE, updateResponse);
                 response.put(ERROR_STATUS, statusCode);
-                break;
+            }
 
-            default:
+            default -> {
                 statusCode = 500;
                 response.put(ERROR_MESSAGE, updateResponse);
                 response.put(ERROR_STATUS, statusCode);
-                break;
+            }
         }
 
         return ResponseEntity.status(statusCode).body(response);
     }
 
-    public static SignupResponse generateSignupResponse(final String message, final int status) {
+    public static ResponseEntity<SignupResponse> generateSignupSuccessResponse(final String message, final int status) {
         final var signupResponse = new SignupResponse();
 
         signupResponse.setMessage(message);
         signupResponse.setStatus(status);
         signupResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        return signupResponse;
+        return ResponseEntity.status(status).body(signupResponse);
     }
 
-    public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final UserResponseDto userProfile) {
+    public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final Object profile) {
         final var response = new HashMap<String, Object>();
-        int statusCode = userProfile != null ? 200 : 404;
+        final int statusCode = profile != null ? 200 : 404;
 
         if (statusCode == 200) {
             response.put(STATUS, statusCode);
@@ -140,7 +142,7 @@ public class ResponseUtils {
             response.put(ERROR_STATUS, statusCode);
         }
 
-        response.put("user", userProfile);
+        response.put("user", profile);
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return ResponseEntity.status(statusCode).body(response);
@@ -186,21 +188,13 @@ public class ResponseUtils {
         return ResponseEntity.status(responseStatusCode).body(response);
     }
 
-    public static ResponseEntity<Map<String, Object>> generateAccountLockStateChangeResponse(final boolean lockStateChangeResponse) {
-        return getAccountStateChangeResponse(lockStateChangeResponse, ACCOUNT_LOCK_STATE_UPDATED_SUCCESS, ACCOUNT_LOCK_STATE_UPDATED_FAILED);
-    }
-
-    public static ResponseEntity<Map<String, Object>> generateAccountEnabledStateChangeResponse(final boolean enableStateChangeResponse) {
-        return getAccountStateChangeResponse(enableStateChangeResponse, ACCOUNT_ENABLED_STATE_CHANGE_SUCCESS, ACCOUNT_ENABLED_STATE_CHANGE_FAILED);
-    }
-
-    private static ResponseEntity<Map<String, Object>> getAccountStateChangeResponse(
-            boolean state, String successMessage, String errorMessage
+    public static ResponseEntity<Map<String, Object>> generateBooleanConditionalResponse(
+            boolean condition, String successMessage, String errorMessage
     ) {
         final var response = new HashMap<String, Object>();
         int responseStatusCode;
 
-        if (state) {
+        if (condition) {
             response.put(MESSAGE, successMessage);
             responseStatusCode = 200;
             response.put(STATUS, responseStatusCode);
@@ -211,13 +205,27 @@ public class ResponseUtils {
         }
 
         response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
-        response.put(SUCCESS, state);
+        response.put(SUCCESS, condition);
 
         return ResponseEntity.status(responseStatusCode).body(response);
     }
 
-    public static TodoApiResponse generateTodoApiResponse(final String message, final Object data, final int status) {
-        final var response = new TodoApiResponse();
+    public static ResponseEntity<Map<String, Object>> generateGetCacheResponse(final List<CacheKVResponse> caches) {
+        final var response = new HashMap<String, Object>();
+
+        response.put("cache", caches);
+        response.put(SUCCESS, true);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.ok(response);
+    }
+
+    public static ResponseEntity<TodoApiResponse> generateTodoApiResponse(
+            final String message,
+            final Object data,
+            final int status
+    ) {
+        final TodoApiResponse response = new TodoApiResponse();
 
         response.setSuccess(status < 400 || status > 599);
         response.setMessage(message);
@@ -225,17 +233,27 @@ public class ResponseUtils {
         response.setStatus(status);
         response.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        return response;
+        return ResponseEntity.status(status).body(response);
     }
 
     public static ApiErrorResponse generateApiErrorResponse(final String errorMessage, final int errorCode) {
-        final var errorResponse = new ApiErrorResponse();
+        final ApiErrorResponse errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorMessage(errorMessage);
         errorResponse.setErrorCode(errorCode);
         errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
         return errorResponse;
+    }
+
+    public static ResponseEntity<Map<String, Object>> generateUpdateConfigPropResponse(final CacheKVResponse updatedKVPair) {
+        final var response = new HashMap<String, Object>();
+
+        response.put("config_prop", updatedKVPair);
+        response.put(SUCCESS, true);
+        response.put(TIMESTAMP, DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.ok(response);
     }
 
 }

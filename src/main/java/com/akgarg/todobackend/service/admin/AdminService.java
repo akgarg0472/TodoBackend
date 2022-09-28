@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.service.admin;
 
+import com.akgarg.todobackend.dto.TodoUserDto;
 import com.akgarg.todobackend.response.AdminDashboardInfo;
 import com.akgarg.todobackend.response.PaginatedUserResponse;
 import com.akgarg.todobackend.response.UserResponseDto;
@@ -16,6 +17,8 @@ public interface AdminService {
     UserResponseDto getAdminProfile(String adminId);
 
     PaginatedUserResponse getAllUsers(int offset, int limit);
+
+    TodoUserDto getProfile(String profileId);
 
     boolean lockUserAccount(String userId, String reason, String lockedBy);
 

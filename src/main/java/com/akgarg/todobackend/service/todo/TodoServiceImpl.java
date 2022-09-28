@@ -48,14 +48,14 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void delete(String todoId) {
-        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
 
         this.todoRepository.delete(todoEntity);
     }
 
     @Override
     public TodoResponseDto getTodoById(String todoId) {
-        final var todo = this.getTodoEntityById(todoId, TODO_NOT_FOUND);
+        final TodoEntity todo = this.getTodoEntityById(todoId, TODO_NOT_FOUND);
 
         return convertEntityToDto(todo);
     }
@@ -73,24 +73,25 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoResponseDto update(String todoId, UpdateTodoRequest updateDto) {
-        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+
         todoEntity.setDescription(updateDto.getDescription());
         todoEntity.setTitle(updateDto.getTitle());
         todoEntity.setCompleted(updateDto.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        final var updatedEntity = todoRepository.save(todoEntity);
+        final TodoEntity updatedEntity = todoRepository.save(todoEntity);
 
         return convertEntityToDto(updatedEntity);
     }
 
     @Override
     public TodoResponseDto updateTodoStatus(String todoId, UpdateTodoStatusRequest request) {
-        final var todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
+        final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setCompleted(request.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
-        final var updatedEntity = todoRepository.save(todoEntity);
+        final TodoEntity updatedEntity = todoRepository.save(todoEntity);
 
         return convertEntityToDto(updatedEntity);
     }

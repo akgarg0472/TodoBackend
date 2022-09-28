@@ -1,5 +1,6 @@
 package com.akgarg.todobackend.cache;
 
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -9,24 +10,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 06-08-2022
+ * @author Akhilesh Garg
+ * @since 06-08-2022
  */
 @Component
-public class JwtTokenBlackList {
+public final class JwtTokenBlackList {
 
+    private final ApplicationLogger logger;
     private final Map<String, LocalDateTime> jwtBlackList;
 
-    public JwtTokenBlackList() {
+    public JwtTokenBlackList(final ApplicationLogger logger) {
+        this.logger = logger;
         this.jwtBlackList = new HashMap<>();
     }
 
-    public boolean containsToken(String token) {
+    public boolean containsToken(final String token) {
+        this.logger.info(getClass(), "Contains token: {}", token);
+
         return this.jwtBlackList.get(token) != null;
     }
 
-    public void addToken(String token) {
+    public void addToken(final String token) {
+        this.logger.info(getClass(), "Add token: {}", token);
+
         this.jwtBlackList.put(token, getTokenExpirationTime());
     }
 

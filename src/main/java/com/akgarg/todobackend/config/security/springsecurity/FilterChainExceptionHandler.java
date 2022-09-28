@@ -13,9 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 17-07-2022
+ * @author Akhilesh Garg
+ * @since 17-07-2022
  */
 @Component
 public class FilterChainExceptionHandler extends OncePerRequestFilter {
@@ -34,20 +33,16 @@ public class FilterChainExceptionHandler extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             switch (e.getClass().getSimpleName()) {
-                case "SignatureException":
-                    resolver.resolveException(request, response, null, new UserException(UNKNOWN_JWT_TOKEN));
-                    break;
+                case "SignatureException" ->
+                        resolver.resolveException(request, response, null, new UserException(UNKNOWN_JWT_TOKEN));
 
-                case "ExpiredJwtException":
-                    resolver.resolveException(request, response, null, new UserException(EXPIRED_JWT_TOKEN));
-                    break;
+                case "ExpiredJwtException" ->
+                        resolver.resolveException(request, response, null, new UserException(EXPIRED_JWT_TOKEN));
 
-                case "MalformedJwtException":
-                    resolver.resolveException(request, response, null, new UserException(INVALID_JWT_TOKEN));
-                    break;
+                case "MalformedJwtException" ->
+                        resolver.resolveException(request, response, null, new UserException(INVALID_JWT_TOKEN));
 
-                default:
-                    resolver.resolveException(request, response, null, e);
+                default -> resolver.resolveException(request, response, null, e);
             }
         }
     }

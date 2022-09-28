@@ -17,10 +17,8 @@ import static com.akgarg.todobackend.constants.ApplicationConstants.NULL_OR_INVA
 import static com.akgarg.todobackend.constants.ApplicationConstants.USER_PROFILE_DELETED_SUCCESSFULLY;
 
 /**
- * Author: Akhilesh Garg
- * GitHub:
- * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 23-07-2022
+ * @author Akhilesh Garg
+ * @since 23-07-2022
  */
 @RestController
 @AllArgsConstructor
@@ -33,7 +31,7 @@ public class UserController {
     @GetMapping("/profile/{userId}")
     public ResponseEntity<Map<String, Object>> getUserProfile(@PathVariable("userId") final String userId) {
         logger.info(getClass(), "Received get profile request for {}", userId);
-        ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
+        ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
 
         final var userProfile = this.userService.getUserById(userId);
         logger.info(getClass(), "Get profile response {}: {}", userId, userProfile);
@@ -43,10 +41,11 @@ public class UserController {
 
     @PostMapping(value = "/{userId}/update-profile")
     public ResponseEntity<Map<String, Object>> updateUserProfile(
-            @RequestBody UpdateUserRequest updateUserRequest, @PathVariable("userId") String userId
+            @RequestBody final UpdateUserRequest updateUserRequest,
+            @PathVariable("userId") final String userId
     ) {
         logger.info(getClass(), "Received update profile request for {}: {}", userId, updateUserRequest);
-        ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
+        ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
 
         final String updateProfileResponse = this.userService.updateUserProfile(userId, updateUserRequest);
         logger.info(getClass(), "Update profile response {}: {}", userId, updateProfileResponse);
@@ -56,10 +55,11 @@ public class UserController {
 
     @PostMapping(value = "/{userId}/change-password")
     public ResponseEntity<Map<String, Object>> changeUserPassword(
-            @PathVariable("userId") String userId, @RequestBody ChangePasswordRequest changePasswordRequest
+            @PathVariable("userId") final String userId,
+            @RequestBody final ChangePasswordRequest changePasswordRequest
     ) {
         logger.info(getClass(), "Received change password changePasswordRequest for {}", userId);
-        ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
+        ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
 
         final String changePasswordResponse = this.userService.changeProfilePassword(userId, changePasswordRequest);
         logger.info(getClass(), "Password change response {}: {}", userId, changePasswordResponse);
@@ -69,10 +69,11 @@ public class UserController {
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Map<String, Object>> deleteUserAccount(
-            @PathVariable("userId") String userId, Principal principal
+            @PathVariable("userId") final String userId,
+            final Principal principal
     ) {
         logger.warn(getClass(), "Received delete account request for {}: {}", userId, principal.getName());
-        ValidationUtils.checkIdForNullOrInvalid(userId, NULL_OR_INVALID_USER_ID);
+        ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
 
         this.userService.deleteUser(userId, principal.getName());
         logger.warn(getClass(), "User with id {} & email {} deleted successfully", userId, principal.getName());
