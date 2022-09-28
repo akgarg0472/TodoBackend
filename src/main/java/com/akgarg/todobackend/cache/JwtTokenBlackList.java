@@ -14,7 +14,7 @@ import java.util.Map;
  * @since 06-08-2022
  */
 @Component
-public final class JwtTokenBlackList {
+public class JwtTokenBlackList {
 
     private final ApplicationLogger logger;
     private final Map<String, LocalDateTime> jwtBlackList;

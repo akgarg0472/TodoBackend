@@ -14,7 +14,7 @@ import java.util.Optional;
  * @since 16-07-2022
  */
 @Component
-public final class ApplicationCache {
+public  class ApplicationCache {
 
     private final ApplicationLogger logger;
     private final ConfigRepository configRepository;
