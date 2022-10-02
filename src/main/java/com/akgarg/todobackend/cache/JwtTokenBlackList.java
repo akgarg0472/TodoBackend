@@ -25,13 +25,13 @@ public class JwtTokenBlackList {
     }
 
     public boolean containsToken(final String token) {
-        this.logger.info(getClass(), "Contains token: {}", token);
+        this.logger.info(getClass(), "Contains request: {}", token);
 
         return this.jwtBlackList.get(token) != null;
     }
 
     public void addToken(final String token) {
-        this.logger.info(getClass(), "Add token: {}", token);
+        this.logger.info(getClass(), "Add request: {}", token);
 
         this.jwtBlackList.put(token, getTokenExpirationTime());
     }

@@ -24,7 +24,7 @@ public class PaginatedUserResponse implements Serializable {
     private Integer currentPage;
     private Long totalUsers;
     private Integer totalPages;
-    private List<UserResponseDto> todos;
+    private List<UserResponseDto> users;
 
     public static PaginatedUserResponse emptyResponse() {
         return new PaginatedUserResponse(0, 0L, 0, Collections.emptyList());

@@ -45,7 +45,7 @@ public class AdminController {
         return ResponseUtils.generateGetProfileResponse(profile);
     }
 
-    @GetMapping
+    @GetMapping("/admin/users")
     public Map<String, Object> getAllUsers(
             @RequestParam(value = "offset", defaultValue = "0") final int offset,
             @RequestParam(value = "offset", defaultValue = "10") final int limit

@@ -92,6 +92,17 @@ public class ApplicationExceptionHandler {
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 
+    @ExceptionHandler(ConvertAdapterException.class)
+    public ResponseEntity<ApiErrorResponse> handleConvertAdapterException(final ConvertAdapterException e) {
+        final var errorResponse = new ApiErrorResponse();
+
+        errorResponse.setErrorCode(500);
+        errorResponse.setErrorMessage(e.getMessage());
+        errorResponse.setTimestamp(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+
+        return ResponseEntity.internalServerError().body(errorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(final Exception e) {
         String errorMessage;
