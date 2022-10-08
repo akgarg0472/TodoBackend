@@ -36,10 +36,8 @@ public class TodoServiceImpl implements TodoService {
         final TodoEntity todo = convertRequestDtoToEntity(request);
 
         todo.setId(ObjectId.get().toString());
-        todo.setCompleted(false);
-        todo.setDescription(request.getDescription());
         todo.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
-        todo.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
+        todo.setUpdatedAt(null);
 
         final var insertedEntity = todoRepository.insert(todo);
 

@@ -23,6 +23,7 @@ public class TodoEntity {
     private String title;
     private String description;
     private Boolean completed;
+
     private Long createdAt;
     private Long updatedAt;
 

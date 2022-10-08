@@ -34,8 +34,8 @@ public class AdminController {
 
         return ResponseUtils.generateAdminDashboardResponse(adminDashboard);
     }
-
-    @GetMapping("/admin/{adminId}")
+    
+    @GetMapping("/admin/profile/{adminId}")
     public ResponseEntity<Map<String, Object>> getAdminProfile(@PathVariable("adminId") final String adminId) {
         this.logger.debug(getClass(), "getAdminProfile(): {}", adminId);
         ValidationUtils.checkForNullOrInvalidId(adminId, NULL_OR_INVALID_USER_ID);

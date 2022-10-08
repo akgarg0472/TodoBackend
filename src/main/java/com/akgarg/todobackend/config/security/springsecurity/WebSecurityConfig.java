@@ -61,7 +61,7 @@ public class WebSecurityConfig {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/account/**", "/api/v1/password/**").permitAll()
+                .antMatchers("/api/v1/account/**", "/api/v1/password/**", "/health", "/").permitAll()
                 .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/cache/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasRole("USER")
