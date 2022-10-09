@@ -1,9 +1,11 @@
 package com.akgarg.todobackend.controller;
 
-import org.springframework.http.RequestEntity;
+import com.akgarg.todobackend.service.ip.IpService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,16 +15,18 @@ import java.util.Objects;
  * @since 05-10-2022
  */
 @RestController
+@AllArgsConstructor
 public class PublicController {
 
-    @GetMapping()
-    public Map<String, String> welcome(RequestEntity<?> request) {
+    private final IpService ipService;
+
+    @GetMapping("/")
+    public Map<String, String> welcome(HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
 
-        response.put("message", "Hello from welcome API");
-        response.put("url", request.getUrl().toString());
-        response.put("method", Objects.requireNonNull(request.getMethod()).toString());
-        response.put("headers", request.getHeaders().toString());
+        response.put("message", "Hello from backend API");
+        response.put("method", Objects.requireNonNull(request.getMethod()));
+        response.put("IP", ipService.getClientIP(request));
 
         return response;
     }
