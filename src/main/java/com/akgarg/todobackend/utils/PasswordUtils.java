@@ -22,7 +22,8 @@ public class PasswordUtils {
     }
 
     public static String generateIdFromToken(final String token) {
-        final byte[] decodedToken = Base64.getDecoder().decode(token.getBytes(StandardCharsets.UTF_8));
+        final byte[] decodedToken = Base64.getDecoder()
+                .decode(token.getBytes(StandardCharsets.UTF_8));
 
         return new String(decodedToken);
     }
@@ -31,7 +32,10 @@ public class PasswordUtils {
         return RandomString.make(48);
     }
 
-    public static String hashForgotPasswordToken(final String token, final String userId) {
+    public static String hashForgotPasswordToken(
+            final String token,
+            final String userId
+    ) {
         final String rawToken = userId.substring(0, 12) + token + userId.substring(12);
 
         return Base64.getEncoder().encodeToString(rawToken.getBytes());

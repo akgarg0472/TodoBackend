@@ -1,14 +1,13 @@
 package com.akgarg.todobackend.service.user;
 
-import com.akgarg.todobackend.request.*;
-import com.akgarg.todobackend.response.UserResponseDto;
+import com.akgarg.todobackend.model.request.*;
+import com.akgarg.todobackend.model.response.UserResponseDto;
 
 import java.util.Map;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 public interface UserService {
 
@@ -18,9 +17,12 @@ public interface UserService {
 
     UserResponseDto getUserByUsername(String username);
 
-    String updateUserProfile(String userId, UpdateUserRequest updateUserRequest);
+    String updateUserProfile(
+            String userId,
+            UpdateUserRequest updateUserRequest
+    );
 
-    void deleteUser(String userId, String email);
+    void deleteUser(String userId);
 
     Map<String, String> login(LoginRequest loginRequest);
 
@@ -30,6 +32,9 @@ public interface UserService {
 
     boolean processForgotPasswordRequest(ForgotPasswordRequest request);
 
-    String changeProfilePassword(String userId, ChangePasswordRequest request);
+    String changeProfilePassword(
+            String userId,
+            ChangePasswordRequest request
+    );
 
 }

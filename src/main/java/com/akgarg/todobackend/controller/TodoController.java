@@ -1,11 +1,11 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.request.NewTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
-import com.akgarg.todobackend.response.PaginatedTodoResponse;
-import com.akgarg.todobackend.response.TodoApiResponse;
+import com.akgarg.todobackend.model.request.NewTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.model.response.PaginatedTodoResponse;
+import com.akgarg.todobackend.model.response.TodoApiResponse;
 import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -13,8 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
@@ -32,12 +30,9 @@ public class TodoController {
 
     @GetMapping(value = "/todo/{todoId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> getTodoUsingTodoId(
-            @PathVariable final String todoId,
-            final Principal principal
+            final @PathVariable String todoId
     ) {
-        logger.info(getClass(), "Request received from {} to getSingleTodo for todoId: {}", principal.getName(),
-                    todoId
-        );
+        logger.info(getClass(), "Request received to getSingleTodo for todoId: {}", todoId);
         ValidationUtils.checkForNullOrInvalidId(todoId, NULL_OR_INVALID_TODO_ID);
 
         final var todo = this.todoService.getTodoById(todoId);
@@ -47,9 +42,9 @@ public class TodoController {
 
     @GetMapping(value = "/user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaginatedTodoResponse> getTodosForCurrentUser(
-            @PathVariable final String userId,
-            @RequestParam(value = "limit", defaultValue = "10") final int limit,
-            @RequestParam(value = "offset", defaultValue = "0") final int offset
+            final @PathVariable String userId,
+            final @RequestParam(value = "limit", defaultValue = "10") int limit,
+            final @RequestParam(value = "offset", defaultValue = "0") int offset
     ) {
         logger.info(getClass(), "Request received to getTodos for userId: {}", userId);
         ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
@@ -61,9 +56,9 @@ public class TodoController {
 
     @GetMapping(value = "/completed/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaginatedTodoResponse> getCompletedTodos(
-            @PathVariable("userId") final String userId,
-            @RequestParam(value = "limit", defaultValue = "10") final int limit,
-            @RequestParam(value = "offset", defaultValue = "0") final int offset
+            final @PathVariable("userId") String userId,
+            final @RequestParam(value = "limit", defaultValue = "10") int limit,
+            final @RequestParam(value = "offset", defaultValue = "0") int offset
     ) {
         logger.info(getClass(), "Request for completed todos: {}", userId);
         ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
@@ -75,9 +70,9 @@ public class TodoController {
 
     @GetMapping(value = "/pending/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaginatedTodoResponse> getPendingTodos(
-            @PathVariable("userId") final String userId,
-            @RequestParam(value = "limit", defaultValue = "10") final int limit,
-            @RequestParam(value = "offset", defaultValue = "0") final int offset
+            final @PathVariable("userId") String userId,
+            final @RequestParam(value = "limit", defaultValue = "10") int limit,
+            final @RequestParam(value = "offset", defaultValue = "0") int offset
     ) {
         logger.info(getClass(), "Request for pending todos: {}", userId);
         ValidationUtils.checkForNullOrInvalidId(userId, NULL_OR_INVALID_USER_ID);
@@ -89,10 +84,9 @@ public class TodoController {
 
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> addTodoNote(
-            @RequestBody final NewTodoRequest newTodoRequest,
-            final Principal principal
+            final @RequestBody NewTodoRequest newTodoRequest
     ) {
-        logger.info(getClass(), "Request received from {} to add new todo: {}", principal.getName(), newTodoRequest);
+        logger.info(getClass(), "Request received to add new todo: {}", newTodoRequest);
         ValidationUtils.validateNewTodoRequest(newTodoRequest);
 
         final var insertedTodo = this.todoService.insert(newTodoRequest);
@@ -102,10 +96,9 @@ public class TodoController {
 
     @DeleteMapping(value = "/{todoId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> removeTodoNote(
-            @PathVariable final String todoId,
-            final Principal principal
+            final @PathVariable String todoId
     ) {
-        logger.info(getClass(), "Request received from {} to remove todo with todoId: {}", principal.getName(), todoId);
+        logger.info(getClass(), "Request received to remove todo with todoId: {}", todoId);
         ValidationUtils.checkForNullOrInvalidId(todoId, NULL_OR_INVALID_TODO_ID);
 
         this.todoService.delete(todoId);
@@ -115,11 +108,10 @@ public class TodoController {
 
     @PutMapping(value = "/todo/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> updateTodo(
-            @RequestBody final UpdateTodoRequest updateTodoRequest,
-            @PathVariable final String todoId,
-            final Principal principal
+            final @RequestBody UpdateTodoRequest updateTodoRequest,
+            final @PathVariable String todoId
     ) {
-        logger.info(getClass(), "Request received from {} to update todo with todoId: {}", principal.getName(), todoId);
+        logger.info(getClass(), "Request received to update todo with todoId: {}", todoId);
         ValidationUtils.checkForNullOrInvalidId(todoId, NULL_OR_INVALID_TODO_ID);
         ValidationUtils.validateUpdateTodoRequest(updateTodoRequest);
 
@@ -131,12 +123,9 @@ public class TodoController {
     @PatchMapping(value = "/todo/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoApiResponse> updateTodoStatus(
             @PathVariable final String todoId,
-            @RequestBody final UpdateTodoStatusRequest request,
-            final Principal principal
+            @RequestBody final UpdateTodoStatusRequest request
     ) {
-        logger.info(getClass(), "Request received from {} to update todo status with todoId: {}", principal.getName(),
-                    todoId
-        );
+        logger.info(getClass(), "Request received to update todo status with todoId: {}", todoId);
         ValidationUtils.checkForNullOrInvalidId(todoId, NULL_OR_INVALID_TODO_ID);
         ValidationUtils.validateUpdateTodoStatusRequest(request);
 

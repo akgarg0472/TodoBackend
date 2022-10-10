@@ -1,6 +1,7 @@
 package com.akgarg.todobackend.config.todo;
 
 import com.akgarg.todobackend.constants.CacheConfigKey;
+import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.service.cache.CacheService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -8,6 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
+
+import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEND_BASE_URL;
 
 /**
  * @author Akhilesh Garg
@@ -18,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class TodoConfig implements WebMvcConfigurer {
 
     private final CacheService cacheService;
+    private final ApplicationLogger logger;
 
     @Bean
     public ModelMapper modelMapper() {
@@ -30,10 +36,14 @@ public class TodoConfig implements WebMvcConfigurer {
         WebMvcConfigurer.super.addCorsMappings(registry);
 
         final String frontendBaseUrl = this.cacheService
-                .getConfig(CacheConfigKey.FRONTEND_BASE_URL, "http://localhost:3000");
+                .getConfig(CacheConfigKey.FRONTEND_BASE_URL, DEFAULT_FRONTEND_BASE_URL);
+
+        logger.info(getClass(), "Front-end base URL registered for CORS is : {}",
+                    Arrays.toString(frontendBaseUrl.split(","))
+        );
 
         registry.addMapping("/**")
-                .allowedOrigins(frontendBaseUrl)
+                .allowedOrigins(frontendBaseUrl.split(","))
                 .allowedMethods(requestMethods);
     }
 

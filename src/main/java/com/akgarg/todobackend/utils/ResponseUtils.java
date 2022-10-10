@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.utils;
 
-import com.akgarg.todobackend.response.*;
+import com.akgarg.todobackend.model.response.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
@@ -38,7 +38,10 @@ public class ResponseUtils {
         return ResponseEntity.ok(response);
     }
 
-    public static Map<String, Object> generateForgotPasswordResponse(final boolean emailResponse, final String email) {
+    public static Map<String, Object> generateForgotPasswordResponse(
+            final boolean emailResponse,
+            final String email
+    ) {
         final var response = new HashMap<String, Object>();
 
         final String responseMessage = emailResponse ?
@@ -52,8 +55,7 @@ public class ResponseUtils {
         return response;
     }
 
-    public static ResponseEntity<Map<String, Object>> generateAccountVerificationFailResponse(
-    ) {
+    public static ResponseEntity<Map<String, Object>> generateAccountVerificationFailResponse() {
         final var response = new HashMap<String, Object>();
         final int responseStatusCode = 400;
 
@@ -65,7 +67,8 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateForgotPasswordCompleteResponse(
-            final boolean isRequestValid, final boolean passwordResetResponse
+            final boolean isRequestValid,
+            final boolean passwordResetResponse
     ) {
         final var response = new HashMap<String, Object>();
         int statusCode;
@@ -122,7 +125,10 @@ public class ResponseUtils {
         return ResponseEntity.status(statusCode).body(response);
     }
 
-    public static ResponseEntity<SignupResponse> generateSignupSuccessResponse(final String message, final int status) {
+    public static ResponseEntity<SignupResponse> generateSignupSuccessResponse(
+            final String message,
+            final int status
+    ) {
         final var signupResponse = new SignupResponse();
 
         signupResponse.setMessage(message);
@@ -133,7 +139,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateGetProfileResponse(final Object profile) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
         final int statusCode = profile != null ? 200 : 404;
 
         if (statusCode == 200) {
@@ -149,7 +155,7 @@ public class ResponseUtils {
     }
 
     public static Map<String, Object> generateGetAllUsersResponse(final PaginatedUserResponse users) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
 
         response.put("users", users);
         response.put(SUCCESS, true);
@@ -159,7 +165,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateAdminDashboardResponse(final AdminDashboardInfo adminDashboard) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
 
         response.put("data", adminDashboard);
         response.put(SUCCESS, true);
@@ -169,7 +175,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateChangeAccountTypeResponse(final boolean changeAccountTypeResponse) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
         int responseStatusCode;
 
         if (changeAccountTypeResponse) {
@@ -189,9 +195,11 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateBooleanConditionalResponse(
-            boolean condition, String successMessage, String errorMessage
+            boolean condition,
+            final String successMessage,
+            final String errorMessage
     ) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
         int responseStatusCode;
 
         if (condition) {
@@ -211,7 +219,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateGetCacheResponse(final List<CacheKVResponse> caches) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
 
         response.put("cache", caches);
         response.put(SUCCESS, true);
@@ -236,7 +244,10 @@ public class ResponseUtils {
         return ResponseEntity.status(status).body(response);
     }
 
-    public static ApiErrorResponse generateApiErrorResponse(final String errorMessage, final int errorCode) {
+    public static ApiErrorResponse generateApiErrorResponse(
+            final String errorMessage,
+            final int errorCode
+    ) {
         final ApiErrorResponse errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorMessage(errorMessage);
@@ -247,7 +258,7 @@ public class ResponseUtils {
     }
 
     public static ResponseEntity<Map<String, Object>> generateUpdateConfigPropResponse(final CacheKVResponse updatedKVPair) {
-        final var response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<>();
 
         response.put("config_prop", updatedKVPair);
         response.put(SUCCESS, true);

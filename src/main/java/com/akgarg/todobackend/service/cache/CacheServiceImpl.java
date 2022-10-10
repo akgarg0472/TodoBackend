@@ -2,11 +2,11 @@ package com.akgarg.todobackend.service.cache;
 
 import com.akgarg.todobackend.cache.ApplicationCache;
 import com.akgarg.todobackend.constants.CacheConfigKey;
-import com.akgarg.todobackend.entity.TodoConfig;
 import com.akgarg.todobackend.exception.BadRequestException;
 import com.akgarg.todobackend.exception.GenericException;
+import com.akgarg.todobackend.model.entity.TodoConfig;
+import com.akgarg.todobackend.model.response.CacheKVResponse;
 import com.akgarg.todobackend.repository.ConfigRepository;
-import com.akgarg.todobackend.response.CacheKVResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,12 +47,15 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public CacheKVResponse updateConfigProp(final String _key, final String value) {
+    public CacheKVResponse updateConfigProp(
+            final String _key,
+            final String value
+    ) {
         try {
-            final CacheConfigKey key = CacheConfigKey.valueOf(_key);
-            final TodoConfig config = new TodoConfig(key.name(), value);
+            final var key = CacheConfigKey.valueOf(_key);
+            final var config = new TodoConfig(key.name(), value);
 
-            final TodoConfig updatedConfigProp = this.configRepository.save(config);
+            final var updatedConfigProp = this.configRepository.save(config);
             this.cache.insertOrUpdateConfig(updatedConfigProp.getKey(), updatedConfigProp.getValue());
 
             return new CacheKVResponse(updatedConfigProp.getKey(), updatedConfigProp.getValue());
@@ -77,7 +80,10 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public String getConfig(final CacheConfigKey key, final String defaultValue) {
+    public String getConfig(
+            final CacheConfigKey key,
+            final String defaultValue
+    ) {
         return this.cache.getConfigValue(key.name(), defaultValue);
     }
 

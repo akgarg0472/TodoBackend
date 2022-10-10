@@ -1,9 +1,9 @@
 package com.akgarg.todobackend.adapter;
 
-import com.akgarg.todobackend.entity.TodoUser;
-import com.akgarg.todobackend.exception.ConvertAdapterException;
-import com.akgarg.todobackend.response.TodoResponseDto;
-import com.akgarg.todobackend.response.UserResponseDto;
+import com.akgarg.todobackend.model.entity.TodoUser;
+import com.akgarg.todobackend.exception.ConverterAdapterException;
+import com.akgarg.todobackend.model.response.TodoResponseDto;
+import com.akgarg.todobackend.model.response.UserResponseDto;
 
 import static com.akgarg.todobackend.constants.ApplicationConstants.ROLE_ADMIN;
 
@@ -28,7 +28,7 @@ public class TodoUserToUserResponseDtoAdapter {
 
             return dto;
         } catch (Exception e) {
-            throw new ConvertAdapterException(getErrorMessage(entity), e);
+            throw new ConverterAdapterException(getErrorMessage(entity), e);
         }
     }
 

@@ -3,12 +3,12 @@ package com.akgarg.todobackend.service.user;
 import com.akgarg.todobackend.cache.ApplicationCache;
 import com.akgarg.todobackend.config.security.springsecurity.UserDetailsImpl;
 import com.akgarg.todobackend.constants.CacheConfigKey;
-import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.logger.ApplicationLogger;
+import com.akgarg.todobackend.model.entity.TodoUser;
+import com.akgarg.todobackend.model.request.*;
+import com.akgarg.todobackend.model.response.UserResponseDto;
 import com.akgarg.todobackend.repository.UserRepository;
-import com.akgarg.todobackend.request.*;
-import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.email.EmailService;
 import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
@@ -32,9 +32,8 @@ import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_FRONTEN
 import static com.akgarg.todobackend.constants.FrontendConstants.DEFAULT_PASSWORD_RESET_ENDPOINT_URL;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Service
 @SuppressWarnings("all")
@@ -53,7 +52,10 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     @Override
-    public String addNewUser(final RegisterUserRequest request, final String url) {
+    public String addNewUser(
+            final RegisterUserRequest request,
+            final String url
+    ) {
         final TodoUser user = convertRequestToEntity(request);
 
         user.setId(generateUserId());
@@ -67,8 +69,16 @@ public class UserServiceImpl implements UserService {
         try {
             final TodoUser insertedUser = this.userRepository.insert(user);
             logger.info(getClass(), "New user {} saved in database", insertedUser);
-            boolean confirmSuccessEmail = emailService.sendAccountVerificationEmail(insertedUser.getEmail(), insertedUser.getName(), url, insertedUser.getAccountVerificationToken());
+
+            final boolean confirmSuccessEmail = emailService
+                    .sendAccountVerificationEmail(
+                            insertedUser.getEmail(),
+                            insertedUser.getName(),
+                            url,
+                            insertedUser.getAccountVerificationToken()
+                    );
             logger.info(getClass(), "Account confirm email sent successfully: {}", confirmSuccessEmail);
+
             return insertedUser.getEmail();
         } catch (Exception e) {
             logger.error(getClass(), "Something wrong happened saving new user into db. {}", e.getClass());
@@ -106,7 +116,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateUserProfile(final String userId, final UpdateUserRequest updateUserRequest) {
+    public String updateUserProfile(
+            final String userId,
+            final UpdateUserRequest updateUserRequest
+    ) {
         logger.info(getClass(), "Updating user {} profile: {}", userId, updateUserRequest);
 
         final TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
@@ -134,11 +147,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(final String userId, final String email) {
+    public void deleteUser(final String userId) {
         logger.warn(getClass(), "Deleting user with userId {}", userId);
 
-        final TodoUser user = this.userRepository
-                .findByIdAndEmail(userId, email)
+        final TodoUser user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL_AND_ID));
 
         this.todoService.removeAllTodoByUserId(userId);
@@ -150,8 +162,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> login(final LoginRequest loginRequest) {
         try {
-            final var authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+            final var authenticationToken = new UsernamePasswordAuthenticationToken(
+                    loginRequest.getEmail(),
+                    loginRequest.getPassword()
+            );
             this.authenticationManager.authenticate(authenticationToken);
         } catch (Exception e) {
             switch (e.getClass().getSimpleName()) {
@@ -177,22 +191,34 @@ public class UserServiceImpl implements UserService {
         String name = null;
 
         if (userDetails instanceof UserDetailsImpl) {
-            cache.insertOrUpdateUserKeyValue(((UserDetailsImpl) userDetails).getUser().getId(), ((UserDetailsImpl) userDetails).getUser());
-            cache.insertOrUpdateUserKeyValue(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getUser());
+            cache.insertOrUpdateUserKeyValue(
+                    ((UserDetailsImpl) userDetails).getUser().getId(),
+                    ((UserDetailsImpl) userDetails).getUser()
+            );
+            cache.insertOrUpdateUserKeyValue(
+                    userDetails.getUsername(),
+                    ((UserDetailsImpl) userDetails).getUser()
+            );
             userRole = ((UserDetailsImpl) userDetails).getUser().getRole();
             userId = ((UserDetailsImpl) userDetails).getUser().getId();
             email = ((UserDetailsImpl) userDetails).getUser().getEmail();
             name = ((UserDetailsImpl) userDetails).getUser().getName();
         }
 
-        return Map.of(LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtUtils.generateToken(userDetails),
-                      LOGIN_SUCCESS_RESPONSE_ROLE, userRole, LOGIN_SUCCESS_RESPONSE_USERID, userId,
-                      LOGIN_SUCCESS_RESPONSE_EMAIL, email, LOGIN_SUCCESS_RESPONSE_NAME, name
+        return Map.of(
+                LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtUtils.generateToken(userDetails),
+                LOGIN_SUCCESS_RESPONSE_ROLE, userRole,
+                LOGIN_SUCCESS_RESPONSE_USERID, userId,
+                LOGIN_SUCCESS_RESPONSE_EMAIL, email,
+                LOGIN_SUCCESS_RESPONSE_NAME, name
         );
     }
 
     @Override
-    public boolean sendForgotPasswordEmail(final String email, final String url) {
+    public boolean sendForgotPasswordEmail(
+            final String email,
+            final String url
+    ) {
         final TodoUser user = fetchUserEntityByEmail(email);
         final String forgotPasswordToken = PasswordUtils.generateForgotPasswordToken();
 
@@ -204,7 +230,12 @@ public class UserServiceImpl implements UserService {
             final String hashedToken = PasswordUtils.hashForgotPasswordToken(forgotPasswordToken, updatedUser.getId());
             final String frontEndResetPasswordEndpointUrl = getFrontEndResetPasswordEndpointUrl();
 
-            return this.emailService.sendForgotPasswordEmail(frontEndResetPasswordEndpointUrl, updatedUser.getName(), updatedUser.getEmail(), hashedToken);
+            return this.emailService.sendForgotPasswordEmail(
+                    frontEndResetPasswordEndpointUrl,
+                    updatedUser.getName(),
+                    updatedUser.getEmail(),
+                    hashedToken
+            );
         } catch (Exception e) {
             logger.error(getClass(), "Something went wrong sending forgot password email to {}", user.getEmail());
         }
@@ -248,8 +279,7 @@ public class UserServiceImpl implements UserService {
         final String userId = decodedForgotPasswordToken[1];
         final TodoUser user = fetchUserEntityById(userId, ACCOUNT_NOT_FOUND_BY_TOKEN);
 
-        if (forgotPasswordToken != null &&
-                forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
+        if (forgotPasswordToken != null && forgotPasswordToken.equals(user.getForgotPasswordToken()) &&
                 request.getPassword().equals(request.getConfirmPassword())) {
             user.setForgotPasswordToken(null);
             user.setPassword(this.passwordEncoder.encode(request.getPassword()));
@@ -271,7 +301,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String changeProfilePassword(final String userId, final ChangePasswordRequest request) {
+    public String changeProfilePassword(
+            final String userId,
+            final ChangePasswordRequest request
+    ) {
         final TodoUser user = fetchUserEntityById(userId, USER_NOT_FOUND_BY_ID);
 
         boolean isOldPasswordValidated = ValidationUtils.validatePasswordField(request.getOldPassword());
@@ -309,7 +342,10 @@ public class UserServiceImpl implements UserService {
 
     private String getFrontEndResetPasswordEndpointUrl() {
         final Object frontEndBaseUrl = this.cache.getConfigValue(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
-        final Object frontendPasswordResetEndpointUrl = this.cache.getConfigValue(CacheConfigKey.RESET_PASSWORD_PAGE_URL.name(), DEFAULT_PASSWORD_RESET_ENDPOINT_URL);
+        final Object frontendPasswordResetEndpointUrl = this.cache.getConfigValue(
+                CacheConfigKey.RESET_PASSWORD_PAGE_URL.name(),
+                DEFAULT_PASSWORD_RESET_ENDPOINT_URL
+        );
 
         return frontEndBaseUrl + "/" + frontendPasswordResetEndpointUrl;
     }
@@ -351,11 +387,13 @@ public class UserServiceImpl implements UserService {
             return (TodoUser) cachedUser.get();
         }
 
-        return this.userRepository.findByEmail(email).orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
+        return this.userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND_BY_EMAIL));
     }
 
     private TodoUser fetchUserEntityById(final String userId, final String exceptionMessage) {
-        return this.userRepository.findById(userId).orElseThrow(() -> new UserException(exceptionMessage));
+        return this.userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(exceptionMessage));
     }
 
     private TodoUser convertRequestToEntity(final RegisterUserRequest request) {

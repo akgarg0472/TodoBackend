@@ -1,9 +1,9 @@
 package com.akgarg.todobackend.repository;
 
 import com.akgarg.todobackend.adapter.TodoUserToUserResponseDtoAdapter;
-import com.akgarg.todobackend.dto.AdminDashboardUserInfoDto;
-import com.akgarg.todobackend.entity.TodoUser;
-import com.akgarg.todobackend.response.PaginatedUserResponse;
+import com.akgarg.todobackend.model.dto.AdminDashboardUserInfoDto;
+import com.akgarg.todobackend.model.entity.TodoUser;
+import com.akgarg.todobackend.model.response.PaginatedUserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -32,7 +32,7 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
             offset = 0;
         }
 
-        final PageRequest pageable = PageRequest.of(offset, limit);
+        final var pageable = PageRequest.of(offset, limit);
         final var entities = this.findAll(pageable);
 
         return getPaginatedUserResponse(entities);
@@ -52,8 +52,6 @@ public interface UserRepository extends MongoRepository<TodoUser, String> {
     }
 
     Optional<TodoUser> findByEmail(final String email);
-
-    Optional<TodoUser> findByIdAndEmail(final String id, final String email);
 
     List<AdminDashboardUserInfoDto> findAllBy();
 

@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.config.security.springsecurity;
 
-import com.akgarg.todobackend.entity.TodoUser;
+import com.akgarg.todobackend.model.entity.TodoUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

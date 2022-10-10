@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.repository;
 
-import com.akgarg.todobackend.entity.TodoConfig;
+import com.akgarg.todobackend.model.entity.TodoConfig;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

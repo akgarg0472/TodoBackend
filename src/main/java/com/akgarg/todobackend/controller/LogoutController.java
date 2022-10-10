@@ -26,7 +26,7 @@ public class LogoutController {
     private final LogoutService logoutService;
 
     @PostMapping("/logout")
-    public void logout(@RequestBody(required = false) final Map<String, String> logoutRequestBody) {
+    public void logout(final @RequestBody(required = false) Map<String, String> logoutRequestBody) {
         this.logger.info(getClass(), "Logout request received for: {}", logoutRequestBody);
 
         if (logoutRequestBody == null || logoutRequestBody.isEmpty()) {

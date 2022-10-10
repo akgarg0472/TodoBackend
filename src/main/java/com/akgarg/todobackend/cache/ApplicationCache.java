@@ -5,6 +5,7 @@ import com.akgarg.todobackend.repository.ConfigRepository;
 import com.akgarg.todobackend.utils.ValidationUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * @since 16-07-2022
  */
 @Component
-public  class ApplicationCache {
+public class ApplicationCache {
 
     private final ApplicationLogger logger;
     private final ConfigRepository configRepository;
@@ -82,11 +83,11 @@ public  class ApplicationCache {
     }
 
     public Map<String, Object> getCacheMap() {
-        return this.cacheMap;
+        return Collections.unmodifiableMap(this.cacheMap);
     }
 
     public Map<String, String> getConfigsMap() {
-        return this.configsMap;
+        return Collections.unmodifiableMap(this.configsMap);
     }
 
 }

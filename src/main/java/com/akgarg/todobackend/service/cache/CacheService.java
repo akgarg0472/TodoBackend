@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.service.cache;
 
 import com.akgarg.todobackend.constants.CacheConfigKey;
-import com.akgarg.todobackend.response.CacheKVResponse;
+import com.akgarg.todobackend.model.response.CacheKVResponse;
 
 import java.util.List;
 

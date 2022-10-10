@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.exception;
 
-import com.akgarg.todobackend.response.ApiErrorResponse;
+import com.akgarg.todobackend.model.response.ApiErrorResponse;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import org.springframework.http.ResponseEntity;
@@ -92,8 +92,8 @@ public class ApplicationExceptionHandler {
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 
-    @ExceptionHandler(ConvertAdapterException.class)
-    public ResponseEntity<ApiErrorResponse> handleConvertAdapterException(final ConvertAdapterException e) {
+    @ExceptionHandler(ConverterAdapterException.class)
+    public ResponseEntity<ApiErrorResponse> handleConvertAdapterException(final ConverterAdapterException e) {
         final var errorResponse = new ApiErrorResponse();
 
         errorResponse.setErrorCode(500);

@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.request.ConfigPropUpdateRequest;
+import com.akgarg.todobackend.model.request.ConfigPropUpdateRequest;
 import com.akgarg.todobackend.service.cache.CacheService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -33,7 +33,11 @@ public class CacheController {
 
         final boolean cacheReloaded = this.cacheService.reloadCache();
 
-        return ResponseUtils.generateBooleanConditionalResponse(cacheReloaded, CACHE_RELOAD_SUCCESS, CACHE_RELOAD_FAILED);
+        return ResponseUtils.generateBooleanConditionalResponse(
+                cacheReloaded,
+                CACHE_RELOAD_SUCCESS,
+                CACHE_RELOAD_FAILED
+        );
     }
 
     @GetMapping("/getConfigs")
@@ -60,11 +64,12 @@ public class CacheController {
     }
 
     @PostMapping("/cacheConfig")
-    public ResponseEntity<Map<String, Object>> updateConfigProp(@RequestBody final ConfigPropUpdateRequest request) {
+    public ResponseEntity<Map<String, Object>> updateConfigProp(final @RequestBody ConfigPropUpdateRequest request) {
         this.logger.info(getClass(), "updateConfigProp cache request received: {}", request);
         ValidationUtils.validateConfigPropUpdateRequest(request);
 
-        final var cacheKVResponse = this.cacheService.updateConfigProp(request.getKey(), request.getValue());
+        final var cacheKVResponse = this.cacheService
+                .updateConfigProp(request.getKey(), request.getValue());
 
         return ResponseUtils.generateUpdateConfigPropResponse(cacheKVResponse);
     }

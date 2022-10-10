@@ -1,8 +1,8 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.request.ForgotPasswordEmailRequest;
-import com.akgarg.todobackend.request.ForgotPasswordRequest;
+import com.akgarg.todobackend.model.request.ForgotPasswordEmailRequest;
+import com.akgarg.todobackend.model.request.ForgotPasswordRequest;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
@@ -32,7 +32,8 @@ public class PasswordController {
 
     @PostMapping(value = "/forgot-password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> sendForgotPasswordEmail(
-            @RequestBody final ForgotPasswordEmailRequest forgotPasswordEmailRequest, final HttpServletRequest request
+            final @RequestBody ForgotPasswordEmailRequest forgotPasswordEmailRequest,
+            final HttpServletRequest httpServletRequest
     ) {
         logger.info(getClass(), "Forgot password request received for: {}", forgotPasswordEmailRequest);
         ValidationUtils.validateForgotPasswordEmailRequest(forgotPasswordEmailRequest);
@@ -40,14 +41,14 @@ public class PasswordController {
         final boolean forgotPasswordEmailResponse = this.userService
                 .sendForgotPasswordEmail(
                         forgotPasswordEmailRequest.getEmail(),
-                        UrlUtils.getUrl(request)
+                        UrlUtils.getUrl(httpServletRequest)
                 );
 
         return ResponseUtils.generateForgotPasswordResponse(forgotPasswordEmailResponse, forgotPasswordEmailRequest.getEmail());
     }
 
     @PostMapping(value = "reset-password")
-    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody final ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<Map<String, Object>> resetPassword(final @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         logger.info(getClass(), "Received resetPassword request for: {}", forgotPasswordRequest.getForgotPasswordToken());
 
         final boolean isRequestValid = ValidationUtils.validateForgotPasswordRequest(forgotPasswordRequest);

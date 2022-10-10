@@ -1,8 +1,8 @@
 package com.akgarg.todobackend.controller;
 
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.request.ChangeAccountStateRequest;
-import com.akgarg.todobackend.request.ChangeAccountTypeRequest;
+import com.akgarg.todobackend.model.request.ChangeAccountStateRequest;
+import com.akgarg.todobackend.model.request.ChangeAccountTypeRequest;
 import com.akgarg.todobackend.service.admin.AdminService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
@@ -34,9 +34,9 @@ public class AdminController {
 
         return ResponseUtils.generateAdminDashboardResponse(adminDashboard);
     }
-    
+
     @GetMapping("/admin/profile/{adminId}")
-    public ResponseEntity<Map<String, Object>> getAdminProfile(@PathVariable("adminId") final String adminId) {
+    public ResponseEntity<Map<String, Object>> getAdminProfile(final @PathVariable("adminId") String adminId) {
         this.logger.debug(getClass(), "getAdminProfile(): {}", adminId);
         ValidationUtils.checkForNullOrInvalidId(adminId, NULL_OR_INVALID_USER_ID);
 
@@ -47,8 +47,8 @@ public class AdminController {
 
     @GetMapping("/admin/users")
     public Map<String, Object> getAllUsers(
-            @RequestParam(value = "offset", defaultValue = "0") final int offset,
-            @RequestParam(value = "offset", defaultValue = "10") final int limit
+            final @RequestParam(value = "offset", defaultValue = "0") int offset,
+            final @RequestParam(value = "offset", defaultValue = "10") int limit
     ) {
         this.logger.debug(getClass(), "getAllUsers(): {}->{}", offset, limit);
 
@@ -58,7 +58,7 @@ public class AdminController {
     }
 
     @GetMapping("/profile/{profileId}")
-    public ResponseEntity<Map<String, Object>> getProfile(@PathVariable("profileId") final String profileId) {
+    public ResponseEntity<Map<String, Object>> getProfile(final @PathVariable("profileId") String profileId) {
         this.logger.debug(getClass(), "getProfile(): {}", profileId);
         ValidationUtils.checkForNullOrInvalidId(profileId, NULL_OR_INVALID_USER_ID);
 
@@ -68,7 +68,7 @@ public class AdminController {
     }
 
     @PatchMapping("/changeAccountType")
-    public ResponseEntity<Map<String, Object>> changeAccountType(@RequestBody final ChangeAccountTypeRequest request) {
+    public ResponseEntity<Map<String, Object>> changeAccountType(final @RequestBody ChangeAccountTypeRequest request) {
         this.logger.debug(getClass(), "changeAccountType(): {}", request);
         ValidationUtils.validateChangeAccountTypeRequest(request);
 
@@ -79,7 +79,7 @@ public class AdminController {
     }
 
     @PatchMapping("/user/lockAccount")
-    public ResponseEntity<Map<String, Object>> lockAccount(@RequestBody final ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> lockAccount(final @RequestBody ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "lockAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
@@ -90,7 +90,7 @@ public class AdminController {
     }
 
     @PatchMapping("/user/unlockAccount")
-    public ResponseEntity<Map<String, Object>> unlockAccount(@RequestBody final ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> unlockAccount(final @RequestBody ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "unlockAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
@@ -101,7 +101,7 @@ public class AdminController {
     }
 
     @PatchMapping("/user/disableAccount")
-    public ResponseEntity<Map<String, Object>> disableAccount(@RequestBody final ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> disableAccount(final @RequestBody ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "disableAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 
@@ -112,7 +112,7 @@ public class AdminController {
     }
 
     @PatchMapping("/user/enableAccount")
-    public ResponseEntity<Map<String, Object>> enableAccount(@RequestBody final ChangeAccountStateRequest request) {
+    public ResponseEntity<Map<String, Object>> enableAccount(final @RequestBody ChangeAccountStateRequest request) {
         this.logger.debug(getClass(), "enableAccount(): {}", request);
         ValidationUtils.validateChangeAccountStateRequest(request);
 

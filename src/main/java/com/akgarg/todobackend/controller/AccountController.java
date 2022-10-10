@@ -3,10 +3,10 @@ package com.akgarg.todobackend.controller;
 import com.akgarg.todobackend.cache.ApplicationCache;
 import com.akgarg.todobackend.constants.CacheConfigKey;
 import com.akgarg.todobackend.logger.ApplicationLogger;
-import com.akgarg.todobackend.request.LoginRequest;
-import com.akgarg.todobackend.request.RegisterUserRequest;
-import com.akgarg.todobackend.response.LoginResponse;
-import com.akgarg.todobackend.response.SignupResponse;
+import com.akgarg.todobackend.model.request.LoginRequest;
+import com.akgarg.todobackend.model.request.RegisterUserRequest;
+import com.akgarg.todobackend.model.response.LoginResponse;
+import com.akgarg.todobackend.model.response.SignupResponse;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.ResponseUtils;
 import com.akgarg.todobackend.utils.UrlUtils;
@@ -38,18 +38,19 @@ public class AccountController {
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignupResponse> registerUser(
-            @RequestBody final RegisterUserRequest registerUserRequest, final HttpServletRequest httpServletRequest
+            final @RequestBody RegisterUserRequest registerUserRequest,
+            final HttpServletRequest httpServletRequest
     ) {
         logger.info(getClass(), "Signup request received: {}", registerUserRequest);
         ValidationUtils.validateRegisterUserRequest(registerUserRequest);
 
-        final String email = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
+        final String registeredEmail = this.userService.addNewUser(registerUserRequest, UrlUtils.getUrl(httpServletRequest));
 
-        return ResponseUtils.generateSignupSuccessResponse(REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", email), 201);
+        return ResponseUtils.generateSignupSuccessResponse(REGISTRATION_SUCCESS_CONFIRM_ACCOUNT.replace("$email", registeredEmail), 201);
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody final LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginUser(final @RequestBody LoginRequest loginRequest) {
         logger.info(getClass(), "Login request received: {}", loginRequest);
         ValidationUtils.validateLoginRequest(loginRequest);
 
@@ -59,7 +60,7 @@ public class AccountController {
     }
 
     @GetMapping(value = "/verify/{accountVerificationToken}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> verifyUserAccount(@PathVariable final String accountVerificationToken) {
+    public ResponseEntity<?> verifyUserAccount(final @PathVariable String accountVerificationToken) {
         final boolean isTokenValid = ValidationUtils.checkForNullOrInvalidToken(accountVerificationToken);
 
         String verifiedAccountEmail = null;

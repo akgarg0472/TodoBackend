@@ -16,12 +16,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class EmailSenderConfigProperties {
 
     private String host;
-    private int port;
+    private Integer port;
     private String senderEmail;
     private String senderEmailPassword;
     private String protocol;
     private boolean auth;
     private boolean tlsEnable;
     private boolean debug;
-
+    
 }

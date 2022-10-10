@@ -1,8 +1,8 @@
 package com.akgarg.todobackend.adapter;
 
-import com.akgarg.todobackend.entity.TodoEntity;
-import com.akgarg.todobackend.exception.ConvertAdapterException;
-import com.akgarg.todobackend.response.TodoResponseDto;
+import com.akgarg.todobackend.model.entity.TodoEntity;
+import com.akgarg.todobackend.exception.ConverterAdapterException;
+import com.akgarg.todobackend.model.response.TodoResponseDto;
 
 /**
  * @author Akhilesh Garg
@@ -23,7 +23,7 @@ public class TodoEntityToTodoResponseDtoAdapter {
 
             return dto;
         } catch (Exception e) {
-            throw new ConvertAdapterException(getErrorMessage(entity), e);
+            throw new ConverterAdapterException(getErrorMessage(entity), e);
         }
     }
 

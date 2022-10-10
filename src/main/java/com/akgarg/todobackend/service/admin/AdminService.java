@@ -1,9 +1,9 @@
 package com.akgarg.todobackend.service.admin;
 
-import com.akgarg.todobackend.dto.TodoUserDto;
-import com.akgarg.todobackend.response.AdminDashboardInfo;
-import com.akgarg.todobackend.response.PaginatedUserResponse;
-import com.akgarg.todobackend.response.UserResponseDto;
+import com.akgarg.todobackend.model.dto.TodoUserDto;
+import com.akgarg.todobackend.model.response.AdminDashboardInfo;
+import com.akgarg.todobackend.model.response.PaginatedUserResponse;
+import com.akgarg.todobackend.model.response.UserResponseDto;
 
 /**
  * Author: Akhilesh Garg

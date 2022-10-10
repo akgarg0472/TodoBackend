@@ -1,14 +1,14 @@
 package com.akgarg.todobackend.service.todo;
 
-import com.akgarg.todobackend.entity.TodoEntity;
 import com.akgarg.todobackend.exception.TodoException;
 import com.akgarg.todobackend.logger.ApplicationLogger;
+import com.akgarg.todobackend.model.entity.TodoEntity;
+import com.akgarg.todobackend.model.request.NewTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.model.response.PaginatedTodoResponse;
+import com.akgarg.todobackend.model.response.TodoResponseDto;
 import com.akgarg.todobackend.repository.TodoRepository;
-import com.akgarg.todobackend.request.NewTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
-import com.akgarg.todobackend.response.PaginatedTodoResponse;
-import com.akgarg.todobackend.response.TodoResponseDto;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
@@ -18,10 +18,8 @@ import org.springframework.stereotype.Service;
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub:
- * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Service
 @AllArgsConstructor
@@ -32,7 +30,7 @@ public class TodoServiceImpl implements TodoService {
     private final ApplicationLogger logger;
 
     @Override
-    public TodoResponseDto insert(NewTodoRequest request) {
+    public TodoResponseDto insert(final NewTodoRequest request) {
         final TodoEntity todo = convertRequestDtoToEntity(request);
 
         todo.setId(ObjectId.get().toString());
@@ -45,21 +43,25 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void delete(String todoId) {
+    public void delete(final String todoId) {
         final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
 
         this.todoRepository.delete(todoEntity);
     }
 
     @Override
-    public TodoResponseDto getTodoById(String todoId) {
+    public TodoResponseDto getTodoById(final String todoId) {
         final TodoEntity todo = this.getTodoEntityById(todoId, TODO_NOT_FOUND);
 
         return convertEntityToDto(todo);
     }
 
     @Override
-    public PaginatedTodoResponse getTodosForUser(String userId, int offset, int limit) {
+    public PaginatedTodoResponse getTodosForUser(
+            final String userId,
+            final int offset,
+            final int limit
+    ) {
         final var userTodos = this.todoRepository.findAllTodosByUserId(userId, offset, limit);
 
         if (userTodos == null || userTodos.getTodos() == null) {
@@ -70,7 +72,10 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public TodoResponseDto update(String todoId, UpdateTodoRequest updateDto) {
+    public TodoResponseDto update(
+            final String todoId,
+            final UpdateTodoRequest updateDto
+    ) {
         final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
 
         todoEntity.setDescription(updateDto.getDescription());
@@ -84,7 +89,10 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public TodoResponseDto updateTodoStatus(String todoId, UpdateTodoStatusRequest request) {
+    public TodoResponseDto updateTodoStatus(
+            final String todoId,
+            final UpdateTodoStatusRequest request
+    ) {
         final TodoEntity todoEntity = this.getTodoEntityById(todoId, TODO_NOT_FOUND_FOR_PROVIDED_ID);
         todoEntity.setCompleted(request.getCompleted());
         todoEntity.setUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
@@ -95,7 +103,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void removeAllTodoByUserId(String userId) {
+    public void removeAllTodoByUserId(final String userId) {
         logger.warn(getClass(), "Deleting all todos for userId {}", userId);
 
         final var todos = this.todoRepository.findAllByUserId(userId).orElseThrow(() -> new TodoException(NO_TODO_FOUND_FOR_USER));
@@ -106,8 +114,13 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public PaginatedTodoResponse getCompletedTodosForUser(final String userId, final int offset, final int limit) {
-        final var completedTodos = this.todoRepository.findCompletedTodosByUserId(userId, offset, limit);
+    public PaginatedTodoResponse getCompletedTodosForUser(
+            final String userId,
+            final int offset,
+            final int limit
+    ) {
+        final var completedTodos = this.todoRepository
+                .findCompletedTodosByUserId(userId, offset, limit);
 
         if (completedTodos == null || completedTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
@@ -117,8 +130,13 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public PaginatedTodoResponse getPendingTodosForUser(final String userId, final int offset, final int limit) {
-        final var pendingTodos = this.todoRepository.findPendingTodosByUserId(userId, offset, limit);
+    public PaginatedTodoResponse getPendingTodosForUser(
+            final String userId,
+            final int offset,
+            final int limit
+    ) {
+        final var pendingTodos = this.todoRepository
+                .findPendingTodosByUserId(userId, offset, limit);
 
         if (pendingTodos == null || pendingTodos.getTodos() == null) {
             throw new TodoException(NO_TODO_FOUND_FOR_USER);
@@ -127,15 +145,20 @@ public class TodoServiceImpl implements TodoService {
         return pendingTodos;
     }
 
-    private TodoEntity getTodoEntityById(String todoId, String exceptionMessage) {
-        return this.todoRepository.findById(todoId).orElseThrow(() -> new TodoException(exceptionMessage));
+    private TodoEntity getTodoEntityById(
+            final String todoId,
+            final String exceptionMessage
+    ) {
+        return this.todoRepository
+                .findById(todoId)
+                .orElseThrow(() -> new TodoException(exceptionMessage));
     }
 
-    private TodoResponseDto convertEntityToDto(TodoEntity entity) {
+    private TodoResponseDto convertEntityToDto(final TodoEntity entity) {
         return modelMapper.map(entity, TodoResponseDto.class);
     }
 
-    private TodoEntity convertRequestDtoToEntity(NewTodoRequest dto) {
+    private TodoEntity convertRequestDtoToEntity(final NewTodoRequest dto) {
         return modelMapper.map(dto, TodoEntity.class);
     }
 

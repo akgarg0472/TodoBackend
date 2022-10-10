@@ -1,6 +1,6 @@
 package com.akgarg.todobackend.config.security.jwt;
 
-import com.akgarg.todobackend.response.ApiErrorResponse;
+import com.akgarg.todobackend.model.response.ApiErrorResponse;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
@@ -13,17 +13,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Author: Akhilesh Garg
- * GitHub:
- * <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final AuthenticationException exception
     )
             throws IOException {
         final ApiErrorResponse errorResponse = new ApiErrorResponse();

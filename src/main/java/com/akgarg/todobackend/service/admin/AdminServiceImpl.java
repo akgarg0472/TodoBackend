@@ -1,17 +1,17 @@
 package com.akgarg.todobackend.service.admin;
 
 import com.akgarg.todobackend.cache.ApplicationCache;
-import com.akgarg.todobackend.dto.AdminDashboardUserInfoDto;
-import com.akgarg.todobackend.dto.TodoUserDto;
-import com.akgarg.todobackend.entity.TodoUser;
 import com.akgarg.todobackend.exception.GenericException;
 import com.akgarg.todobackend.exception.UserException;
 import com.akgarg.todobackend.logger.ApplicationLogger;
+import com.akgarg.todobackend.model.dto.AdminDashboardUserInfoDto;
+import com.akgarg.todobackend.model.dto.TodoUserDto;
+import com.akgarg.todobackend.model.entity.TodoUser;
+import com.akgarg.todobackend.model.response.AdminDashboardInfo;
+import com.akgarg.todobackend.model.response.PaginatedUserResponse;
+import com.akgarg.todobackend.model.response.UserResponseDto;
 import com.akgarg.todobackend.repository.TodoRepository;
 import com.akgarg.todobackend.repository.UserRepository;
-import com.akgarg.todobackend.response.AdminDashboardInfo;
-import com.akgarg.todobackend.response.PaginatedUserResponse;
-import com.akgarg.todobackend.response.UserResponseDto;
 import com.akgarg.todobackend.service.user.UserService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
@@ -81,7 +81,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public PaginatedUserResponse getAllUsers(final int offset, final int limit) {
+    public PaginatedUserResponse getAllUsers(
+            final int offset,
+            final int limit
+    ) {
         logger.info(getClass(), "getAllUsers(): {}->{}", offset, limit);
 
         try {
@@ -99,35 +102,55 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public boolean lockUserAccount(final String userId, String reason, String lockedBy) {
+    public boolean lockUserAccount(
+            final String userId,
+            final String reason,
+            final String lockedBy
+    ) {
         logger.info(getClass(), "lockUserAccount(): {}->'{}' by {}", userId, reason, lockedBy);
 
         return this.changeUserAccountLockState(userId, false, reason, lockedBy);
     }
 
     @Override
-    public boolean unlockUserAccount(final String userId, String reason, String by) {
+    public boolean unlockUserAccount(
+            final String userId,
+            final String reason,
+            final String by
+    ) {
         logger.info(getClass(), "unlockUserAccount(): {}->'{}' by {}", userId, reason, by);
 
         return this.changeUserAccountLockState(userId, true, reason, by);
     }
 
     @Override
-    public boolean terminateUserAccount(final String userId, final String reason, final String terminatedBy) {
+    public boolean terminateUserAccount(
+            final String userId,
+            final String reason,
+            final String terminatedBy
+    ) {
         logger.info(getClass(), "terminateUserAccount(): {}->'{}' by {}", userId, reason, terminatedBy);
 
         return changeUserAccountEnableState(userId, false, reason, terminatedBy);
     }
 
     @Override
-    public boolean enableUserAccount(final String userId, final String reason, final String by) {
+    public boolean enableUserAccount(
+            final String userId,
+            final String reason,
+            final String by
+    ) {
         logger.info(getClass(), "terminateUserAccount(): {}->'{}' by {}", userId, reason, by);
 
         return changeUserAccountEnableState(userId, true, reason, by);
     }
 
     @Override
-    public boolean changeAccountType(final String userId, final String accountType, final String by) {
+    public boolean changeAccountType(
+            final String userId,
+            final String accountType,
+            final String by
+    ) {
         logger.info(getClass(), "changeAccountType(): {}->{}", userId, accountType);
 
         final String _accountType = getAccountType(accountType);
@@ -169,7 +192,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private boolean changeUserAccountEnableState(
-            final String userId, final boolean enabled, final String reason,
+            final String userId,
+            final boolean enabled,
+            final String reason,
             final String accountStateChangedBy
     ) {
         final TodoUser user = getUserEntity(userId);
@@ -194,7 +219,11 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    private boolean changeUserAccountType(final String userId, final String accountType, final String by) {
+    private boolean changeUserAccountType(
+            final String userId,
+            final String accountType,
+            final String by
+    ) {
         final TodoUser user = getUserEntity(userId);
 
         try {

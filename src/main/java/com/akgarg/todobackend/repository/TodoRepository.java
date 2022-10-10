@@ -1,8 +1,8 @@
 package com.akgarg.todobackend.repository;
 
 import com.akgarg.todobackend.adapter.TodoEntityToTodoResponseDtoAdapter;
-import com.akgarg.todobackend.entity.TodoEntity;
-import com.akgarg.todobackend.response.PaginatedTodoResponse;
+import com.akgarg.todobackend.model.entity.TodoEntity;
+import com.akgarg.todobackend.model.response.PaginatedTodoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,7 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        final PageRequest pageable = PageRequest.of(offset, limit);
+        final var pageable = PageRequest.of(offset, limit);
         final var entities = this.findAllByUserId(userId, pageable);
 
         return getPaginatedTodoResponse(entities);
@@ -56,7 +56,7 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        final PageRequest pageable = PageRequest.of(offset, limit);
+        final var pageable = PageRequest.of(offset, limit);
         final var entities = this.findAllByUserIdAndCompletedTrue(userId, pageable);
 
         return getPaginatedTodoResponse(entities);
@@ -73,7 +73,7 @@ public interface TodoRepository extends MongoRepository<TodoEntity, String> {
             offset = 0;
         }
 
-        final PageRequest pageable = PageRequest.of(offset, limit);
+        final var pageable = PageRequest.of(offset, limit);
         final var entities = this.findAllByUserIdAndCompletedFalse(userId, pageable);
 
         return getPaginatedTodoResponse(entities);

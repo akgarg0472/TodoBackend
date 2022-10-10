@@ -21,7 +21,7 @@ public class PublicController {
     private final IpService ipService;
 
     @GetMapping("/")
-    public Map<String, String> welcome(HttpServletRequest request) {
+    public Map<String, String> welcome(final HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
 
         response.put("message", "Hello from backend API");

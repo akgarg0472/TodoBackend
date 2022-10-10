@@ -55,16 +55,22 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/account/**", "/api/v1/password/**", "/health", "/api/v1/cache/reloadCache", "/").permitAll()
+                .antMatchers(
+                        "/api/v1/account/**",
+                        "/api/v1/password/**",
+                        "/api/v1/cache/reloadCache",
+                        "/health",
+                        "/"
+                ).permitAll()
                 .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/cache/**").hasRole("ADMIN")
-                .antMatchers("/api/v1/users/**").hasRole("USER")
+                .antMatchers("/api/v1/users/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/v1/**")
                 .authenticated()
                 .anyRequest().authenticated()

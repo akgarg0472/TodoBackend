@@ -32,7 +32,8 @@ public class JwtUtils implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.secretKey = Base64.getEncoder()
+                .encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String extractUsername(final String token) {
@@ -43,7 +44,10 @@ public class JwtUtils implements InitializingBean {
         return this.extractClaim(token, Claims::getExpiration);
     }
 
-    public <T> T extractClaim(final String token, final Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(
+            final String token,
+            final Function<Claims, T> claimsResolver
+    ) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -64,7 +68,10 @@ public class JwtUtils implements InitializingBean {
         return this.createToken(claims, userDetails.getUsername());
     }
 
-    private String createToken(final Map<String, Object> claims, final String subject) {
+    private String createToken(
+            final Map<String, Object> claims,
+            final String subject
+    ) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -75,7 +82,10 @@ public class JwtUtils implements InitializingBean {
                 .compact();
     }
 
-    public Boolean validateToken(final String token, final UserDetails userDetails) {
+    public Boolean validateToken(
+            final String token,
+            final UserDetails userDetails
+    ) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }

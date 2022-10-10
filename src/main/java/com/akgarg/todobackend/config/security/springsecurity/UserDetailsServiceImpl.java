@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.config.security.springsecurity;
 
 import com.akgarg.todobackend.cache.ApplicationCache;
-import com.akgarg.todobackend.entity.TodoUser;
+import com.akgarg.todobackend.model.entity.TodoUser;
 import com.akgarg.todobackend.logger.ApplicationLogger;
 import com.akgarg.todobackend.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;

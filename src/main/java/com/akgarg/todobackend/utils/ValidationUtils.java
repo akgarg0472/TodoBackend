@@ -5,7 +5,7 @@ import com.akgarg.todobackend.exception.BadRequestException;
 import com.akgarg.todobackend.exception.GenericException;
 import com.akgarg.todobackend.exception.TodoException;
 import com.akgarg.todobackend.exception.UserException;
-import com.akgarg.todobackend.request.*;
+import com.akgarg.todobackend.model.request.*;
 import org.bson.types.ObjectId;
 
 import java.util.regex.Pattern;
@@ -101,7 +101,8 @@ public class ValidationUtils {
     }
 
     public static boolean validatePasswordField(final String password) {
-        final var passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+        final Pattern passwordRegexPattern =
+                Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             return false;
@@ -190,7 +191,11 @@ public class ValidationUtils {
     }
 
     private static void validateRequestEmailField(final String email) {
-        final Pattern emailRegexPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        final Pattern emailRegexPattern =
+                Pattern.compile(
+                        "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+                        Pattern.CASE_INSENSITIVE
+                );
 
         if (email == null || email.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_EMAIL);
@@ -210,7 +215,8 @@ public class ValidationUtils {
     }
 
     private static void validateRequestPasswordField(final String password) {
-        final Pattern passwordRegexPattern = Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
+        final Pattern passwordRegexPattern =
+                Pattern.compile("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}");
 
         if (password == null || password.trim().isBlank()) {
             throw new BadRequestException(NULL_OR_EMPTY_PASSWORD);

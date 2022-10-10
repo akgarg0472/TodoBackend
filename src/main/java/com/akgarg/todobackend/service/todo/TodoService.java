@@ -1,17 +1,14 @@
 package com.akgarg.todobackend.service.todo;
 
-import com.akgarg.todobackend.request.NewTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoRequest;
-import com.akgarg.todobackend.request.UpdateTodoStatusRequest;
-import com.akgarg.todobackend.response.PaginatedTodoResponse;
-import com.akgarg.todobackend.response.TodoResponseDto;
+import com.akgarg.todobackend.model.request.NewTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoRequest;
+import com.akgarg.todobackend.model.request.UpdateTodoStatusRequest;
+import com.akgarg.todobackend.model.response.PaginatedTodoResponse;
+import com.akgarg.todobackend.model.response.TodoResponseDto;
 
 /**
- * TodoApplication service object
- * <p>
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 16-07-2022
+ * @author Akhilesh Garg
+ * @since 16-07-2022
  */
 public interface TodoService {
 
