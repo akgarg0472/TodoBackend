@@ -61,8 +61,8 @@ public class UserServiceImpl implements UserService {
         user.setId(generateUserId());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(ROLE_USER);
-        user.setIsEnabled(true);
-        user.setIsAccountNonLocked(false);
+        user.setIsEnabled(true);    // means account is not blocked
+        user.setIsAccountNonLocked(false);  // means account is not active yet
         user.setAccountVerificationToken(generateTokenFromUserId(user.getId()));
         user.setCreatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 

@@ -27,5 +27,7 @@ public class UserResponseDto implements Serializable {
     private String avatar;
     private Long createdAt;
     private Long lastUpdatedAt;
+    private boolean isEnabled;
+    private boolean isAccountNonLocked;
 
 }

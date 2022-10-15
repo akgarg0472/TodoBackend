@@ -27,13 +27,13 @@ public class TodoUser {
     private String role;
     private String avatar;
 
-    private Boolean isEnabled;
+    private Boolean isEnabled;  // blocked or not
     private String disabledBy;
     private String disableReason;
     private String enabledBy;
     private String enableReason;
 
-    private Boolean isAccountNonLocked;
+    private Boolean isAccountNonLocked; // enabled or not
     private String lockedBy;
     private String lockReason;
     private String unlockedBy;

@@ -37,7 +37,7 @@ public final class ApplicationConstants {
     public static final String USER_NOT_FOUND_BY_ID = "No user found with userId provided";
     public static final String ACCOUNT_NOT_FOUND_BY_TOKEN = "Invalid verification token";
     public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid Login Credentials";
-    public static final String USER_ACCOUNT_DISABLED = "Your account is disabled";
+    public static final String USER_ACCOUNT_DISABLED = "Your account is blocked. Please contact admin";
     public static final String USER_ACCOUNT_LOCKED = "Please verify your account to continue";
     public static final String EXPIRED_JWT_TOKEN = "Token expired. Please login again";
     public static final String INVALID_JWT_TOKEN = "Auth token is invalid";

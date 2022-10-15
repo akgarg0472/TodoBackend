@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @since 17-09-2022
  */
 @SpringBootTest
-class PasswordTests {
+class PasswordUtilsTests {
 
     @Autowired
     private ApplicationLogger logger;

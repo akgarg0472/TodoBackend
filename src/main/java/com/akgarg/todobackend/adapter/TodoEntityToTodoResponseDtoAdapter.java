@@ -1,7 +1,7 @@
 package com.akgarg.todobackend.adapter;
 
-import com.akgarg.todobackend.model.entity.TodoEntity;
 import com.akgarg.todobackend.exception.ConverterAdapterException;
+import com.akgarg.todobackend.model.entity.TodoEntity;
 import com.akgarg.todobackend.model.response.TodoResponseDto;
 
 /**

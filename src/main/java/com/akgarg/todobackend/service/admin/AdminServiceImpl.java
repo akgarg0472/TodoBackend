@@ -21,9 +21,8 @@ import org.springframework.stereotype.Service;
 import static com.akgarg.todobackend.constants.ApplicationConstants.*;
 
 /**
- * Author: Akhilesh Garg
- * GitHub: <a href="https://github.com/akgarg0472">https://github.com/akgarg0472</a>
- * Date: 21-07-2022
+ * @author Akhilesh Garg
+ * @since 21-07-2022
  */
 @Service
 @AllArgsConstructor
@@ -44,6 +43,7 @@ public class AdminServiceImpl implements AdminService {
             long usersCount = 0L;
             long activeAccountsCount = 0L;
             long todosCount;
+            long blockedAccountsCount = 0L;
 
             final var accounts = this.userRepository.getAdminDashboardInfo();
             todosCount = this.todoRepository.count();
@@ -58,6 +58,9 @@ public class AdminServiceImpl implements AdminService {
                 if (account.isAccountNonLocked()) {
                     activeAccountsCount++;
                 }
+                if (!account.isAccountNonLocked()) {
+                    blockedAccountsCount++;
+                }
             }
 
             response.setTotalAccountsCount((long) accounts.size());
@@ -65,6 +68,8 @@ public class AdminServiceImpl implements AdminService {
             response.setTotalUsersCount(usersCount);
             response.setTotalTodosCount(todosCount);
             response.setActiveAccountsCount(activeAccountsCount);
+            response.setBlockedAccountsCount(blockedAccountsCount);
+            response.setEnabledAccountsCount(accounts.size() - blockedAccountsCount);
 
             return response;
         } catch (Exception e) {
@@ -201,6 +206,7 @@ public class AdminServiceImpl implements AdminService {
 
         try {
             user.setIsEnabled(enabled);
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
             if (enabled) {
                 user.setEnabledBy(accountStateChangedBy);
@@ -228,6 +234,7 @@ public class AdminServiceImpl implements AdminService {
 
         try {
             user.setRole(accountType);
+            user.setLastUpdatedAt(DateTimeUtils.getCurrentDateTimeInMilliseconds());
 
             if (ROLE_ADMIN.equalsIgnoreCase(accountType)) {
                 user.setApprovedAsAdminBy(by);
@@ -239,7 +246,6 @@ public class AdminServiceImpl implements AdminService {
 
             final TodoUser updatedUser = this.userRepository.save(user);
             this.cache.insertOrUpdateUserKeyValue(updatedUser.getEmail(), updatedUser);
-
             return true;
         } catch (Exception e) {
             throw new UserException(ERROR_UPDATING_ACC_TYPE);

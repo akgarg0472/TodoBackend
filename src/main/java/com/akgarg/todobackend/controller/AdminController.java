@@ -64,6 +64,8 @@ public class AdminController {
 
         final var profile = this.adminService.getProfile(profileId);
 
+        System.out.println("Detailed user profile is: " + profile);
+
         return ResponseUtils.generateGetProfileResponse(profile);
     }
 

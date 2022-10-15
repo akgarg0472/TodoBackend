@@ -18,19 +18,25 @@ public class AdminDashboardInfo implements Serializable {
     @Serial
     private static final long serialVersionUID = -2164752345273567367L;
 
-    @JsonProperty("accounts_count")
+    @JsonProperty("total_accounts")
     private Long totalAccountsCount;
 
-    @JsonProperty("users_count")
+    @JsonProperty("total_users")
     private Long totalUsersCount;
 
-    @JsonProperty("admins_count")
+    @JsonProperty("total_admins")
     private Long totalAdminsCount;
 
-    @JsonProperty("todos_count")
+    @JsonProperty("total_todos")
     private Long totalTodosCount;
 
-    @JsonProperty("active_account_count")
+    @JsonProperty("total_active_accounts")
     private Long activeAccountsCount;
+
+    @JsonProperty("total_blocked_accounts")
+    private Long blockedAccountsCount;
+
+    @JsonProperty("total_enabled_accounts")
+    private Long enabledAccountsCount;
 
 }

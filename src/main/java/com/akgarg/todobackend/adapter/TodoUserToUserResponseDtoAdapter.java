@@ -25,6 +25,8 @@ public class TodoUserToUserResponseDtoAdapter {
             dto.setCreatedAt(entity.getCreatedAt());
             dto.setLastUpdatedAt(entity.getLastUpdatedAt());
             dto.setRole(getRole(entity.getRole()));
+            dto.setEnabled(entity.getIsEnabled());
+            dto.setAccountNonLocked(entity.getIsAccountNonLocked());
 
             return dto;
         } catch (Exception e) {
