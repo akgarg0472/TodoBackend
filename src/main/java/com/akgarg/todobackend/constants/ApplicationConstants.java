@@ -24,7 +24,7 @@ public final class ApplicationConstants {
     public static final String TODO_STATUS_UPDATED_SUCCESSFULLY = "Todo status successfully updated";
     public static final String NO_TODO_FOUND_FOR_USER = "No todos found for the user";
     public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
-    public static final String REGISTRATION_SUCCESS_CONFIRM_ACCOUNT = "Please verify your account by clicking on the verification email sent to your email $email";
+    public static final String REGISTRATION_SUCCESS_CONFIRM_ACCOUNT = "Please verify your account by clicking on the verification email sent to $email";
     public static final String NULL_OR_EMPTY_EMAIL = "Invalid email provided";
     public static final String INVALID_EMAIL_FORMAT = "Email provided is in invalid format";
     public static final String NULL_OR_EMPTY_PASSWORD = "Invalid password";

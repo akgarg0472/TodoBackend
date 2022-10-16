@@ -24,14 +24,14 @@ public class PublicController {
     public Map<String, String> welcome(final HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
 
-        response.put("message", "Hello from backend API");
+        response.put("message", "Hello from Todo backend API");
         response.put("method", Objects.requireNonNull(request.getMethod()));
         response.put("IP", ipService.getClientIP(request));
 
         return response;
     }
 
-    @GetMapping("/health")
+    @GetMapping("/heartbeat")
     public String health() {
         return "Service is running";
     }

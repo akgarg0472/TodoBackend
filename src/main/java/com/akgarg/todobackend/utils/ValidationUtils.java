@@ -1,6 +1,5 @@
 package com.akgarg.todobackend.utils;
 
-import com.akgarg.todobackend.config.email.EmailSenderConfigProperties;
 import com.akgarg.todobackend.exception.BadRequestException;
 import com.akgarg.todobackend.exception.GenericException;
 import com.akgarg.todobackend.exception.TodoException;
@@ -158,16 +157,6 @@ public class ValidationUtils {
 
     public static boolean isStringInvalid(final String str) {
         return str == null || str.isBlank();
-    }
-
-    public static void validateEmailSenderProperties(final EmailSenderConfigProperties config) {
-        if (config == null ||
-                config.getHost() == null ||
-                config.getPort() == 0 ||
-                config.getSenderEmail() == null ||
-                config.getSenderEmailPassword() == null) {
-            throw new NullPointerException("Invalid email config properties");
-        }
     }
 
     public static void checkForNullOrInvalidId(final String id, final String exceptionMessage) {

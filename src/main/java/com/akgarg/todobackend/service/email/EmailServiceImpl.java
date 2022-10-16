@@ -2,10 +2,12 @@ package com.akgarg.todobackend.service.email;
 
 import com.akgarg.todobackend.cache.ApplicationCache;
 import com.akgarg.todobackend.constants.CacheConfigKey;
+import com.akgarg.todobackend.constants.KafkaEnums;
 import com.akgarg.todobackend.logger.ApplicationLogger;
+import com.akgarg.todobackend.model.kafka.EmailMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import static com.akgarg.todobackend.constants.EmailConstants.*;
@@ -18,9 +20,10 @@ import static com.akgarg.todobackend.constants.EmailConstants.*;
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender javaMailSender;
     private final ApplicationLogger logger;
     private final ApplicationCache cache;
+    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public boolean send(
@@ -28,25 +31,25 @@ public class EmailServiceImpl implements EmailService {
             final String subject,
             final String message
     ) {
-        logger.info(getClass(), "Send email request received: [to: {}, subject: {}, message: {}]", toEmail, subject, message);
+        logger.info(getClass(), "Send email request received: [to: {}, subject: {}]", toEmail, subject);
 
         try {
-            final var emailMessage = this.javaMailSender.createMimeMessage();
+            final var emailTopic = KafkaEnums.EMAIL_TOPIC.value();
+
+            final var emailMessage = new EmailMessage();
+            emailMessage.setRecipients(new String[]{toEmail});
             emailMessage.setSubject(subject);
+            emailMessage.setMessage(message);
 
-            final var messageHelper = new MimeMessageHelper(emailMessage, true);
-            messageHelper.setTo(toEmail);
-            messageHelper.setText(message, true);
-
-            this.javaMailSender.send(emailMessage);
-            logger.info(getClass(), "{}: email successfully sent to -> {}", subject, toEmail);
+            final var emailMessageJsonString = this.objectMapper.writeValueAsString(emailMessage);
+            this.kafkaTemplate.send(emailTopic, emailMessageJsonString);
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(getClass(), "Error sending {} email to {}: {}", subject, toEmail, e.getClass().getSimpleName());
-            return false;
+            logger.error(getClass(), "Error sending email request: [to: {}, subject: {}]", toEmail, subject);
         }
+
+        return false;
     }
 
     @Override
@@ -61,10 +64,16 @@ public class EmailServiceImpl implements EmailService {
                 DEFAULT_FORGOT_PASSWORD_EMAIL_MESSAGE
         );
 
-        return this.send(email, FORGOT_PASSWORD_EMAIL_SUBJECT, forgotPasswordEmailMessage
-                .replace(NAME_PLACEHOLDER, name)
-                .replace(FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL_PLACEHOLDER, frontEndResetPasswordEndpointUrl)
-                .replace(FORGOT_PASSWORD_TOKEN_PLACEHOLDER, forgotPasswordToken));
+        return this.send(
+                email,
+                FORGOT_PASSWORD_EMAIL_SUBJECT,
+                forgotPasswordEmailMessage.replace(NAME_PLACEHOLDER, name)
+                        .replace(
+                                FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL_PLACEHOLDER,
+                                frontEndResetPasswordEndpointUrl
+                        )
+                        .replace(FORGOT_PASSWORD_TOKEN_PLACEHOLDER, forgotPasswordToken)
+        );
     }
 
     @Override
@@ -79,11 +88,13 @@ public class EmailServiceImpl implements EmailService {
                 DEFAULT_ACCOUNT_VERIFICATION_EMAIL
         );
 
-        return this.send(email, ACCOUNT_VERIFICATION_EMAIL_SUBJECT,
-                         sendAccountVerificationEmailMessage
-                                 .replace(NAME_PLACEHOLDER, name)
-                                 .replace(BASE_URL_PLACEHOLDER, url)
-                                 .replace(ACCOUNT_VERIFICATION_TOKEN_PLACEHOLDER, accountVerificationToken)
+        return this.send(
+                email,
+                ACCOUNT_VERIFICATION_EMAIL_SUBJECT,
+                sendAccountVerificationEmailMessage
+                        .replace(NAME_PLACEHOLDER, name)
+                        .replace(BASE_URL_PLACEHOLDER, url)
+                        .replace(ACCOUNT_VERIFICATION_TOKEN_PLACEHOLDER, accountVerificationToken)
         );
     }
 
@@ -94,8 +105,11 @@ public class EmailServiceImpl implements EmailService {
                 DEFAULT_ACCOUNT_VERIFY_SUCCESS_EMAIL
         );
 
-        this.send(email, ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT, accountConfirmSuccessEmailMessage
-                .replace(NAME_PLACEHOLDER, name));
+        this.send(
+                email,
+                ACCOUNT_VERIFICATION_SUCCESS_EMAIL_SUBJECT,
+                accountConfirmSuccessEmailMessage.replace(NAME_PLACEHOLDER, name)
+        );
     }
 
     @Override
@@ -105,7 +119,11 @@ public class EmailServiceImpl implements EmailService {
                 DEFAULT_PASSWORD_CHANGED_SUCCESS_EMAIL
         );
 
-        this.send(email, PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT, passwordSuccessfullyUpdatedEmailMessage.replace(NAME_PLACEHOLDER, name));
+        this.send(
+                email,
+                PASSWORD_CHANGED_SUCCESSFULLY_SUBJECT,
+                passwordSuccessfullyUpdatedEmailMessage.replace(NAME_PLACEHOLDER, name)
+        );
     }
 
     @Override

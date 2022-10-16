@@ -14,8 +14,8 @@ public class EmailConstants {
 
     // default email messages for different cases
     public static final String DEFAULT_FORGOT_PASSWORD_EMAIL_MESSAGE = "Dear <strong>$NAME</strong>,<br><br>Please click on following link to change password of your account.<br><a href='$FRONT_END_FORGOT_PASSWORD_ENDPOINT_URL/$FORGOT_PASSWORD_TOKEN'>Reset Password</a><br><br>Regards<br>Team Admin";
-    public static final String DEFAULT_ACCOUNT_VERIFICATION_EMAIL = "Congratulations <strong>$NAME</strong>,<br><br>Your account is created successfully. Please click on following link to verify your account.<br><a href='$BASE_URL/api/v1/account/verify/$ACCOUNT_VERIFICATION_TOKEN'>Verify Account</a><br><br>Regards<br>Team Admin";
-    public static final String DEFAULT_ACCOUNT_VERIFY_SUCCESS_EMAIL = "Congratulations <strong>$NAME</strong>,<br><br>Your account is successfully activated. Now you can enjoy our services.<br><br>Regards<br>Team Admin";
+    public static final String DEFAULT_ACCOUNT_VERIFICATION_EMAIL = "Dear <strong>$NAME</strong>,<br><br>Your account is created successfully. Please click on following link to verify your account.<br><a href='$BASE_URL/api/v1/account/verify/$ACCOUNT_VERIFICATION_TOKEN'>Verify Account</a><br><br>Regards<br>Team Admin";
+    public static final String DEFAULT_ACCOUNT_VERIFY_SUCCESS_EMAIL = "Congratulations <strong>$NAME</strong>,<br><br>Your account is successfully activated.<br><br>Regards<br>Team Admin";
     public static final String DEFAULT_PASSWORD_CHANGED_SUCCESS_EMAIL = "Dear <strong>$NAME</strong>,<br><br>Password of your account is successfully changed.<br>If you have not performed this action, please change the password of your account immediately.<br><br>Regards<br>Team Admin";
 
     // placeholder constants

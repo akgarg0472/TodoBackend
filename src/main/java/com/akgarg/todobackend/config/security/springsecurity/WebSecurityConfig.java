@@ -65,14 +65,16 @@ public class WebSecurityConfig {
                         "/api/v1/account/**",
                         "/api/v1/password/**",
                         "/api/v1/cache/reloadCache",
-                        "/health",
+                        "/heartbeat",
                         "/"
                 ).permitAll()
-                .antMatchers("/api/v1/admins/**").hasRole("ADMIN")
-                .antMatchers("/api/v1/cache/**").hasRole("ADMIN")
+                .antMatchers(
+                        "/api/v1/admins/**",
+                        "/api/v1/admin/management/**",
+                        "/api/v1/cache/**"
+                ).hasRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/v1/**")
-                .authenticated()
+                .antMatchers("/api/v1/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
