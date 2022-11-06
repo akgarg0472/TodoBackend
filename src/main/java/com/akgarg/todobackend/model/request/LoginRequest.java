@@ -2,7 +2,6 @@ package com.akgarg.todobackend.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Akhilesh Garg
@@ -10,10 +9,16 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 public class LoginRequest {
 
     private String email;
     private String password;
+
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "email='" + email + '\'' +
+                '}';
+    }
 
 }

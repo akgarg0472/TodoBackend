@@ -7,7 +7,7 @@ package com.akgarg.todobackend.service.email;
 @SuppressWarnings("unused")
 public interface EmailService {
 
-    boolean send(String toEmail, String subject, String message);
+    boolean send(String recipients, String subject, String message);
 
     boolean sendForgotPasswordEmail(
             String frontEndResetPasswordEndpointUrl,

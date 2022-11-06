@@ -2,7 +2,6 @@ package com.akgarg.todobackend.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Akhilesh Garg
@@ -10,7 +9,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 public class ForgotPasswordRequest {
 
     private String forgotPasswordToken;

@@ -10,9 +10,9 @@ import com.akgarg.todobackend.model.request.*;
 import com.akgarg.todobackend.model.response.UserResponseDto;
 import com.akgarg.todobackend.repository.UserRepository;
 import com.akgarg.todobackend.service.email.EmailService;
+import com.akgarg.todobackend.service.jwt.JwtService;
 import com.akgarg.todobackend.service.todo.TodoService;
 import com.akgarg.todobackend.utils.DateTimeUtils;
-import com.akgarg.todobackend.utils.JwtUtils;
 import com.akgarg.todobackend.utils.PasswordUtils;
 import com.akgarg.todobackend.utils.ValidationUtils;
 import lombok.AllArgsConstructor;
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     private final TodoService todoService;
     private final ApplicationLogger logger;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final ApplicationCache cache;
     private final EmailService emailService;
@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
         }
 
         return Map.of(
-                LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtUtils.generateToken(userDetails),
+                LOGIN_SUCCESS_RESPONSE_TOKEN, this.jwtService.generateToken(userDetails),
                 LOGIN_SUCCESS_RESPONSE_ROLE, userRole,
                 LOGIN_SUCCESS_RESPONSE_USERID, userId,
                 LOGIN_SUCCESS_RESPONSE_EMAIL, email,
@@ -342,10 +342,11 @@ public class UserServiceImpl implements UserService {
 
     private String getFrontEndResetPasswordEndpointUrl() {
         final Object frontEndBaseUrl = this.cache.getConfigValue(CacheConfigKey.FRONTEND_BASE_URL.name(), DEFAULT_FRONTEND_BASE_URL);
-        final Object frontendPasswordResetEndpointUrl = this.cache.getConfigValue(
+
+        final String frontendPasswordResetEndpointUrl = this.cache.getConfigValue(
                 CacheConfigKey.RESET_PASSWORD_PAGE_URL.name(),
                 DEFAULT_PASSWORD_RESET_ENDPOINT_URL
-        );
+        ).toString();
 
         return frontEndBaseUrl + "/" + frontendPasswordResetEndpointUrl;
     }

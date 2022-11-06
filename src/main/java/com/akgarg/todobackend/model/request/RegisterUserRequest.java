@@ -2,7 +2,6 @@ package com.akgarg.todobackend.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Akhilesh Garg
@@ -10,7 +9,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 public class RegisterUserRequest {
 
     private String email;
@@ -19,4 +17,13 @@ public class RegisterUserRequest {
     private String firstName;
     private String lastName;
 
+    @Override
+    public String toString() {
+        return "RegisterUserRequest{" +
+                "email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
+    
 }

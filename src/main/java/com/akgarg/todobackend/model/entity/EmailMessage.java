@@ -1,4 +1,4 @@
-package com.akgarg.todobackend.model.kafka;
+package com.akgarg.todobackend.model.entity;
 
 import lombok.Data;
 

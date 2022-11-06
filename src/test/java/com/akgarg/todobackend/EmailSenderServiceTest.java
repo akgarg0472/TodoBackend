@@ -1,9 +1,6 @@
 package com.akgarg.todobackend;
 
 import com.akgarg.todobackend.service.email.EmailService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,13 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author Akhilesh Garg
  * @since 16-10-2022
  */
-@SpringBootTest
+// @SpringBootTest
+@SuppressWarnings("unused")
 class EmailSenderServiceTest {
 
-    @Autowired
+    // @Autowired
     private EmailService emailService;
 
-    @Test
+    // @Test
     void testSendEmailMethod() {
         assertNotNull(emailService, "Email Service can't be null");
 

@@ -1,4 +1,4 @@
-package com.akgarg.todobackend.utils;
+package com.akgarg.todobackend.service.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -6,7 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -19,9 +19,8 @@ import java.util.function.Function;
  * @author Akhilesh Garg
  * @since 16-07-2022
  */
-@SuppressWarnings("unused")
-@Component
-public class JwtUtils implements InitializingBean {
+@Service
+public class JwtServiceImpl implements JwtService, InitializingBean {
 
     @Value("${todo.security.jwt.secret}")
     private String secretKey;
@@ -33,18 +32,25 @@ public class JwtUtils implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         this.secretKey = Base64.getEncoder()
-                .encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+                .encodeToString(this.secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Override
     public String extractUsername(final String token) {
         return this.extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(final String token) {
+    @Override
+    public String generateToken(final UserDetails userDetails) {
+        final var claims = new HashMap<String, Object>();
+        return this.createToken(claims, userDetails.getUsername());
+    }
+
+    private Date extractExpiration(final String token) {
         return this.extractClaim(token, Claims::getExpiration);
     }
 
-    public <T> T extractClaim(
+    private <T> T extractClaim(
             final String token,
             final Function<Claims, T> claimsResolver
     ) {
@@ -63,11 +69,6 @@ public class JwtUtils implements InitializingBean {
         return this.extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(final UserDetails userDetails) {
-        final var claims = new HashMap<String, Object>();
-        return this.createToken(claims, userDetails.getUsername());
-    }
-
     private String createToken(
             final Map<String, Object> claims,
             final String subject
@@ -82,7 +83,8 @@ public class JwtUtils implements InitializingBean {
                 .compact();
     }
 
-    public Boolean validateToken(
+    @Override
+    public boolean validateToken(
             final String token,
             final UserDetails userDetails
     ) {
